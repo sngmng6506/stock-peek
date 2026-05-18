@@ -42,7 +42,7 @@ npm run build:win    # Windows installer 빌드 → dist/
 
 ## 라이선스
 
-MIT.
+BSL.
 
 ## 문의
 
