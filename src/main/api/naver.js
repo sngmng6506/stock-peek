@@ -20,25 +20,73 @@ const CHART_HEADERS = {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
 }
 
+function parseNumber(raw, formatted) {
+  const r = Number(raw)
+  if (Number.isFinite(r)) return r
+  return Number(String(formatted ?? '').replace(/,/g, ''))
+}
+
+function quoteFromMain(data) {
+  return {
+    price: parseNumber(data.closePriceRaw, data.closePrice),
+    change: parseNumber(
+      data.compareToPreviousClosePriceRaw,
+      data.compareToPreviousClosePrice
+    ),
+    changeRatio: parseNumber(
+      data.fluctuationsRatioRaw,
+      data.fluctuationsRatio
+    ),
+    direction: data.compareToPreviousPrice?.code,
+    time: data.localTradedAt
+  }
+}
+
+function quoteFromOver(over) {
+  return {
+    price: parseNumber(over.overPriceRaw, over.overPrice),
+    change: parseNumber(
+      over.compareToPreviousClosePriceRaw,
+      over.compareToPreviousClosePrice
+    ),
+    changeRatio: parseNumber(
+      over.fluctuationsRatioRaw,
+      over.fluctuationsRatio
+    ),
+    direction: over.compareToPreviousPrice?.code,
+    time: over.localTradedAt
+  }
+}
+
 function extractQuote(json) {
   const data = json?.datas?.[0] || json?.result?.areas?.[0]?.datas?.[0]
   if (!data) return null
-  const price = Number(data.closePriceRaw ?? data.closePrice?.replace?.(/,/g, ''))
-  const change = Number(
-    data.compareToPreviousClosePriceRaw ??
-      data.compareToPreviousClosePrice?.replace?.(/,/g, '')
-  )
-  const changeRatio = Number(
-    data.fluctuationsRatioRaw ?? data.fluctuationsRatio
-  )
-  const direction = data.compareToPreviousPrice?.code
+
+  // 정규장 + 시간외 단일가 둘 다 받아서 더 최신 거래 기준으로 표시.
+  // (장 마감 후엔 시간외 가격이 토스 등 다른 앱에서 보이는 "현재 가격"과 일치)
+  const mainQ = quoteFromMain(data)
+  const overQ = data.overMarketPriceInfo
+    ? quoteFromOver(data.overMarketPriceInfo)
+    : null
+
+  let chosen = mainQ
+  if (overQ && Number.isFinite(overQ.price) && overQ.time && mainQ.time) {
+    if (new Date(overQ.time).getTime() > new Date(mainQ.time).getTime()) {
+      chosen = overQ
+    }
+  }
+
   // 1: 상한, 2: 상승, 3: 보합, 4: 하한, 5: 하락
-  const isUp = direction === '1' || direction === '2' || (!direction && change > 0)
+  const isUp =
+    chosen.direction === '1' ||
+    chosen.direction === '2' ||
+    (!chosen.direction && chosen.change > 0)
+
   return {
     name: data.stockName,
-    price,
-    change,
-    changeRatio,
+    price: chosen.price,
+    change: chosen.change,
+    changeRatio: chosen.changeRatio,
     isUp
   }
 }

@@ -30,6 +30,53 @@ function errResponse(message, status = 400) {
 
 // ----- Naver (KR) -----
 
+function parseNum(raw, formatted) {
+  const r = Number(raw)
+  if (Number.isFinite(r)) return r
+  return Number(String(formatted ?? '').replace(/,/g, ''))
+}
+
+function pickQuote(data) {
+  const main = {
+    price: parseNum(data.closePriceRaw, data.closePrice),
+    change: parseNum(
+      data.compareToPreviousClosePriceRaw,
+      data.compareToPreviousClosePrice
+    ),
+    changeRatio: parseNum(data.fluctuationsRatioRaw, data.fluctuationsRatio),
+    direction: data.compareToPreviousPrice?.code,
+    time: data.localTradedAt
+  }
+  const over = data.overMarketPriceInfo
+    ? {
+        price: parseNum(
+          data.overMarketPriceInfo.overPriceRaw,
+          data.overMarketPriceInfo.overPrice
+        ),
+        change: parseNum(
+          data.overMarketPriceInfo.compareToPreviousClosePriceRaw,
+          data.overMarketPriceInfo.compareToPreviousClosePrice
+        ),
+        changeRatio: parseNum(
+          data.overMarketPriceInfo.fluctuationsRatioRaw,
+          data.overMarketPriceInfo.fluctuationsRatio
+        ),
+        direction: data.overMarketPriceInfo.compareToPreviousPrice?.code,
+        time: data.overMarketPriceInfo.localTradedAt
+      }
+    : null
+  if (
+    over &&
+    Number.isFinite(over.price) &&
+    over.time &&
+    main.time &&
+    new Date(over.time).getTime() > new Date(main.time).getTime()
+  ) {
+    return over
+  }
+  return main
+}
+
 async function fetchKR(code, { skipChart = false } = {}) {
   const quoteP = fetch(
     `https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`,
@@ -48,10 +95,11 @@ async function fetchKR(code, { skipChart = false } = {}) {
   const data = quoteJson?.datas?.[0]
   if (!data) throw new Error(`Naver quote ${code}: empty`)
 
-  const price = Number(data.closePriceRaw)
-  const change = Number(data.compareToPreviousClosePriceRaw)
-  const changeRatio = Number(data.fluctuationsRatioRaw)
-  const direction = data.compareToPreviousPrice?.code
+  const q = pickQuote(data)
+  const price = q.price
+  const change = q.change
+  const changeRatio = q.changeRatio
+  const direction = q.direction
   const isUp =
     direction === '1' || direction === '2' || (!direction && change > 0)
 
