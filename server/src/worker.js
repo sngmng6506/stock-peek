@@ -1,8 +1,5 @@
 // Stock Peek — Cloudflare Worker proxy
-// 클라이언트가 비공식 API를 직접 호출하지 않고 이 Worker를 거치도록 해서:
-// 1) IP를 Cloudflare edge로 분산 (단일 백엔드 IP 문제 회피)
-// 2) Cache API로 응답 캐싱 (같은 종목 보는 사용자 다수일 때 효과 큼)
-// 3) 비공식 API 약관 위반 노출은 Worker 한 곳에만 (README에 명시할 것)
+// IP를 Cloudflare edge로 분산하고 Cache API로 응답 캐싱.
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'

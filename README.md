@@ -42,7 +42,7 @@ npm run build:win    # Windows installer 빌드 → dist/
 
 ## 라이선스
 
-MIT. 비공식 API를 사용하므로 개인 학습용으로만.
+MIT.
 
 ## 문의
 
