@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>몰래주식 — hover로 시세 확인</title>
+  <meta name="description" content="일하다가 몰래, 게임하다가 몰래. 화면 우측 가장자리 hover로 즐겨찾기 한국·미국 주식 시세를 슬라이드 인." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="몰래주식" />
+  <meta property="og:description" content="hover로 즐겨찾기 주식 시세. Windows 데스크톱 위젯." />
+  <meta property="og:url" content="https://stock-peek.com" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300C8FF'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23000' font-weight='800'%3E몰%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="#" class="logo">몰래주식</a>
+      <nav class="nav-links">
+        <a href="#features">기능</a>
+        <a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a>
+        <a href="#download" class="nav-cta">다운로드</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">Windows · 무료 · 오픈소스</div>
+        <h1 class="hero-title">
+          <span class="grad">시세는 몰래,</span><br />
+          마우스만 살짝.
+        </h1>
+        <p class="hero-sub">
+          일하다가, 게임하다가, 회의 중에도.<br />
+          화면 우측 가장자리에 마우스만 가져가면 시세가 슬라이드로.
+        </p>
+        <div class="hero-cta">
+          <a href="#download" class="btn-primary">
+            <span>↓ Windows 다운로드</span>
+            <span class="btn-sub">v1.0.0 · 91.9 MB</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="showcase">
+        <div class="showcase-bg"></div>
+        <div class="showcase-panel">
+          <div class="sp-head">
+            <span class="sp-title">Watchlist</span>
+            <div class="sp-actions">
+              <span>↻</span><span>+</span><span>⚙</span>
+            </div>
+          </div>
+          <div class="sp-cards">
+            <div class="sp-card">
+              <div class="sp-row">
+                <span class="sp-name">삼성전자</span>
+                <span class="sp-change up">+5.08%</span>
+              </div>
+              <div class="sp-row">
+                <span class="sp-price">284,250원</span>
+                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,16 12,14 22,12 32,15 42,10 52,8 62,5 72,3 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
+              </div>
+            </div>
+            <div class="sp-card">
+              <div class="sp-row">
+                <span class="sp-name">SK하이닉스</span>
+                <span class="sp-change down">−0.52%</span>
+              </div>
+              <div class="sp-row">
+                <span class="sp-price">198,500원</span>
+                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,4 12,6 22,10 32,8 42,12 52,11 62,14 72,16 78,18" fill="none" stroke="#A32D2D" stroke-width="1.4" stroke-linejoin="round" /></svg>
+              </div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-card">
+              <div class="sp-row">
+                <span class="sp-name">AAPL</span>
+                <span class="sp-change up">+0.83%</span>
+              </div>
+              <div class="sp-row">
+                <span class="sp-price">$189.20</span>
+                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,14 12,11 22,12 32,9 42,8 52,10 62,6 72,5 78,4" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
+              </div>
+            </div>
+            <div class="sp-card">
+              <div class="sp-row">
+                <span class="sp-name">NVDA</span>
+                <span class="sp-change up">+2.14%</span>
+              </div>
+              <div class="sp-row">
+                <span class="sp-price">$632.40</span>
+                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,18 12,15 22,13 32,12 42,8 52,9 62,6 72,4 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="container">
+        <h2 class="section-title">
+          <span class="grad">필요한 만큼만,</span><br />그 이상은 없습니다.
+        </h2>
+        <div class="feat-grid">
+          <div class="feat-card">
+            <div class="feat-num">01</div>
+            <h3>Hover 트리거</h3>
+            <p>화면 우측 5px에 0.3초 머무르면 슬라이드. 벗어나면 자동 숨김. 단축키도, 클릭도 필요 없습니다.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-num">02</div>
+            <h3>한국 + 미국</h3>
+            <p>종목명이나 티커로 검색해서 추가. 코스피·코스닥·NYSE·NASDAQ 모두 지원.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-num">03</div>
+            <h3>30일 sparkline</h3>
+            <p>일봉 30개로 흐름을 한눈에. 상승은 녹색, 하락은 빨강.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-num">04</div>
+            <h3>드래그로 재정렬</h3>
+            <p>중요한 종목을 위로. 변경 사항 자동 저장.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-num">05</div>
+            <h3>자동 시작</h3>
+            <p>윈도우 부팅 시 트레이에 조용히. 켜둬도 부담 없음.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-num">06</div>
+            <h3>적응형 갱신</h3>
+            <p>장 시간엔 5초마다, 장 외엔 60초. 배터리·트래픽 절약.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="download" id="download">
+      <div class="container">
+        <h2 class="section-title">
+          <span class="grad">지금 받기</span>
+        </h2>
+        <p class="download-sub">Windows 10/11 (64-bit) · 무료</p>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest" target="_blank" rel="noopener" class="btn-primary big">
+          <span>↓ stock-peek-setup.exe</span>
+          <span class="btn-sub">GitHub Releases에서 받기</span>
+        </a>
+        <p class="caveat">
+          코드 사이닝이 없어 첫 실행 시 Windows SmartScreen 경고가 뜰 수 있습니다.<br />
+          "추가 정보 → 실행"으로 진행하세요.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>
+        <div class="footer-brand">몰래주식</div>
+        <div class="footer-copy">© 2026 · 비공식 API 사용, 개인 학습용</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:sngmng6506@gmail.com">문의</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,107 @@
+import { useProxy, proxyStock, proxySearch } from './proxy.js'
+
+const QUOTE_URL = (code) =>
+  `https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`
+
+// 모바일 네이버 일봉 엔드포인트. 휴장일/거래시간 외에도 직전 거래일들 데이터를 반환.
+// (siseJson의 timeframe=minute는 평일 거래시간 외엔 빈 응답이라 sparkline이 안 그려짐)
+const CHART_URL = (code) =>
+  `https://m.stock.naver.com/api/stock/${code}/price?pageSize=30&page=1`
+
+const QUOTE_HEADERS = {
+  Referer: 'https://finance.naver.com',
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+}
+
+const CHART_HEADERS = {
+  Referer: 'https://m.stock.naver.com',
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+}
+
+function extractQuote(json) {
+  const data = json?.datas?.[0] || json?.result?.areas?.[0]?.datas?.[0]
+  if (!data) return null
+  const price = Number(data.closePriceRaw ?? data.closePrice?.replace?.(/,/g, ''))
+  const change = Number(
+    data.compareToPreviousClosePriceRaw ??
+      data.compareToPreviousClosePrice?.replace?.(/,/g, '')
+  )
+  const changeRatio = Number(
+    data.fluctuationsRatioRaw ?? data.fluctuationsRatio
+  )
+  const direction = data.compareToPreviousPrice?.code
+  // 1: 상한, 2: 상승, 3: 보합, 4: 하한, 5: 하락
+  const isUp = direction === '1' || direction === '2' || (!direction && change > 0)
+  return {
+    name: data.stockName,
+    price,
+    change,
+    changeRatio,
+    isUp
+  }
+}
+
+function extractCloses(rows) {
+  if (!Array.isArray(rows)) return []
+  // 응답은 최신 → 과거 순. sparkline은 좌→우 시간순으로 그려야 하므로 reverse.
+  return rows
+    .map((r) => Number(String(r.closePrice ?? '').replace(/,/g, '')))
+    .filter((n) => Number.isFinite(n))
+    .reverse()
+}
+
+const SEARCH_URL = (kw) =>
+  `https://ac.stock.naver.com/ac?q=${encodeURIComponent(kw)}&target=stock`
+
+export async function searchKoreanStocks(keyword) {
+  if (useProxy()) return proxySearch('KR', keyword)
+  const res = await fetch(SEARCH_URL(keyword), { headers: CHART_HEADERS })
+  if (!res.ok) throw new Error(`Naver search: ${res.status}`)
+  const json = await res.json()
+  return (json?.items || [])
+    .filter((i) => i.nationCode === 'KOR' && i.category === 'stock')
+    .map((i) => ({
+      market: 'KR',
+      symbol: i.code,
+      name: i.name,
+      type: i.typeName || ''
+    }))
+}
+
+export async function fetchKoreanStock(code, { skipChart = false } = {}) {
+  if (useProxy()) return proxyStock('KR', code, { skipChart })
+  const quotePromise = fetch(QUOTE_URL(code), { headers: QUOTE_HEADERS })
+  const chartPromise = skipChart
+    ? null
+    : fetch(CHART_URL(code), { headers: CHART_HEADERS })
+
+  const quoteRes = await quotePromise
+  if (!quoteRes.ok) throw new Error(`Naver quote ${code}: ${quoteRes.status}`)
+
+  const quoteJson = await quoteRes.json()
+  const quote = extractQuote(quoteJson)
+  if (!quote) throw new Error(`Naver quote ${code}: empty payload`)
+
+  let prices = []
+  if (chartPromise) {
+    const chartRes = await chartPromise
+    if (chartRes.ok) {
+      try {
+        const rows = await chartRes.json()
+        prices = extractCloses(rows)
+      } catch {
+        prices = []
+      }
+    }
+  }
+
+  return {
+    market: 'KR',
+    symbol: code,
+    currency: 'KRW',
+    ...quote,
+    prices
+  }
+}
