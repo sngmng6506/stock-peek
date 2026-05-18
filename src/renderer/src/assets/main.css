@@ -397,6 +397,21 @@ body,
   background: rgba(45, 108, 223, 0.25);
 }
 
+.update-banner.ready {
+  background: rgba(46, 184, 114, 0.18);
+  border-color: rgba(46, 184, 114, 0.5);
+  color: #62d29c;
+}
+
+.update-banner.ready:hover {
+  background: rgba(46, 184, 114, 0.28);
+}
+
+.update-banner.downloading {
+  cursor: default;
+  color: rgba(235, 235, 245, 0.6);
+}
+
 .setting-row {
   display: flex;
   align-items: center;

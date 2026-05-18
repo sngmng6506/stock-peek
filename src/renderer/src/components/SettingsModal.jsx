@@ -7,7 +7,8 @@ function SettingsModal({ onClose }) {
   const [autoStart, setAutoStart] = useState(false)
   const [version, setVersion] = useState('')
   const [qr, setQr] = useState(null)
-  const [update, setUpdate] = useState(null)
+  const [updateAvailable, setUpdateAvailable] = useState(null)
+  const [updateReady, setUpdateReady] = useState(null)
 
   useEffect(() => {
     window.api.getSettings().then((s) => {
@@ -15,9 +16,16 @@ function SettingsModal({ onClose }) {
       setVersion(s.version || '')
     })
     window.api.getDonateQr().then(setQr)
-    window.api.getUpdate().then(setUpdate)
-    const unsub = window.api.onUpdateAvailable(setUpdate)
-    return () => unsub()
+    window.api.getUpdate().then((u) => {
+      if (u?.available) setUpdateAvailable(u.available)
+      if (u?.ready) setUpdateReady(u.ready)
+    })
+    const u1 = window.api.onUpdateAvailable(setUpdateAvailable)
+    const u2 = window.api.onUpdateReady(setUpdateReady)
+    return () => {
+      u1()
+      u2()
+    }
   }, [])
 
   const toggleAutoStart = async () => {
@@ -32,15 +40,20 @@ function SettingsModal({ onClose }) {
       <div className="modal settings-modal" onMouseDown={(e) => e.stopPropagation()}>
         <div className="modal-title">설정</div>
 
-        {update && (
+        {updateReady && (
           <button
             type="button"
-            className="update-banner"
-            onClick={openExternal(update.url)}
+            className="update-banner ready"
+            onClick={() => window.api.installUpdate()}
           >
-            <span>새 버전 {update.version} 사용 가능</span>
-            <span>↗</span>
+            <span>v{updateReady.version} 다운로드 완료 — 클릭해서 재시작</span>
+            <span>↻</span>
           </button>
+        )}
+        {!updateReady && updateAvailable && (
+          <div className="update-banner downloading">
+            <span>v{updateAvailable.version} 다운로드 중…</span>
+          </div>
         )}
 
         <label className="setting-row">

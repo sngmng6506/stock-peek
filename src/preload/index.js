@@ -20,10 +20,16 @@ const api = {
     ipcRenderer.invoke('watchlist:remove', { market, symbol }),
   reorderStocks: (items) => ipcRenderer.invoke('watchlist:reorder', items),
   getUpdate: () => ipcRenderer.invoke('app:get-update'),
+  installUpdate: () => ipcRenderer.send('app:install-update'),
   onUpdateAvailable: (cb) => {
     const handler = (_e, data) => cb(data)
     ipcRenderer.on('app:update-available', handler)
     return () => ipcRenderer.off('app:update-available', handler)
+  },
+  onUpdateReady: (cb) => {
+    const handler = (_e, data) => cb(data)
+    ipcRenderer.on('app:update-ready', handler)
+    return () => ipcRenderer.off('app:update-ready', handler)
   },
   getSettings: () => ipcRenderer.invoke('settings:get'),
   setAutoStart: (enabled) => ipcRenderer.invoke('settings:set-autostart', enabled),

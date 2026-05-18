@@ -19,7 +19,8 @@ import {
 import { getItems, addItem, removeItem, setItems } from './watchlist.js'
 import { searchKoreanStocks } from './api/naver.js'
 import { searchUSStocks } from './api/yahoo.js'
-import { startUpdateChecker, getLatestUpdate } from './updater.js'
+import electronUpdater from 'electron-updater'
+const { autoUpdater } = electronUpdater
 
 const PANEL_WIDTH = 280
 const PANEL_HEIGHT_INITIAL = 180 // 로딩 중 초기 높이. renderer가 측정 후 동적으로 늘림.
@@ -39,6 +40,8 @@ let hoverEnterTime = null
 let targetState = 'hidden' // 'hidden' | 'shown'
 let cancelAnim = null
 let panelLocked = false
+let updateInfo = null // {version} — download available/in progress
+let updateReady = null // {version} — downloaded, ready to install on restart
 
 function getDisplayWorkArea() {
   return screen.getPrimaryDisplay().workArea
@@ -207,12 +210,17 @@ function applyAutoStart(enabled) {
 function refreshTrayMenu() {
   if (!tray) return
   const isAuto = app.getLoginItemSettings().openAtLogin
-  const update = getLatestUpdate()
   const template = []
-  if (update) {
+  if (updateReady) {
     template.push({
-      label: `↓ 새 버전 ${update.version} 다운로드`,
-      click: () => shell.openExternal(update.url)
+      label: `↻ v${updateReady.version} 적용 (재시작)`,
+      click: () => autoUpdater.quitAndInstall()
+    })
+    template.push({ type: 'separator' })
+  } else if (updateInfo) {
+    template.push({
+      label: `↓ v${updateInfo.version} 다운로드 중...`,
+      enabled: false
     })
     template.push({ type: 'separator' })
   }
@@ -236,6 +244,17 @@ function createTray() {
   tray.setToolTip('몰래주식')
   refreshTrayMenu()
 }
+
+// 단일 인스턴스 — 두 번째 실행 시도하면 즉시 quit하고 첫 인스턴스가 패널 강제 표시.
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+}
+
+app.on('second-instance', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    setTarget('shown')
+  }
+})
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.stockpeek')
@@ -312,14 +331,42 @@ app.whenReady().then(() => {
   createWindow()
   createTray()
 
-  startUpdateChecker(app.getVersion(), (update) => {
+  // electron-updater: GitHub Releases 자동 체크 + 백그라운드 다운로드.
+  autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.on('update-available', (info) => {
+    updateInfo = { version: info.version, releaseDate: info.releaseDate }
     refreshTrayMenu()
     if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send('app:update-available', update)
+      mainWindow.webContents.send('app:update-available', updateInfo)
     }
   })
+  autoUpdater.on('update-downloaded', (info) => {
+    updateReady = { version: info.version }
+    refreshTrayMenu()
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('app:update-ready', updateReady)
+    }
+  })
+  autoUpdater.on('error', (err) => {
+    console.error('autoUpdater error:', err?.message || err)
+  })
+  // dev 모드에선 update check를 건너뜀 (signing/path 검사 실패함).
+  if (!is.dev) {
+    autoUpdater.checkForUpdates().catch(() => {})
+    setInterval(
+      () => autoUpdater.checkForUpdates().catch(() => {}),
+      24 * 60 * 60 * 1000
+    )
+  }
 
-  ipcMain.handle('app:get-update', () => getLatestUpdate())
+  ipcMain.handle('app:get-update', () => ({
+    available: updateInfo,
+    ready: updateReady
+  }))
+  ipcMain.on('app:install-update', () => {
+    if (updateReady) autoUpdater.quitAndInstall()
+  })
 
   subscribe((data) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
