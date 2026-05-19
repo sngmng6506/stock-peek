@@ -188,6 +188,7 @@ a {
   filter: blur(40px);
 }
 
+/* Showcase 패널 — 실제 앱처럼 우측에서 슬라이드 인/아웃 반복 */
 .showcase-panel {
   position: absolute;
   right: 0;
@@ -201,6 +202,36 @@ a {
     0 30px 80px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
+  animation: peek-loop 6s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+
+@keyframes peek-loop {
+  0%   { transform: translateX(110%); opacity: 0; }
+  15%  { transform: translateX(110%); opacity: 0; }
+  25%  { transform: translateX(0);    opacity: 1; }
+  75%  { transform: translateX(0);    opacity: 1; }
+  85%  { transform: translateX(110%); opacity: 0; }
+  100% { transform: translateX(110%); opacity: 0; }
+}
+
+/* 마우스 커서 일러스트 — 좌→우 이동하다가 패널 닿으면 멈추고 다시 돌아옴 */
+.peek-cursor {
+  position: absolute;
+  top: 80px;
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.7);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  pointer-events: none;
+  animation: peek-cursor-loop 6s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+
+@keyframes peek-cursor-loop {
+  0%   { right: 80%; }
+  15%  { right: 12%; }
+  25%  { right: 5%; }
+  75%  { right: 5%; }
+  85%  { right: 80%; }
+  100% { right: 80%; }
 }
 
 .sp-head {
@@ -274,7 +305,30 @@ a {
 
 @media (max-width: 720px) {
   .showcase { height: auto; padding: 20px 0; }
-  .showcase-panel { position: relative; right: auto; top: auto; width: 100%; max-width: 320px; margin: 0 auto; }
+  .showcase-panel {
+    position: relative;
+    right: auto;
+    top: auto;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+  .peek-cursor { display: none; }
+}
+
+/* 사용자가 애니메이션 줄이기 설정해놓으면 정지 */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-panel,
+  .peek-cursor {
+    animation: none;
+  }
+  .showcase-panel {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* ---------- Sections ---------- */
