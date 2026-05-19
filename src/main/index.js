@@ -19,6 +19,7 @@ import {
 import { getItems, addItem, removeItem, setItems } from './watchlist.js'
 import { searchKoreanStocks } from './api/naver.js'
 import { searchUSStocks } from './api/yahoo.js'
+import { isWelcomeShown, markWelcomeShown, resetWelcome } from './preferences.js'
 import electronUpdater from 'electron-updater'
 const { autoUpdater } = electronUpdater
 
@@ -110,11 +111,24 @@ function getCurrentPanelHeight() {
   return mainWindow.getSize()[1]
 }
 
+// 마우스가 주 모니터 안에 있는지 검사. 다중 모니터 환경에서 보조 모니터로
+// 마우스가 넘어가면 패널을 자동으로 닫기 위해 사용.
+function isOnPrimaryDisplay(cursor) {
+  const wa = screen.getPrimaryDisplay().workArea
+  return (
+    cursor.x >= wa.x &&
+    cursor.x < wa.x + wa.width &&
+    cursor.y >= wa.y &&
+    cursor.y < wa.y + wa.height
+  )
+}
+
 function isInTriggerZone(cursor) {
+  if (!isOnPrimaryDisplay(cursor)) return false
   const wa = getDisplayWorkArea()
   return (
     cursor.x >= wa.x + wa.width - TRIGGER_WIDTH &&
-    cursor.x <= wa.x + wa.width &&
+    cursor.x < wa.x + wa.width &&
     cursor.y >= getPanelY() &&
     cursor.y <= getPanelY() + TRIGGER_HEIGHT
   )
@@ -122,12 +136,12 @@ function isInTriggerZone(cursor) {
 
 function isInPanelArea(cursor) {
   if (!mainWindow) return false
-  // 패널이 실제로 보일 때만 검사 (슬라이드 아웃 중엔 false)
   if (targetState !== 'shown') return false
+  if (!isOnPrimaryDisplay(cursor)) return false
   const shownX = getShownX()
   return (
     cursor.x >= shownX &&
-    cursor.x <= shownX + PANEL_WIDTH &&
+    cursor.x < shownX + PANEL_WIDTH &&
     cursor.y >= getPanelY() &&
     cursor.y <= getPanelY() + getCurrentPanelHeight()
   )
@@ -137,6 +151,15 @@ function startHoverPolling() {
   pollTimer = setInterval(() => {
     if (!mainWindow) return
     const cursor = screen.getCursorScreenPoint()
+
+    // 마우스가 주 모니터 밖이면 lock 무시하고 무조건 hidden 처리.
+    // (보조 모니터로 옮겨도 패널이 계속 떠있는 버그 방지)
+    if (!isOnPrimaryDisplay(cursor)) {
+      hoverEnterTime = null
+      if (targetState === 'shown') setTarget('hidden')
+      return
+    }
+
     const active = isInTriggerZone(cursor) || isInPanelArea(cursor) || panelLocked
 
     if (active) {
@@ -186,6 +209,12 @@ function createWindow() {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     startHoverPolling()
+    // 첫 실행이면 패널을 강제로 슬라이드 인 + 잠금 (환영 모달이 보이게).
+    // 사용자가 환영 모달 dismiss하면 lock 풀려서 자연 hover 동작 복귀.
+    if (!isWelcomeShown()) {
+      panelLocked = true
+      setTarget('shown')
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -318,6 +347,17 @@ app.whenReady().then(() => {
     const next = setItems(items)
     reorderCache(next)
     return next
+  })
+
+  ipcMain.handle('welcome:check', () => !isWelcomeShown())
+  ipcMain.handle('welcome:dismiss', () => {
+    markWelcomeShown()
+    panelLocked = false
+    return true
+  })
+  ipcMain.handle('welcome:show-again', () => {
+    resetWelcome()
+    return true
   })
 
   ipcMain.handle('search:stocks', async (_e, { market, keyword }) => {

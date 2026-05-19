@@ -412,6 +412,141 @@ body,
   color: rgba(235, 235, 245, 0.6);
 }
 
+/* Welcome modal */
+.welcome-modal {
+  gap: 18px !important;
+  padding: 22px !important;
+  align-items: stretch;
+}
+
+.welcome-illust {
+  height: 90px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.welcome-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 16px;
+}
+
+.welcome-panel-mini {
+  width: 40px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slide-in-demo 2.5s ease-in-out infinite;
+}
+
+.welcome-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+.welcome-cursor {
+  position: absolute;
+  right: 65px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: rgba(235, 235, 245, 0.6);
+  animation: cursor-bounce 2.5s ease-in-out infinite;
+}
+
+.welcome-arrow {
+  position: absolute;
+  right: 100px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--ev-c-text-2, rgba(120, 160, 220, 0.7));
+}
+
+@keyframes slide-in-demo {
+  0%, 30% { transform: translateX(20px); opacity: 0; }
+  50%, 80% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(20px); opacity: 0; }
+}
+
+@keyframes cursor-bounce {
+  0%, 30% { transform: translate(8px, -50%); }
+  50%, 80% { transform: translate(0, -50%); }
+  100% { transform: translate(8px, -50%); }
+}
+
+.welcome-title {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  color: rgba(235, 235, 245, 0.95);
+}
+
+.welcome-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.welcome-steps li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: rgba(235, 235, 245, 0.85);
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(45, 108, 223, 0.85);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-steps strong {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.step-desc {
+  font-size: 11px;
+  color: rgba(235, 235, 245, 0.55);
+}
+
+.welcome-modal .big-btn {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.welcome-modal .modal-actions {
+  justify-content: stretch;
+}
+
 .setting-row {
   display: flex;
   align-items: center;

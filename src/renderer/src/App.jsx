@@ -18,6 +18,7 @@ import { CSS } from '@dnd-kit/utilities'
 import StockCard from './components/StockCard'
 import AddStockModal from './components/AddStockModal'
 import SettingsModal from './components/SettingsModal'
+import WelcomeModal from './components/WelcomeModal'
 
 const idOf = (s) => `${s.market}-${s.symbol}`
 
@@ -41,6 +42,7 @@ function App() {
   const [stocks, setStocks] = useState([])
   const [showAdd, setShowAdd] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
@@ -56,6 +58,9 @@ function App() {
       if (Array.isArray(data) && data.length) setStocks(data)
     })
     const unsub = window.api.onStocksUpdate((data) => setStocks(data))
+    window.api.checkWelcome().then((shouldShow) => {
+      if (shouldShow) setShowWelcome(true)
+    })
     return () => unsub()
   }, [])
 
@@ -96,7 +101,7 @@ function App() {
     const modal = panel.querySelector('.modal')
     if (modal) ro.observe(modal)
     return () => ro.disconnect()
-  }, [showAdd, showSettings])
+  }, [showAdd, showSettings, showWelcome])
 
   const handleAdd = async (market, symbol) => {
     await window.api.addStock(market, symbol)
@@ -235,6 +240,7 @@ function App() {
         />
       )}
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
     </div>
   )
 }
