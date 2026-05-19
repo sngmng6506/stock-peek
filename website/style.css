@@ -218,20 +218,22 @@ a {
 .peek-cursor {
   position: absolute;
   top: 80px;
+  left: 12%;
   font-size: 26px;
-  color: rgba(255, 255, 255, 0.7);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  color: rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
   pointer-events: none;
+  z-index: 2;
   animation: peek-cursor-loop 6s cubic-bezier(0.33, 1, 0.68, 1) infinite;
 }
 
 @keyframes peek-cursor-loop {
-  0%   { right: 80%; }
-  15%  { right: 12%; }
-  25%  { right: 5%; }
-  75%  { right: 5%; }
-  85%  { right: 80%; }
-  100% { right: 80%; }
+  0%   { left: 12%; }
+  18%  { left: 78%; }
+  25%  { left: 82%; }
+  75%  { left: 82%; }
+  85%  { left: 12%; }
+  100% { left: 12%; }
 }
 
 .sp-head {
