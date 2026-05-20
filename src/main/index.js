@@ -28,6 +28,7 @@ const PANEL_HEIGHT_INITIAL = 180 // 로딩 중 초기 높이. renderer가 측정
 const PANEL_HEIGHT_MIN = 120
 const PANEL_HEIGHT_BOTTOM_MARGIN = 40 // 화면 하단에서 띄울 여백
 const PANEL_Y = 100
+const PANEL_PEEK = 4 // 숨겨졌을 때 우측 가장자리에 살짝 보이는 너비 (px) — 위젯 위치 인지용
 const TRIGGER_WIDTH = 5
 const TRIGGER_HEIGHT = 500 // hover 트리거 zone 세로 범위 (패널 실제 높이와 분리)
 const HOVER_DELAY = 300
@@ -50,7 +51,8 @@ function getDisplayWorkArea() {
 
 function getHiddenX() {
   const wa = getDisplayWorkArea()
-  return wa.x + wa.width
+  // 완전히 화면 밖에 두지 않고 우측에 살짝 (PANEL_PEEK) 보이게 → 위젯 위치 인지.
+  return wa.x + wa.width - PANEL_PEEK
 }
 
 function getShownX() {
