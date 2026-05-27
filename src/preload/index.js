@@ -16,7 +16,14 @@ const api = {
   panelUnlock: () => ipcRenderer.send('panel:unlock'),
   setPanelHeight: (h) => ipcRenderer.send('panel:set-height', h),
   getWatchlist: () => ipcRenderer.invoke('watchlist:get'),
-  addStock: (market, symbol) => ipcRenderer.invoke('watchlist:add', { market, symbol }),
+  addStock: (market, symbol, holding) =>
+    ipcRenderer.invoke('watchlist:add', { market, symbol, ...(holding || {}) }),
+  updateHolding: (market, symbol, holding) =>
+    ipcRenderer.invoke('watchlist:update-holding', {
+      market,
+      symbol,
+      ...(holding || {})
+    }),
   searchStocks: (market, keyword) =>
     ipcRenderer.invoke('search:stocks', { market, keyword }),
   removeStock: (market, symbol) =>

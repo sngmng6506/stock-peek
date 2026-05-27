@@ -12,24 +12,37 @@ function formatRatio(r) {
   return `${sign}${r.toFixed(2)}%`
 }
 
-function RemoveBtn({ onClick }) {
+function formatProfit(stock) {
+  if (!Number.isFinite(stock.price) || !stock.quantity || !stock.avgPrice) return null
+  const profit = (stock.price - stock.avgPrice) * stock.quantity
+  const ratio = ((stock.price - stock.avgPrice) / stock.avgPrice) * 100
+  const sign = profit > 0 ? '+' : ''
+  const profitText =
+    stock.market === 'KR'
+      ? `${sign}${Math.round(profit).toLocaleString('ko-KR')}원`
+      : `${sign}$${profit.toFixed(2)}`
+  const ratioText = `${sign}${ratio.toFixed(2)}%`
+  return { profitText, ratioText, isUp: profit >= 0 }
+}
+
+function CardBtn({ onClick, title, label, className }) {
   return (
     <button
-      className="card-remove"
+      className={`card-btn ${className || ''}`}
       onClick={onClick}
-      title="삭제"
-      aria-label="삭제"
+      title={title}
+      aria-label={title}
     >
-      ×
+      {label}
     </button>
   )
 }
 
-function StockCard({ stock, onRemove }) {
+function StockCard({ stock, onRemove, onEditHolding }) {
   if (stock.error) {
     return (
       <div className="card card-err">
-        {onRemove && <RemoveBtn onClick={() => onRemove(stock)} />}
+        {onRemove && <CardBtn onClick={() => onRemove(stock)} title="삭제" label="×" className="card-remove" />}
         <div className="row">
           <span className="name">{stock.symbol}</span>
           <span className="change down">err</span>
@@ -44,9 +57,28 @@ function StockCard({ stock, onRemove }) {
   }
 
   const cls = stock.isUp ? 'up' : 'down'
+  const profit = formatProfit(stock)
+
   return (
     <div className="card">
-      {onRemove && <RemoveBtn onClick={() => onRemove(stock)} />}
+      <div className="card-actions">
+        {onEditHolding && (
+          <CardBtn
+            onClick={() => onEditHolding(stock)}
+            title="보유 정보 편집"
+            label="✎"
+            className="card-edit"
+          />
+        )}
+        {onRemove && (
+          <CardBtn
+            onClick={() => onRemove(stock)}
+            title="삭제"
+            label="×"
+            className="card-remove"
+          />
+        )}
+      </div>
       <div className="row">
         <span className="name" title={stock.symbol}>
           {stock.name || stock.symbol}
@@ -57,6 +89,16 @@ function StockCard({ stock, onRemove }) {
         <span className="price">{formatPrice(stock)}</span>
         <Sparkline prices={stock.prices} isUp={stock.isUp} />
       </div>
+      {profit && (
+        <div className="row holding">
+          <span className="holding-qty">
+            {Number(stock.quantity).toLocaleString('ko-KR')}주
+          </span>
+          <span className={`holding-profit ${profit.isUp ? 'up' : 'down'}`}>
+            {profit.profitText} ({profit.ratioText})
+          </span>
+        </div>
+      )}
     </div>
   )
 }

@@ -16,7 +16,13 @@ import {
   refreshAll,
   reorderCache
 } from './stockService.js'
-import { getItems, addItem, removeItem, setItems } from './watchlist.js'
+import {
+  getItems,
+  addItem,
+  removeItem,
+  setItems,
+  updateHolding
+} from './watchlist.js'
 import { searchKoreanStocks } from './api/naver.js'
 import { searchUSStocks } from './api/yahoo.js'
 import { isWelcomeShown, markWelcomeShown, resetWelcome } from './preferences.js'
@@ -334,11 +340,19 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('watchlist:get', () => getItems())
-  ipcMain.handle('watchlist:add', async (_e, { market, symbol }) => {
-    const list = addItem(market, symbol)
+  ipcMain.handle('watchlist:add', async (_e, { market, symbol, quantity, avgPrice }) => {
+    const list = addItem(market, symbol, { quantity, avgPrice })
     refreshAll() // immediate (don't await — UI shouldn't block)
     return list
   })
+  ipcMain.handle(
+    'watchlist:update-holding',
+    async (_e, { market, symbol, quantity, avgPrice }) => {
+      const list = updateHolding(market, symbol, { quantity, avgPrice })
+      refreshAll()
+      return list
+    }
+  )
   ipcMain.handle('watchlist:remove', async (_e, { market, symbol }) => {
     const list = removeItem(market, symbol)
     refreshAll()

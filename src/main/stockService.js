@@ -49,11 +49,12 @@ function anyMarketOpen() {
 
 async function fetchOne(item) {
   try {
+    let result
     if (item.market === 'KR') {
       const key = `${item.market}-${item.symbol}`
       const cached = chartCache.get(key)
       const useCachedChart = cached && Date.now() - cached.ts < CHART_TTL
-      const result = await fetchKoreanStock(item.symbol, {
+      result = await fetchKoreanStock(item.symbol, {
         skipChart: useCachedChart
       })
       if (useCachedChart) {
@@ -61,10 +62,15 @@ async function fetchOne(item) {
       } else if (result.prices?.length) {
         chartCache.set(key, { prices: result.prices, ts: Date.now() })
       }
-      return result
+    } else if (item.market === 'US') {
+      result = await fetchUSStock(item.symbol)
+    } else {
+      return { ...item, error: 'unknown market' }
     }
-    if (item.market === 'US') return await fetchUSStock(item.symbol)
-    return { ...item, error: 'unknown market' }
+    // 보유 정보 (watchlist에 기록된 quantity/avgPrice)를 합쳐서 렌더러로 전달.
+    if (item.quantity != null) result.quantity = item.quantity
+    if (item.avgPrice != null) result.avgPrice = item.avgPrice
+    return result
   } catch (e) {
     return { ...item, error: e.message || String(e) }
   }

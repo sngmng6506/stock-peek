@@ -30,13 +30,22 @@ function validate({ market, symbol }) {
   }
 }
 
+function applyHolding(item, raw) {
+  const q = Number(raw?.quantity)
+  const p = Number(raw?.avgPrice)
+  if (Number.isFinite(q) && q > 0) item.quantity = q
+  if (Number.isFinite(p) && p > 0) item.avgPrice = p
+  return item
+}
+
 export function getItems() {
   return store.get('items')
 }
 
-export function addItem(market, symbol) {
+export function addItem(market, symbol, holding) {
   const item = normalize(market, symbol)
   validate(item)
+  applyHolding(item, holding)
   const list = getItems()
   if (list.some((i) => i.market === item.market && i.symbol === item.symbol)) {
     throw new Error('이미 추가된 종목')
@@ -47,7 +56,6 @@ export function addItem(market, symbol) {
 }
 
 export function setItems(items) {
-  // 외부에서 전달된 array를 신뢰하지 않고 정규화 + 검증 통과한 항목만 저장.
   const seen = new Set()
   const next = []
   for (const raw of Array.isArray(items) ? items : []) {
@@ -57,11 +65,31 @@ export function setItems(items) {
       const key = `${item.market}-${item.symbol}`
       if (seen.has(key)) continue
       seen.add(key)
+      applyHolding(item, raw)
       next.push(item)
     } catch {
       // skip invalid entries
     }
   }
+  store.set('items', next)
+  return next
+}
+
+export function updateHolding(market, symbol, holding) {
+  const target = normalize(market, symbol)
+  const list = getItems()
+  const idx = list.findIndex(
+    (i) => i.market === target.market && i.symbol === target.symbol
+  )
+  if (idx < 0) throw new Error('종목 없음')
+  const next = list.map((it) => ({ ...it }))
+  const item = next[idx]
+  const q = Number(holding?.quantity)
+  const p = Number(holding?.avgPrice)
+  if (Number.isFinite(q) && q > 0) item.quantity = q
+  else delete item.quantity
+  if (Number.isFinite(p) && p > 0) item.avgPrice = p
+  else delete item.avgPrice
   store.set('items', next)
   return next
 }

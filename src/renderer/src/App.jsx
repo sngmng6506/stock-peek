@@ -19,10 +19,11 @@ import StockCard from './components/StockCard'
 import AddStockModal from './components/AddStockModal'
 import SettingsModal from './components/SettingsModal'
 import WelcomeModal from './components/WelcomeModal'
+import HoldingEditModal from './components/HoldingEditModal'
 
 const idOf = (s) => `${s.market}-${s.symbol}`
 
-function SortableCard({ stock, onRemove }) {
+function SortableCard({ stock, onRemove, onEditHolding }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: idOf(stock) })
   const style = {
@@ -33,7 +34,11 @@ function SortableCard({ stock, onRemove }) {
   }
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <StockCard stock={stock} onRemove={onRemove} />
+      <StockCard
+        stock={stock}
+        onRemove={onRemove}
+        onEditHolding={onEditHolding}
+      />
     </div>
   )
 }
@@ -43,6 +48,7 @@ function App() {
   const [showAdd, setShowAdd] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
+  const [editingHolding, setEditingHolding] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
@@ -65,9 +71,9 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (showAdd || showSettings) window.api.panelLock()
+    if (showAdd || showSettings || editingHolding) window.api.panelLock()
     else window.api.panelUnlock()
-  }, [showAdd, showSettings])
+  }, [showAdd, showSettings, editingHolding])
 
   // 카드 영역 + 모달 자연 높이를 측정해서 main에 전달. 화면 한도 내에서 clamp.
   // 모달이 열려있으면 모달 컨텐츠가 다 보이는 높이를 보장 (작은 패널에 모달 갇히는 문제 해결).
@@ -101,14 +107,25 @@ function App() {
     const modal = panel.querySelector('.modal')
     if (modal) ro.observe(modal)
     return () => ro.disconnect()
-  }, [showAdd, showSettings, showWelcome])
+  }, [showAdd, showSettings, showWelcome, editingHolding])
 
-  const handleAdd = async (market, symbol) => {
-    await window.api.addStock(market, symbol)
+  const handleAdd = async (market, symbol, holding) => {
+    await window.api.addStock(market, symbol, holding)
   }
 
   const handleRemove = async (stock) => {
     await window.api.removeStock(stock.market, stock.symbol)
+  }
+
+  const handleEditHolding = (stock) => setEditingHolding(stock)
+
+  const handleSaveHolding = async (holding) => {
+    if (!editingHolding) return
+    await window.api.updateHolding(
+      editingHolding.market,
+      editingHolding.symbol,
+      holding
+    )
   }
 
   const handleRefresh = async () => {
@@ -210,6 +227,7 @@ function App() {
                     key={idOf(s)}
                     stock={s}
                     onRemove={handleRemove}
+                    onEditHolding={handleEditHolding}
                   />
                 ))}
               </SortableContext>
@@ -223,6 +241,7 @@ function App() {
                     key={idOf(s)}
                     stock={s}
                     onRemove={handleRemove}
+                    onEditHolding={handleEditHolding}
                   />
                 ))}
               </SortableContext>
@@ -241,6 +260,13 @@ function App() {
       )}
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
       {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
+      {editingHolding && (
+        <HoldingEditModal
+          stock={editingHolding}
+          onClose={() => setEditingHolding(null)}
+          onSave={handleSaveHolding}
+        />
+      )}
     </div>
   )
 }
