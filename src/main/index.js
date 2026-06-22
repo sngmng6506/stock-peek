@@ -34,7 +34,8 @@ const PANEL_HEIGHT_INITIAL = 180 // 로딩 중 초기 높이. renderer가 측정
 const PANEL_HEIGHT_MIN = 120
 const PANEL_HEIGHT_BOTTOM_MARGIN = 40 // 화면 하단에서 띄울 여백
 const PANEL_Y = 100
-const PANEL_PEEK = 4 // 숨겨졌을 때 우측 가장자리에 살짝 보이는 너비 (px) — 위젯 위치 인지용
+// PANEL_PEEK 제거 — 멀티 모니터 환경에서 숨긴 패널이 보조 화면에 노출되는 버그 방지.
+// 숨김 시 mainWindow.hide()를 사용하므로 peek 영역이 불필요.
 const TRIGGER_WIDTH = 5
 const TRIGGER_HEIGHT = 500 // hover 트리거 zone 세로 범위 (패널 실제 높이와 분리)
 const HOVER_DELAY = 300
@@ -57,8 +58,8 @@ function getDisplayWorkArea() {
 
 function getHiddenX() {
   const wa = getDisplayWorkArea()
-  // 완전히 화면 밖에 두지 않고 우측에 살짝 (PANEL_PEEK) 보이게 → 위젯 위치 인지.
-  return wa.x + wa.width - PANEL_PEEK
+  // 완전히 화면 밖으로 이동 (hide()와 함께 사용하므로 peek 불필요).
+  return wa.x + wa.width
 }
 
 function getShownX() {
@@ -99,7 +100,16 @@ function setTarget(state) {
   const y = getPanelY()
   const fromX = mainWindow.getPosition()[0]
   const toX = state === 'shown' ? getShownX() : getHiddenX()
+
+  // 보여주기 전에 윈도우를 먼저 표시 (숨김 → 표시 전환 시 필수).
+  if (state === 'shown' && !mainWindow.isVisible()) {
+    mainWindow.setPosition(getHiddenX(), y)
+    mainWindow.show()
+  }
+
   if (fromX === toX) {
+    // 이미 목표 위치 — 숨김이면 즉시 hide 처리.
+    if (state === 'hidden') mainWindow.hide()
     cancelAnim = null
     return
   }
@@ -110,6 +120,8 @@ function setTarget(state) {
     (x) => mainWindow.setPosition(x, y),
     () => {
       cancelAnim = null
+      // 슬라이드 아웃 완료 후 윈도우를 실제로 숨김 → 멀티 모니터에서 보조 화면 노출 방지.
+      if (state === 'hidden') mainWindow.hide()
     }
   )
 }
@@ -222,6 +234,9 @@ function createWindow() {
     if (!isWelcomeShown()) {
       panelLocked = true
       setTarget('shown')
+    } else {
+      // 일반 실행: renderer 초기화 후 즉시 숨김 → 멀티 모니터 노출 방지.
+      mainWindow.hide()
     }
   })
 
