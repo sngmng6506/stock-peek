@@ -195,6 +195,13 @@ function App() {
           >
             ⚙
           </button>
+          <button
+            className="icon-btn quit-btn"
+            onClick={() => window.api.quitApp()}
+            title="종료"
+          >
+            ✕
+          </button>
         </div>
       </header>
 
