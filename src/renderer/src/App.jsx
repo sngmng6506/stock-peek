@@ -50,6 +50,7 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(false)
   const [editingHolding, setEditingHolding] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [dockEdge, setDockEdge] = useState('right')
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
   const cardsInnerRef = useRef(null)
@@ -62,12 +63,16 @@ function App() {
   useEffect(() => {
     window.api.getStocks().then((data) => {
       if (Array.isArray(data) && data.length) setStocks(data)
-    })
+    }).catch(() => {})
     const unsub = window.api.onStocksUpdate((data) => setStocks(data))
     window.api.checkWelcome().then((shouldShow) => {
       if (shouldShow) setShowWelcome(true)
-    })
-    return () => unsub()
+    }).catch(() => {})
+    window.api.getDockEdge().then((edge) => {
+      if (edge) setDockEdge(edge)
+    }).catch(() => {})
+    const unsubDock = window.api.onDockEdgeChanged((edge) => setDockEdge(edge))
+    return () => { unsub(); unsubDock() }
   }, [])
 
   useEffect(() => {
@@ -75,16 +80,14 @@ function App() {
     else window.api.panelUnlock()
   }, [showAdd, showSettings, editingHolding])
 
-  // 카드 영역 + 모달 자연 높이를 측정해서 main에 전달. 화면 한도 내에서 clamp.
-  // 모달이 열려있으면 모달 컨텐츠가 다 보이는 높이를 보장 (작은 패널에 모달 갇히는 문제 해결).
   useLayoutEffect(() => {
     const panel = panelRef.current
     const inner = cardsInnerRef.current
     if (!panel || !inner) return
 
-    const cardsPadding = 20 // .cards padding 10+10
-    const borderCompensation = 2 // .panel border
-    const modalBackdropPadding = 32 // .modal-backdrop padding 16*2
+    const cardsPadding = 20
+    const borderCompensation = 2
+    const modalBackdropPadding = 32
 
     const measure = () => {
       const header = panel.querySelector('.panel-header')
@@ -143,7 +146,7 @@ function App() {
     if (!over || active.id === over.id) return
     const [marketA] = String(active.id).split('-')
     const [marketB] = String(over.id).split('-')
-    if (marketA !== marketB) return // 시장 간 이동 불가
+    if (marketA !== marketB) return
 
     const same = stocks.filter((s) => s.market === marketA)
     const others = stocks.filter((s) => s.market !== marketA)
@@ -152,12 +155,11 @@ function App() {
     if (oldIndex < 0 || newIndex < 0) return
     const reordered = arrayMove(same, oldIndex, newIndex)
 
-    // KR이 항상 앞, US가 뒤로 오는 순서 유지
     const next =
       marketA === 'KR'
         ? [...reordered, ...others]
         : [...others, ...reordered]
-    setStocks(next) // optimistic
+    setStocks(next)
     window.api.reorderStocks(
       next.map((s) => ({ market: s.market, symbol: s.symbol }))
     )
@@ -170,7 +172,7 @@ function App() {
   const existingKeys = new Set(stocks.map(idOf))
 
   return (
-    <div className="panel" ref={panelRef}>
+    <div className={`panel dock-${dockEdge}`} ref={panelRef}>
       <header className="panel-header">
         <span className="title">Watchlist</span>
         <div className="actions">
