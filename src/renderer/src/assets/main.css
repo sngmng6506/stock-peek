@@ -722,3 +722,13 @@ body,
   font-family: ui-monospace, Menlo, Consolas, monospace;
   font-size: 11px;
 }
+
+/* dock-left: 좌측 도킹 시 border-radius 및 border 반전 */
+.panel.dock-left {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-left: none;
+  border-right: 2px solid rgba(120, 160, 220, 0.45);
+}
