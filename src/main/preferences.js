@@ -3,7 +3,8 @@ import Store from 'electron-store'
 const store = new Store({
   name: 'preferences',
   defaults: {
-    welcomeShown: false
+    welcomeShown: false,
+    dockPosition: { edge: 'right', y: 100 }
   }
 })
 
@@ -17,4 +18,12 @@ export function markWelcomeShown() {
 
 export function resetWelcome() {
   store.set('welcomeShown', false)
+}
+
+export function getDockPosition() {
+  return store.get('dockPosition', { edge: 'right', y: 100 })
+}
+
+export function setDockPosition(pos) {
+  store.set('dockPosition', pos)
 }
