@@ -25,50 +25,79 @@ import {
 } from './watchlist.js'
 import { searchKoreanStocks } from './api/naver.js'
 import { searchUSStocks } from './api/yahoo.js'
-import { isWelcomeShown, markWelcomeShown, resetWelcome } from './preferences.js'
+import {
+  isWelcomeShown,
+  markWelcomeShown,
+  resetWelcome,
+  getDockPosition,
+  setDockPosition
+} from './preferences.js'
 import electronUpdater from 'electron-updater'
 const { autoUpdater } = electronUpdater
 
 const PANEL_WIDTH = 280
-const PANEL_HEIGHT_INITIAL = 180 // 로딩 중 초기 높이. renderer가 측정 후 동적으로 늘림.
+const PANEL_HEIGHT_INITIAL = 180
 const PANEL_HEIGHT_MIN = 120
-const PANEL_HEIGHT_BOTTOM_MARGIN = 40 // 화면 하단에서 띄울 여백
-const PANEL_Y = 100
-// PANEL_PEEK 제거 — 멀티 모니터 환경에서 숨긴 패널이 보조 화면에 노출되는 버그 방지.
-// 숨김 시 mainWindow.hide()를 사용하므로 peek 영역이 불필요.
-const TRIGGER_WIDTH = 5
-const TRIGGER_HEIGHT = 500 // hover 트리거 zone 세로 범위 (패널 실제 높이와 분리)
+const PANEL_HEIGHT_BOTTOM_MARGIN = 40
+const TRIGGER_WIDTH = 8
+const TRIGGER_HEIGHT = 500
 const HOVER_DELAY = 300
 const POLL_INTERVAL = 50
 const ANIM_DURATION = 200
+const INDICATOR_WIDTH = 6
+const INDICATOR_HEIGHT = 50
 
 let mainWindow = null
+let indicatorWindow = null
 let tray = null
 let pollTimer = null
 let hoverEnterTime = null
 let targetState = 'hidden' // 'hidden' | 'shown'
 let cancelAnim = null
 let panelLocked = false
-let updateInfo = null // {version} — download available/in progress
-let updateReady = null // {version} — downloaded, ready to install on restart
+let isDragging = false
+let dragDebounce = null
+let updateInfo = null
+let updateReady = null
 
 function getDisplayWorkArea() {
   return screen.getPrimaryDisplay().workArea
 }
 
+function getDock() {
+  return getDockPosition()
+}
+
 function getHiddenX() {
   const wa = getDisplayWorkArea()
-  // 완전히 화면 밖으로 이동 (hide()와 함께 사용하므로 peek 불필요).
+  const dock = getDock()
+  if (dock.edge === 'left') return wa.x - PANEL_WIDTH
   return wa.x + wa.width
 }
 
 function getShownX() {
   const wa = getDisplayWorkArea()
+  const dock = getDock()
+  if (dock.edge === 'left') return wa.x
   return wa.x + wa.width - PANEL_WIDTH
 }
 
 function getPanelY() {
-  return getDisplayWorkArea().y + PANEL_Y
+  const wa = getDisplayWorkArea()
+  const dock = getDock()
+  const maxY = wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN
+  return wa.y + Math.max(0, Math.min(dock.y, maxY))
+}
+
+function getIndicatorX() {
+  const wa = getDisplayWorkArea()
+  const dock = getDock()
+  if (dock.edge === 'left') return wa.x
+  return wa.x + wa.width - INDICATOR_WIDTH
+}
+
+function getIndicatorY() {
+  return getPanelY() + 30
 }
 
 function animate(from, to, duration, onUpdate, onDone) {
@@ -78,7 +107,7 @@ function animate(from, to, duration, onUpdate, onDone) {
     if (canceled) return
     const elapsed = Date.now() - start
     const t = Math.min(elapsed / duration, 1)
-    const eased = 1 - Math.pow(1 - t, 3) // ease-out cubic
+    const eased = 1 - Math.pow(1 - t, 3)
     onUpdate(Math.round(from + (to - from) * eased))
     if (t < 1) setTimeout(tick, 1000 / 60)
     else onDone && onDone()
@@ -87,6 +116,17 @@ function animate(from, to, duration, onUpdate, onDone) {
   return () => {
     canceled = true
   }
+}
+
+function showIndicator() {
+  if (!indicatorWindow || indicatorWindow.isDestroyed()) return
+  indicatorWindow.setPosition(getIndicatorX(), getIndicatorY())
+  if (!indicatorWindow.isVisible()) indicatorWindow.show()
+}
+
+function hideIndicator() {
+  if (!indicatorWindow || indicatorWindow.isDestroyed()) return
+  if (indicatorWindow.isVisible()) indicatorWindow.hide()
 }
 
 function setTarget(state) {
@@ -98,32 +138,37 @@ function setTarget(state) {
   if (state === 'hidden' && prev !== 'hidden') stopPolling()
   if (cancelAnim) cancelAnim()
   const y = getPanelY()
-  const fromX = mainWindow.getPosition()[0]
-  const toX = state === 'shown' ? getShownX() : getHiddenX()
 
-  // 보여주기 전에 윈도우를 먼저 표시 (숨김 → 표시 전환 시 필수).
-  if (state === 'shown' && !mainWindow.isVisible()) {
-    mainWindow.setPosition(getHiddenX(), y)
-    mainWindow.show()
-  }
-
-  if (fromX === toX) {
-    // 이미 목표 위치 — 숨김이면 즉시 hide 처리.
-    if (state === 'hidden') mainWindow.hide()
-    cancelAnim = null
-    return
-  }
-  cancelAnim = animate(
-    fromX,
-    toX,
-    ANIM_DURATION,
-    (x) => mainWindow.setPosition(x, y),
-    () => {
-      cancelAnim = null
-      // 슬라이드 아웃 완료 후 윈도우를 실제로 숨김 → 멀티 모니터에서 보조 화면 노출 방지.
-      if (state === 'hidden') mainWindow.hide()
+  if (state === 'shown') {
+    hideIndicator()
+    if (!mainWindow.isVisible()) {
+      mainWindow.setPosition(getHiddenX(), y)
+      mainWindow.show()
     }
-  )
+    const fromX = mainWindow.getPosition()[0]
+    const toX = getShownX()
+    if (fromX === toX) {
+      cancelAnim = null
+      return
+    }
+    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => mainWindow.setPosition(x, y), () => {
+      cancelAnim = null
+    })
+  } else {
+    const fromX = mainWindow.getPosition()[0]
+    const toX = getHiddenX()
+    if (fromX === toX || !mainWindow.isVisible()) {
+      mainWindow.hide()
+      showIndicator()
+      cancelAnim = null
+      return
+    }
+    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => mainWindow.setPosition(x, y), () => {
+      cancelAnim = null
+      mainWindow.hide()
+      showIndicator()
+    })
+  }
 }
 
 function getCurrentPanelHeight() {
@@ -131,8 +176,6 @@ function getCurrentPanelHeight() {
   return mainWindow.getSize()[1]
 }
 
-// 마우스가 주 모니터 안에 있는지 검사. 다중 모니터 환경에서 보조 모니터로
-// 마우스가 넘어가면 패널을 자동으로 닫기 위해 사용.
 function isOnPrimaryDisplay(cursor) {
   const wa = screen.getPrimaryDisplay().workArea
   return (
@@ -146,11 +189,21 @@ function isOnPrimaryDisplay(cursor) {
 function isInTriggerZone(cursor) {
   if (!isOnPrimaryDisplay(cursor)) return false
   const wa = getDisplayWorkArea()
+  const dock = getDock()
+  const y = getPanelY()
+  if (dock.edge === 'left') {
+    return (
+      cursor.x >= wa.x &&
+      cursor.x < wa.x + TRIGGER_WIDTH &&
+      cursor.y >= y &&
+      cursor.y <= y + TRIGGER_HEIGHT
+    )
+  }
   return (
     cursor.x >= wa.x + wa.width - TRIGGER_WIDTH &&
     cursor.x < wa.x + wa.width &&
-    cursor.y >= getPanelY() &&
-    cursor.y <= getPanelY() + TRIGGER_HEIGHT
+    cursor.y >= y &&
+    cursor.y <= y + TRIGGER_HEIGHT
   )
 }
 
@@ -170,10 +223,10 @@ function isInPanelArea(cursor) {
 function startHoverPolling() {
   pollTimer = setInterval(() => {
     if (!mainWindow) return
+    if (isDragging) return
+
     const cursor = screen.getCursorScreenPoint()
 
-    // 마우스가 주 모니터 밖이면 lock 무시하고 무조건 hidden 처리.
-    // (보조 모니터로 옮겨도 패널이 계속 떠있는 버그 방지)
     if (!isOnPrimaryDisplay(cursor)) {
       hoverEnterTime = null
       if (targetState === 'shown') setTarget('hidden')
@@ -199,6 +252,70 @@ function startHoverPolling() {
   }, POLL_INTERVAL)
 }
 
+// 드래그 종료 시 가장 가까운 edge로 스냅
+function snapToEdge() {
+  if (!mainWindow || mainWindow.isDestroyed()) return
+  const [wx, wy] = mainWindow.getPosition()
+  const wa = getDisplayWorkArea()
+  const centerX = wx + PANEL_WIDTH / 2
+
+  const edge = centerX < wa.x + wa.width / 2 ? 'left' : 'right'
+  const newY = Math.max(0, Math.min(wy - wa.y, wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN))
+
+  setDockPosition({ edge, y: newY })
+
+  // 스냅 위치로 애니메이션
+  const toX = getShownX()
+  const toY = getPanelY()
+  mainWindow.setPosition(toX, toY)
+
+  // renderer에 edge 변경 알림
+  if (mainWindow.webContents) {
+    mainWindow.webContents.send('dock:edge-changed', edge)
+  }
+}
+
+const INDICATOR_HTML = `<!DOCTYPE html>
+<html><head><style>
+  html, body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+  .bar {
+    width: ${INDICATOR_WIDTH}px;
+    height: ${INDICATOR_HEIGHT}px;
+    border-radius: 3px;
+    background: rgba(120, 160, 220, 0.35);
+    box-shadow: 0 0 8px rgba(120, 160, 220, 0.2);
+    transition: background 150ms;
+  }
+  .bar:hover {
+    background: rgba(120, 160, 220, 0.6);
+  }
+</style></head><body><div class="bar"></div></body></html>`
+
+function createIndicatorWindow() {
+  indicatorWindow = new BrowserWindow({
+    width: INDICATOR_WIDTH,
+    height: INDICATOR_HEIGHT,
+    x: getIndicatorX(),
+    y: getIndicatorY(),
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    focusable: false,
+    hasShadow: false,
+    show: false,
+    webPreferences: { sandbox: true }
+  })
+  indicatorWindow.setAlwaysOnTop(true, 'screen-saver')
+  indicatorWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false })
+  indicatorWindow.setIgnoreMouseEvents(false)
+  indicatorWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(INDICATOR_HTML)}`)
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: PANEL_WIDTH,
@@ -210,7 +327,7 @@ function createWindow() {
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
-    movable: false,
+    movable: true,
     minimizable: false,
     maximizable: false,
     fullscreenable: false,
@@ -226,17 +343,36 @@ function createWindow() {
   mainWindow.setAlwaysOnTop(true, 'screen-saver')
   mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false })
 
+  // 드래그 감지: will-move → 드래그 시작, 이동 멈추면 스냅
+  mainWindow.on('will-move', () => {
+    if (!isDragging) {
+      isDragging = true
+      panelLocked = true
+      hideIndicator()
+    }
+  })
+
+  mainWindow.on('move', () => {
+    if (!isDragging) return
+    if (dragDebounce) clearTimeout(dragDebounce)
+    dragDebounce = setTimeout(() => {
+      isDragging = false
+      panelLocked = false
+      snapToEdge()
+    }, 200)
+  })
+
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
     startHoverPolling()
-    // 첫 실행이면 패널을 강제로 슬라이드 인 + 잠금 (환영 모달이 보이게).
-    // 사용자가 환영 모달 dismiss하면 lock 풀려서 자연 hover 동작 복귀.
     if (!isWelcomeShown()) {
       panelLocked = true
+      mainWindow.setPosition(getHiddenX(), getPanelY())
+      mainWindow.show()
       setTarget('shown')
     } else {
-      // 일반 실행: renderer 초기화 후 즉시 숨김 → 멀티 모니터 노출 방지.
-      mainWindow.hide()
+      // 일반 실행: show 없이 polling만 시작 → 에러 방지.
+      // indicator만 표시하고 hover 시 패널 노출.
+      showIndicator()
     }
   })
 
@@ -297,7 +433,6 @@ function createTray() {
   refreshTrayMenu()
 }
 
-// 단일 인스턴스 — 두 번째 실행 시도하면 즉시 quit하고 첫 인스턴스가 패널 강제 표시.
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 }
@@ -324,7 +459,8 @@ app.whenReady().then(() => {
   ipcMain.on('panel:set-height', (_e, requested) => {
     if (!mainWindow || mainWindow.isDestroyed()) return
     const wa = getDisplayWorkArea()
-    const maxH = wa.height - PANEL_Y - PANEL_HEIGHT_BOTTOM_MARGIN
+    const dock = getDock()
+    const maxH = wa.height - dock.y - PANEL_HEIGHT_BOTTOM_MARGIN
     const h = Math.max(PANEL_HEIGHT_MIN, Math.min(Math.round(requested) || 0, maxH))
     const [w, current] = mainWindow.getSize()
     if (current === h) return
@@ -357,7 +493,7 @@ app.whenReady().then(() => {
   ipcMain.handle('watchlist:get', () => getItems())
   ipcMain.handle('watchlist:add', async (_e, { market, symbol, quantity, avgPrice }) => {
     const list = addItem(market, symbol, { quantity, avgPrice })
-    refreshAll() // immediate (don't await — UI shouldn't block)
+    refreshAll()
     return list
   })
   ipcMain.handle(
@@ -399,10 +535,16 @@ app.whenReady().then(() => {
     return []
   })
 
+  ipcMain.handle('dock:get-edge', () => getDock().edge)
+
+  ipcMain.on('app:quit', () => {
+    app.quit()
+  })
+
   createWindow()
+  createIndicatorWindow()
   createTray()
 
-  // electron-updater: GitHub Releases 자동 체크 + 백그라운드 다운로드.
   autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true
   autoUpdater.on('update-available', (info) => {
@@ -422,7 +564,6 @@ app.whenReady().then(() => {
   autoUpdater.on('error', (err) => {
     console.error('autoUpdater error:', err?.message || err)
   })
-  // dev 모드에선 update check를 건너뜀 (signing/path 검사 실패함).
   if (!is.dev) {
     autoUpdater.checkForUpdates().catch(() => {})
     setInterval(
@@ -439,10 +580,6 @@ app.whenReady().then(() => {
     if (updateReady) autoUpdater.quitAndInstall()
   })
 
-  ipcMain.on('app:quit', () => {
-    app.quit()
-  })
-
   subscribe((data) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('stocks:update', data)
@@ -457,5 +594,6 @@ app.on('window-all-closed', () => {
 app.on('will-quit', () => {
   if (pollTimer) clearInterval(pollTimer)
   if (cancelAnim) cancelAnim()
+  if (dragDebounce) clearTimeout(dragDebounce)
   stopPolling()
 })
