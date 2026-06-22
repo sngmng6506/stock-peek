@@ -439,6 +439,10 @@ app.whenReady().then(() => {
     if (updateReady) autoUpdater.quitAndInstall()
   })
 
+  ipcMain.on('app:quit', () => {
+    app.quit()
+  })
+
   subscribe((data) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('stocks:update', data)
