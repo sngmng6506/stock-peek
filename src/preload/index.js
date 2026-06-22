@@ -45,7 +45,13 @@ const api = {
   setAutoStart: (enabled) => ipcRenderer.invoke('settings:set-autostart', enabled),
   getDonateQr: () => ipcRenderer.invoke('settings:get-donate-qr'),
   openExternal: (url) => ipcRenderer.send('shell:open-external', url),
-  quitApp: () => ipcRenderer.send('app:quit')
+  quitApp: () => ipcRenderer.send('app:quit'),
+  getDockEdge: () => ipcRenderer.invoke('dock:get-edge'),
+  onDockEdgeChanged: (cb) => {
+    const handler = (_e, edge) => cb(edge)
+    ipcRenderer.on('dock:edge-changed', handler)
+    return () => ipcRenderer.off('dock:edge-changed', handler)
+  }
 }
 
 if (process.contextIsolated) {
