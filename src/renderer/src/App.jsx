@@ -51,6 +51,7 @@ function App() {
   const [editingHolding, setEditingHolding] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
   const [dockEdge, setDockEdge] = useState('right')
+  const [pinned, setPinned] = useState(false)
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
   const cardsInnerRef = useRef(null)
@@ -72,7 +73,9 @@ function App() {
       if (edge) setDockEdge(edge)
     }).catch(() => {})
     const unsubDock = window.api.onDockEdgeChanged((edge) => setDockEdge(edge))
-    return () => { unsub(); unsubDock() }
+    window.api.getPanelPinned().then((p) => setPinned(!!p)).catch(() => {})
+    const unsubPin = window.api.onPanelPinnedChanged((p) => setPinned(!!p))
+    return () => { unsub(); unsubDock(); unsubPin() }
   }, [])
 
   useEffect(() => {
@@ -196,6 +199,21 @@ function App() {
             title="설정"
           >
             ⚙
+          </button>
+          <button
+            className={`icon-btn pin-btn ${pinned ? 'pinned' : ''}`}
+            onClick={() => {
+              if (pinned) {
+                setPinned(false)
+                window.api.unpinPanel()
+              } else {
+                setPinned(true)
+                window.api.pinPanel()
+              }
+            }}
+            title={pinned ? '고정 해제' : '고정'}
+          >
+            📌
           </button>
           <button
             className="icon-btn quit-btn"
