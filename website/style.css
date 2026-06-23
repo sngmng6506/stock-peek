@@ -20,7 +20,7 @@
 html, body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -188,6 +188,7 @@ a {
   filter: blur(40px);
 }
 
+/* Showcase 패널 — 실제 앱처럼 우측에서 슬라이드 인/아웃 반복 */
 .showcase-panel {
   position: absolute;
   right: 0;
@@ -213,6 +214,7 @@ a {
   100% { transform: translateX(110%); opacity: 0; }
 }
 
+/* 마우스 커서 일러스트 — 좌→우 이동하다가 패널 닿으면 멈추고 다시 돌아옴 */
 .peek-cursor {
   position: absolute;
   top: 80px;
@@ -319,6 +321,7 @@ a {
   .peek-cursor { display: none; }
 }
 
+/* 사용자가 애니메이션 줄이기 설정해놓으면 정지 */
 @media (prefers-reduced-motion: reduce) {
   .showcase-panel,
   .peek-cursor {
@@ -390,6 +393,28 @@ a {
   font-size: 15px;
   color: var(--text-2);
   font-weight: 400;
+}
+
+/* ---------- Download ---------- */
+.download {
+  padding: 140px 0;
+  text-align: center;
+}
+
+.download-sub {
+  color: var(--text-2);
+  font-size: 16px;
+  margin: -36px 0 36px;
+}
+
+.caveat {
+  margin-top: 32px;
+  font-size: 13px;
+  color: var(--text-3);
+  max-width: 460px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
 }
 
 /* ---------- Footer ---------- */
