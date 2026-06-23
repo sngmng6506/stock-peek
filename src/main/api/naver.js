@@ -1,4 +1,4 @@
-import { useProxy, proxyStock, proxySearch } from './proxy.js'
+import { useProxy, proxyStock, proxySearch, eFetch } from './proxy.js'
 
 const QUOTE_URL = (code) =>
   `https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`
@@ -111,7 +111,7 @@ export async function searchKoreanStocks(keyword) {
       // 프록시 실패 시 직접 호출로 폴백
     }
   }
-  const res = await fetch(SEARCH_URL(keyword), { headers: CHART_HEADERS })
+  const res = await eFetch(SEARCH_URL(keyword), { headers: CHART_HEADERS })
   if (!res.ok) throw new Error(`Naver search: ${res.status}`)
   const json = await res.json()
   return (json?.items || [])
@@ -132,10 +132,10 @@ export async function fetchKoreanStock(code, { skipChart = false } = {}) {
       // 프록시 실패 시 직접 호출로 폴백
     }
   }
-  const quotePromise = fetch(QUOTE_URL(code), { headers: QUOTE_HEADERS })
+  const quotePromise = eFetch(QUOTE_URL(code), { headers: QUOTE_HEADERS })
   const chartPromise = skipChart
     ? null
-    : fetch(CHART_URL(code), { headers: CHART_HEADERS })
+    : eFetch(CHART_URL(code), { headers: CHART_HEADERS })
 
   const quoteRes = await quotePromise
   if (!quoteRes.ok) throw new Error(`Naver quote ${code}: ${quoteRes.status}`)
@@ -165,4 +165,5 @@ export async function fetchKoreanStock(code, { skipChart = false } = {}) {
     prices
   }
 }
+
 
