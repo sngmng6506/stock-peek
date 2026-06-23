@@ -55,6 +55,7 @@ let hoverEnterTime = null
 let targetState = 'hidden' // 'hidden' | 'shown'
 let cancelAnim = null
 let panelLocked = false
+let panelPinned = false
 let isDragging = false
 let dragDebounce = null
 let updateInfo = null
@@ -233,7 +234,7 @@ function startHoverPolling() {
       return
     }
 
-    const active = isInTriggerZone(cursor) || isInPanelArea(cursor) || panelLocked
+    const active = isInTriggerZone(cursor) || isInPanelArea(cursor) || panelLocked || panelPinned
 
     if (active) {
       if (targetState === 'shown') {
@@ -430,6 +431,13 @@ function createTray() {
   const img = nativeImage.createFromPath(icon).resize({ width: 16, height: 16 })
   tray = new Tray(img)
   tray.setToolTip('몰래주식')
+  tray.on('click', () => {
+    panelPinned = true
+    setTarget('shown')
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('panel:pinned-changed', true)
+    }
+  })
   refreshTrayMenu()
 }
 
@@ -541,6 +549,23 @@ app.whenReady().then(() => {
     app.quit()
   })
 
+  ipcMain.on('panel:pin', () => {
+    panelPinned = true
+    setTarget('shown')
+  })
+  ipcMain.on('panel:unpin', () => {
+    panelPinned = false
+  })
+  ipcMain.handle('panel:get-pinned', () => panelPinned)
+
+  ipcMain.handle('app:get-update', () => ({
+    available: updateInfo,
+    ready: updateReady
+  }))
+  ipcMain.on('app:install-update', () => {
+    if (updateReady) autoUpdater.quitAndInstall()
+  })
+
   createWindow()
   createIndicatorWindow()
   createTray()
@@ -571,14 +596,6 @@ app.whenReady().then(() => {
       24 * 60 * 60 * 1000
     )
   }
-
-  ipcMain.handle('app:get-update', () => ({
-    available: updateInfo,
-    ready: updateReady
-  }))
-  ipcMain.on('app:install-update', () => {
-    if (updateReady) autoUpdater.quitAndInstall()
-  })
 
   subscribe((data) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
