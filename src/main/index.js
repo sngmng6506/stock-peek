@@ -102,10 +102,16 @@ function getIndicatorY() {
 }
 
 function animate(from, to, duration, onUpdate, onDone) {
+  // NaN 방지: from/to가 유효하지 않으면 즉시 완료
+  if (!Number.isFinite(from) || !Number.isFinite(to)) {
+    onDone && onDone()
+    return () => {}
+  }
   const start = Date.now()
   let canceled = false
   const tick = () => {
     if (canceled) return
+    if (mainWindow && mainWindow.isDestroyed()) return
     const elapsed = Date.now() - start
     const t = Math.min(elapsed / duration, 1)
     const eased = 1 - Math.pow(1 - t, 3)
@@ -119,9 +125,27 @@ function animate(from, to, duration, onUpdate, onDone) {
   }
 }
 
+function safeGetX() {
+  try {
+    if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
+      const x = mainWindow.getPosition()[0]
+      if (Number.isFinite(x)) return x
+    }
+  } catch {}
+  return getHiddenX()
+}
+
+function safeSetPosition(win, x, y) {
+  try {
+    if (win && !win.isDestroyed()) {
+      win.setPosition(Math.round(x) || 0, Math.round(y) || 0)
+    }
+  } catch {}
+}
+
 function showIndicator() {
   if (!indicatorWindow || indicatorWindow.isDestroyed()) return
-  indicatorWindow.setPosition(getIndicatorX(), getIndicatorY())
+  safeSetPosition(indicatorWindow, getIndicatorX(), getIndicatorY())
   if (!indicatorWindow.isVisible()) indicatorWindow.show()
 }
 
@@ -131,7 +155,7 @@ function hideIndicator() {
 }
 
 function setTarget(state) {
-  if (!mainWindow) return
+  if (!mainWindow || mainWindow.isDestroyed()) return
   if (targetState === state && !cancelAnim) return
   const prev = targetState
   targetState = state
@@ -143,20 +167,20 @@ function setTarget(state) {
   if (state === 'shown') {
     hideIndicator()
     if (!mainWindow.isVisible()) {
-      mainWindow.setPosition(getHiddenX(), y)
+      safeSetPosition(mainWindow, getHiddenX(), y)
       mainWindow.show()
     }
-    const fromX = mainWindow.getPosition()[0]
+    const fromX = safeGetX()
     const toX = getShownX()
     if (fromX === toX) {
       cancelAnim = null
       return
     }
-    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => mainWindow.setPosition(x, y), () => {
+    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => safeSetPosition(mainWindow, x, y), () => {
       cancelAnim = null
     })
   } else {
-    const fromX = mainWindow.getPosition()[0]
+    const fromX = safeGetX()
     const toX = getHiddenX()
     if (fromX === toX || !mainWindow.isVisible()) {
       mainWindow.hide()
@@ -164,9 +188,9 @@ function setTarget(state) {
       cancelAnim = null
       return
     }
-    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => mainWindow.setPosition(x, y), () => {
+    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => safeSetPosition(mainWindow, x, y), () => {
       cancelAnim = null
-      mainWindow.hide()
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.hide()
       showIndicator()
     })
   }
@@ -256,7 +280,9 @@ function startHoverPolling() {
 // 드래그 종료 시 가장 가까운 edge로 스냅
 function snapToEdge() {
   if (!mainWindow || mainWindow.isDestroyed()) return
-  const [wx, wy] = mainWindow.getPosition()
+  const pos = mainWindow.getPosition()
+  const wx = pos[0] || 0
+  const wy = pos[1] || 0
   const wa = getDisplayWorkArea()
   const centerX = wx + PANEL_WIDTH / 2
 
@@ -265,10 +291,10 @@ function snapToEdge() {
 
   setDockPosition({ edge, y: newY })
 
-  // 스냅 위치로 애니메이션
+  // 스냅 위치로 이동
   const toX = getShownX()
   const toY = getPanelY()
-  mainWindow.setPosition(toX, toY)
+  safeSetPosition(mainWindow, toX, toY)
 
   // renderer에 edge 변경 알림
   if (mainWindow.webContents) {
@@ -367,7 +393,7 @@ function createWindow() {
     startHoverPolling()
     if (!isWelcomeShown()) {
       panelLocked = true
-      mainWindow.setPosition(getHiddenX(), getPanelY())
+      safeSetPosition(mainWindow, getHiddenX(), getPanelY())
       mainWindow.show()
       setTarget('shown')
     } else {
