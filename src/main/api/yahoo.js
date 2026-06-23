@@ -20,7 +20,13 @@ const SEARCH_URL = (kw) =>
 const US_EXCHANGES = new Set(['NMS', 'NGM', 'NCM', 'NYQ', 'PCX', 'ASE', 'BTS'])
 
 export async function searchUSStocks(keyword) {
-  if (useProxy()) return proxySearch('US', keyword)
+  if (useProxy()) {
+    try {
+      return await proxySearch('US', keyword)
+    } catch {
+      // 프록시 실패 시 직접 호출로 폴백
+    }
+  }
   const res = await fetch(SEARCH_URL(keyword), { headers: HEADERS })
   if (!res.ok) throw new Error(`Yahoo search: ${res.status}`)
   const json = await res.json()
@@ -45,7 +51,13 @@ export async function searchUSStocks(keyword) {
 }
 
 export async function fetchUSStock(ticker) {
-  if (useProxy()) return proxyStock('US', ticker)
+  if (useProxy()) {
+    try {
+      return await proxyStock('US', ticker)
+    } catch {
+      // 프록시 실패 시 직접 호출로 폴백
+    }
+  }
   const res = await fetch(CHART_URL(ticker), { headers: HEADERS })
   if (!res.ok) throw new Error(`Yahoo ${ticker}: ${res.status}`)
 
@@ -78,3 +90,4 @@ export async function fetchUSStock(ticker) {
     prices
   }
 }
+
