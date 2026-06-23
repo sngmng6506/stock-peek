@@ -104,7 +104,13 @@ const SEARCH_URL = (kw) =>
   `https://ac.stock.naver.com/ac?q=${encodeURIComponent(kw)}&target=stock`
 
 export async function searchKoreanStocks(keyword) {
-  if (useProxy()) return proxySearch('KR', keyword)
+  if (useProxy()) {
+    try {
+      return await proxySearch('KR', keyword)
+    } catch {
+      // 프록시 실패 시 직접 호출로 폴백
+    }
+  }
   const res = await fetch(SEARCH_URL(keyword), { headers: CHART_HEADERS })
   if (!res.ok) throw new Error(`Naver search: ${res.status}`)
   const json = await res.json()
@@ -119,7 +125,13 @@ export async function searchKoreanStocks(keyword) {
 }
 
 export async function fetchKoreanStock(code, { skipChart = false } = {}) {
-  if (useProxy()) return proxyStock('KR', code, { skipChart })
+  if (useProxy()) {
+    try {
+      return await proxyStock('KR', code, { skipChart })
+    } catch {
+      // 프록시 실패 시 직접 호출로 폴백
+    }
+  }
   const quotePromise = fetch(QUOTE_URL(code), { headers: QUOTE_HEADERS })
   const chartPromise = skipChart
     ? null
@@ -153,3 +165,4 @@ export async function fetchKoreanStock(code, { skipChart = false } = {}) {
     prices
   }
 }
+
