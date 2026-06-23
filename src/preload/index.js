@@ -46,6 +46,14 @@ const api = {
   getDonateQr: () => ipcRenderer.invoke('settings:get-donate-qr'),
   openExternal: (url) => ipcRenderer.send('shell:open-external', url),
   quitApp: () => ipcRenderer.send('app:quit'),
+  pinPanel: () => ipcRenderer.send('panel:pin'),
+  unpinPanel: () => ipcRenderer.send('panel:unpin'),
+  getPanelPinned: () => ipcRenderer.invoke('panel:get-pinned'),
+  onPanelPinnedChanged: (cb) => {
+    const handler = (_e, pinned) => cb(pinned)
+    ipcRenderer.on('panel:pinned-changed', handler)
+    return () => ipcRenderer.off('panel:pinned-changed', handler)
+  },
   getDockEdge: () => ipcRenderer.invoke('dock:get-edge'),
   onDockEdgeChanged: (cb) => {
     const handler = (_e, edge) => cb(edge)
