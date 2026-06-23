@@ -1,4 +1,4 @@
-import { useProxy, proxyStock, proxySearch } from './proxy.js'
+import { useProxy, proxyStock, proxySearch, eFetch } from './proxy.js'
 
 const CHART_URL = (ticker) =>
   `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
@@ -27,7 +27,7 @@ export async function searchUSStocks(keyword) {
       // 프록시 실패 시 직접 호출로 폴백
     }
   }
-  const res = await fetch(SEARCH_URL(keyword), { headers: HEADERS })
+  const res = await eFetch(SEARCH_URL(keyword), { headers: HEADERS })
   if (!res.ok) throw new Error(`Yahoo search: ${res.status}`)
   const json = await res.json()
   return (json?.quotes || [])
@@ -58,7 +58,7 @@ export async function fetchUSStock(ticker) {
       // 프록시 실패 시 직접 호출로 폴백
     }
   }
-  const res = await fetch(CHART_URL(ticker), { headers: HEADERS })
+  const res = await eFetch(CHART_URL(ticker), { headers: HEADERS })
   if (!res.ok) throw new Error(`Yahoo ${ticker}: ${res.status}`)
 
   const json = await res.json()
@@ -90,4 +90,5 @@ export async function fetchUSStock(ticker) {
     prices
   }
 }
+
 
