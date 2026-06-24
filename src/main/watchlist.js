@@ -15,7 +15,8 @@ const store = new Store({
 function normalize(market, symbol) {
   const m = String(market || '').toUpperCase()
   let s = String(symbol || '').trim()
-  if (m === 'KR') s = s.replace(/\D/g, '')
+  // 영문+숫자만 남김 (ETF 코드에 알파벳 포함 가능: 0023A0 등)
+  if (m === 'KR') s = s.replace(/[^0-9A-Za-z]/g, '').toUpperCase()
   else s = s.toUpperCase()
   return { market: m, symbol: s }
 }
