@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useI18n } from '../i18n'
 
 function HoldingEditModal({ stock, onClose, onSave }) {
+  const { t } = useI18n()
   const [quantity, setQuantity] = useState(
     stock.quantity != null ? String(stock.quantity) : ''
   )
@@ -41,24 +43,24 @@ function HoldingEditModal({ stock, onClose, onSave }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="modal-title">보유 정보 편집</div>
+        <div className="modal-title">{t('holding.title')}</div>
 
         <div className="selected-stock">
           <span className="selected-name">{stock.name || stock.symbol}</span>
           <span className="selected-meta">
-            {stock.symbol} · {stock.market === 'KR' ? '한국' : '미국'}
+            {stock.symbol} · {stock.market === 'KR' ? t('add.korea') : t('add.us')}
           </span>
         </div>
 
         <div className="holding-form">
           <label>
-            <span className="form-label">수량</span>
+            <span className="form-label">{t('holding.quantity')}</span>
             <input
               className="modal-input"
               type="number"
               step="any"
               min="0"
-              placeholder="예: 10"
+              placeholder={t('holding.qtyPlaceholder')}
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               autoFocus
@@ -66,14 +68,14 @@ function HoldingEditModal({ stock, onClose, onSave }) {
           </label>
           <label>
             <span className="form-label">
-              평단가 ({stock.market === 'KR' ? '원' : '$'})
+              {t('holding.avgPrice')} ({stock.market === 'KR' ? '₩' : '$'})
             </span>
             <input
               className="modal-input"
               type="number"
               step="any"
               min="0"
-              placeholder={stock.market === 'KR' ? '예: 72400' : '예: 189.20'}
+              placeholder={stock.market === 'KR' ? t('holding.pricePlaceholder') : 'e.g. 189.20'}
               value={avgPrice}
               onChange={(e) => setAvgPrice(e.target.value)}
             />
@@ -84,10 +86,10 @@ function HoldingEditModal({ stock, onClose, onSave }) {
 
         <div className="modal-actions">
           <button type="button" onClick={clearAll} disabled={busy}>
-            지우기
+            {t('holding.clear')}
           </button>
           <button type="button" onClick={onClose} disabled={busy}>
-            취소
+            {t('holding.cancel')}
           </button>
           <button
             type="button"
@@ -95,7 +97,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
             disabled={busy}
             className="primary"
           >
-            {busy ? '...' : '저장'}
+            {busy ? '...' : t('holding.save')}
           </button>
         </div>
       </div>
