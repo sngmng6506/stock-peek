@@ -1,4 +1,8 @@
+import { useI18n } from '../i18n'
+
 function WelcomeModal({ onClose }) {
+  const { t } = useI18n()
+
   const handleStart = async () => {
     await window.api.dismissWelcome()
     onClose()
@@ -19,39 +23,35 @@ function WelcomeModal({ onClose }) {
           </div>
         </div>
 
-        <div className="welcome-title">몰래주식에 오신 걸 환영해요</div>
+        <div className="welcome-title">{t('welcome.title')}</div>
 
         <ol className="welcome-steps">
           <li>
             <span className="step-num">1</span>
             <div>
-              <strong>마우스를 화면 우측 끝으로</strong>
-              <div className="step-desc">패널이 슬라이드로 나타납니다.</div>
+              <strong>{t('welcome.step1')}</strong>
+              <div className="step-desc">{t('welcome.step1desc')}</div>
             </div>
           </li>
           <li>
             <span className="step-num">2</span>
             <div>
-              <strong>＋ 버튼으로 종목 추가</strong>
-              <div className="step-desc">
-                종목명이나 티커로 검색해서 추가하세요.
-              </div>
+              <strong>{t('welcome.step2')}</strong>
+              <div className="step-desc">{t('welcome.step2desc')}</div>
             </div>
           </li>
           <li>
             <span className="step-num">3</span>
             <div>
-              <strong>트레이 아이콘 ⚙</strong>
-              <div className="step-desc">
-                자동 시작 토글 · 앱 종료는 트레이에서.
-              </div>
+              <strong>{t('welcome.step3')}</strong>
+              <div className="step-desc">{t('welcome.step3desc')}</div>
             </div>
           </li>
         </ol>
 
         <div className="modal-actions">
           <button type="button" className="primary big-btn" onClick={handleStart}>
-            시작하기
+            {t('welcome.start')}
           </button>
         </div>
       </div>
