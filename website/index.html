@@ -6,18 +6,16 @@
 
   <title>몰래주식 — 데스크톱 주식 시세 위젯 (한국·미국 무료)</title>
   <meta name="description" content="일하다가, 회의 중에도. 화면 우측 끝에 마우스만 가져가면 한국·미국 주식 시세가 데스크톱 위젯으로 슬라이드. 코스피, 코스닥, NASDAQ, NYSE 무료 지원. Windows 10/11." />
-  <meta name="keywords" content="데스크톱 주식 위젯, 주식 시세 위젯, 윈도우 주식 알림, 직장인 주식, 몰래 주식 보기, 한국 주식, 미국 주식, 코스피, 코스닥, sparkline" />
+  <meta name="keywords" content="데스크톱 주식 위젯, 주식 시세 위젯, desktop stock widget, stock ticker widget, Windows stock widget, 코스피, 코스닥, KOSPI, KOSDAQ, NYSE, NASDAQ" />
   <meta name="author" content="sngmng6506" />
   <link rel="canonical" href="https://stock-peek.com/" />
-  <link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
-  <link rel="alternate" hreflang="en" href="https://stock-peek.com/en/" />
-  <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
 
   <meta name="naver-site-verification" content="3ca8cb70d6914d69849cad717dc26a1ab494b21c" />
 
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ko_KR" />
-  <meta property="og:site_name" content="몰래주식" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:site_name" content="Stock Peek" />
   <meta property="og:title" content="몰래주식 — 데스크톱 주식 시세 위젯" />
   <meta property="og:description" content="화면 우측 끝에 마우스만 가져가면 한국·미국 주식 시세가 슬라이드. Windows 무료 위젯." />
   <meta property="og:url" content="https://stock-peek.com/" />
@@ -26,60 +24,48 @@
   <meta property="og:image:height" content="630" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="몰래주식 — 데스크톱 주식 시세 위젯" />
-  <meta name="twitter:description" content="마우스만 우측 끝으로 — 한국·미국 주식 시세를 슬라이드로." />
+  <meta name="twitter:title" content="Stock Peek — Desktop Stock Widget" />
+  <meta name="twitter:description" content="Hover at the screen edge — Korean & US stock quotes slide in." />
   <meta name="twitter:image" content="https://stock-peek.com/og.png" />
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "몰래주식",
-    "alternateName": "Stock Peek",
-    "description": "화면 우측 가장자리 hover로 한국·미국 주식 시세를 보여주는 Windows 데스크톱 위젯.",
+    "name": "Stock Peek",
+    "alternateName": "몰래주식",
+    "description": "A free Windows desktop widget that shows real-time Korean and US stock quotes on hover at the screen edge.",
     "url": "https://stock-peek.com/",
     "image": "https://stock-peek.com/og.png",
     "operatingSystem": "Windows 10, Windows 11",
     "applicationCategory": "FinanceApplication",
-    "softwareVersion": "1.0.0",
+    "softwareVersion": "1.2.4",
     "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "KRW"
-    },
-    "author": {
-      "@type": "Person",
-      "name": "sngmng6506",
-      "email": "sngmng6506@gmail.com"
-    },
-    "inLanguage": "ko",
-    "featureList": [
-      "한국 주식 (코스피·코스닥) 시세 조회",
-      "미국 주식 (NYSE·NASDAQ) 시세 조회",
-      "30일 일봉 sparkline",
-      "드래그앤드롭 종목 순서 변경",
-      "시스템 트레이 + 자동 시작",
-      "마우스 hover 트리거"
-    ]
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "sngmng6506", "url": "https://github.com/sngmng6506" },
+    "inLanguage": ["ko", "en"]
   }
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300C8FF'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23000' font-weight='800'%3E몰%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300C8FF'/%3E%3Ctext x='50' y='70' font-size='55' text-anchor='middle' fill='%23000' font-weight='800'%3ESP%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="style.css" />
-  <style>.lang-toggle{font-weight:600;font-size:13px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;color:var(--text-2)}.lang-toggle:hover{color:var(--text);border-color:var(--text-3)}</style>
+  <style>
+    .lang-toggle{font-weight:600;font-size:13px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;color:var(--text-2);cursor:pointer;user-select:none}
+    .lang-toggle:hover{color:var(--text);border-color:var(--text-3)}
+  </style>
 </head>
 <body>
   <header class="nav">
     <div class="nav-inner">
-      <a href="#" class="logo">몰래주식</a>
+      <a href="#" class="logo" data-ko="몰래주식" data-en="Stock Peek">몰래주식</a>
       <nav class="nav-links">
-        <a href="#features">기능</a>
-        <a href="/en" class="lang-toggle" title="English">EN</a>
-        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-cta">다운로드</a>
+        <a href="#features" data-ko="기능" data-en="Features">기능</a>
+        <a href="https://github.com/sngmng6506/stock-peek" target="_blank">GitHub</a>
+        <span class="lang-toggle" id="langToggle" title="Switch language">EN</span>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-cta" data-ko="다운로드" data-en="Download">다운로드</a>
       </nav>
     </div>
   </header>
@@ -87,19 +73,16 @@
   <main>
     <section class="hero">
       <div class="hero-inner">
-        <div class="eyebrow">Windows · 무료</div>
+        <div class="eyebrow" data-ko="Windows · 무료" data-en="Windows · Free">Windows · 무료</div>
         <h1 class="hero-title">
-          <span class="grad">시세는 몰래,</span><br />
-          마우스만 살짝.
+          <span class="grad" data-ko="시세는 몰래," data-en="Peek at prices,">시세는 몰래,</span><br />
+          <span data-ko="마우스만 살짝." data-en="just hover.">마우스만 살짝.</span>
         </h1>
-        <p class="hero-sub">
-          일하다가, 게임하다가, 회의 중에도.<br />
-          화면 우측 가장자리에 마우스만 가져가면 시세가 슬라이드로.
-        </p>
+        <p class="hero-sub" data-ko="일하다가, 게임하다가, 회의 중에도.<br />화면 우측 가장자리에 마우스만 가져가면 시세가 슬라이드로." data-en="Working, gaming, in a meeting — doesn't matter.<br />Move your mouse to the screen edge and stock quotes slide right in.">일하다가, 게임하다가, 회의 중에도.<br />화면 우측 가장자리에 마우스만 가져가면 시세가 슬라이드로.</p>
         <div class="hero-cta">
           <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-primary">
-            <span>↓ Windows 다운로드</span>
-            <span class="btn-sub">언제든 최신 버전</span>
+            <span data-ko="↓ Windows 다운로드" data-en="↓ Download for Windows">↓ Windows 다운로드</span>
+            <span class="btn-sub" data-ko="언제든 최신 버전" data-en="Always the latest version">언제든 최신 버전</span>
           </a>
         </div>
       </div>
@@ -110,52 +93,14 @@
         <div class="showcase-panel">
           <div class="sp-head">
             <span class="sp-title">Watchlist</span>
-            <div class="sp-actions">
-              <span>↻</span><span>+</span><span>⚙</span>
-            </div>
+            <div class="sp-actions"><span>↻</span><span>+</span><span>⚙</span></div>
           </div>
           <div class="sp-cards">
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">삼성전자</span>
-                <span class="sp-change up">+5.08%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">284,250원</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,16 12,14 22,12 32,15 42,10 52,8 62,5 72,3 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">SK하이닉스</span>
-                <span class="sp-change down">−0.52%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">198,500원</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,4 12,6 22,10 32,8 42,12 52,11 62,14 72,16 78,18" fill="none" stroke="#A32D2D" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
+            <div class="sp-card"><div class="sp-row"><span class="sp-name" data-ko="삼성전자" data-en="Samsung">삼성전자</span><span class="sp-change up">+5.08%</span></div><div class="sp-row"><span class="sp-price" data-ko="284,250원" data-en="₩284,250">284,250원</span><svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,16 12,14 22,12 32,15 42,10 52,8 62,5 72,3 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
+            <div class="sp-card"><div class="sp-row"><span class="sp-name" data-ko="SK하이닉스" data-en="SK Hynix">SK하이닉스</span><span class="sp-change down">−0.52%</span></div><div class="sp-row"><span class="sp-price" data-ko="198,500원" data-en="₩198,500">198,500원</span><svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,4 12,6 22,10 32,8 42,12 52,11 62,14 72,16 78,18" fill="none" stroke="#A32D2D" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
             <div class="sp-divider"></div>
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">AAPL</span>
-                <span class="sp-change up">+0.83%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">$189.20</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,14 12,11 22,12 32,9 42,8 52,10 62,6 72,5 78,4" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">NVDA</span>
-                <span class="sp-change up">+2.14%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">$632.40</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,18 12,15 22,13 32,12 42,8 52,9 62,6 72,4 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
+            <div class="sp-card"><div class="sp-row"><span class="sp-name">AAPL</span><span class="sp-change up">+0.83%</span></div><div class="sp-row"><span class="sp-price">$189.20</span><svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,14 12,11 22,12 32,9 42,8 52,10 62,6 72,5 78,4" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
+            <div class="sp-card"><div class="sp-row"><span class="sp-name">NVDA</span><span class="sp-change up">+2.14%</span></div><div class="sp-row"><span class="sp-price">$632.40</span><svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,18 12,15 22,13 32,12 42,8 52,9 62,6 72,4 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
           </div>
         </div>
       </div>
@@ -164,52 +109,56 @@
     <section class="features" id="features">
       <div class="container">
         <h2 class="section-title">
-          <span class="grad">필요한 만큼만,</span><br />그 이상은 없습니다.
+          <span class="grad" data-ko="필요한 만큼만," data-en="Just enough,">필요한 만큼만,</span><br /><span data-ko="그 이상은 없습니다." data-en="nothing more.">그 이상은 없습니다.</span>
         </h2>
         <div class="feat-grid">
-          <div class="feat-card">
-            <div class="feat-num">01</div>
-            <h3>마우스만으로</h3>
-            <p>오른쪽 끝에 마우스를 가져가면 패널이 나타나고, 벗어나면 사라집니다. 단축키도, 클릭도 필요 없습니다.</p>
-          </div>
-          <div class="feat-card">
-            <div class="feat-num">02</div>
-            <h3>한국 + 미국</h3>
-            <p>종목명이나 티커로 검색해서 추가. 코스피·코스닥·NYSE·NASDAQ 모두 지원.</p>
-          </div>
-          <div class="feat-card">
-            <div class="feat-num">03</div>
-            <h3>30일 sparkline</h3>
-            <p>일봉 30개로 흐름을 한눈에. 상승은 녹색, 하락은 빨강.</p>
-          </div>
-          <div class="feat-card">
-            <div class="feat-num">04</div>
-            <h3>드래그로 재정렬</h3>
-            <p>중요한 종목을 위로. 변경 사항 자동 저장.</p>
-          </div>
-          <div class="feat-card">
-            <div class="feat-num">05</div>
-            <h3>자동 시작</h3>
-            <p>윈도우 부팅 시 트레이에 조용히. 켜둬도 부담 없음.</p>
-          </div>
+          <div class="feat-card"><div class="feat-num">01</div><h3 data-ko="마우스만으로" data-en="Just hover">마우스만으로</h3><p data-ko="오른쪽 끝에 마우스를 가져가면 패널이 나타나고, 벗어나면 사라집니다. 단축키도, 클릭도 필요 없습니다." data-en="Move your mouse to the edge and the panel appears. Move away and it's gone. No shortcuts, no clicks.">오른쪽 끝에 마우스를 가져가면 패널이 나타나고, 벗어나면 사라집니다. 단축키도, 클릭도 필요 없습니다.</p></div>
+          <div class="feat-card"><div class="feat-num">02</div><h3 data-ko="한국 + 미국" data-en="Korean + US markets">한국 + 미국</h3><p data-ko="종목명이나 티커로 검색해서 추가. 코스피·코스닥·NYSE·NASDAQ 모두 지원." data-en="Search by name or ticker. KOSPI, KOSDAQ, NYSE, and NASDAQ all supported.">종목명이나 티커로 검색해서 추가. 코스피·코스닥·NYSE·NASDAQ 모두 지원.</p></div>
+          <div class="feat-card"><div class="feat-num">03</div><h3 data-ko="30일 sparkline" data-en="30-day sparkline">30일 sparkline</h3><p data-ko="일봉 30개로 흐름을 한눈에. 상승은 녹색, 하락은 빨강." data-en="See the trend at a glance with 30 daily candles. Green for up, red for down.">일봉 30개로 흐름을 한눈에. 상승은 녹색, 하락은 빨강.</p></div>
+          <div class="feat-card"><div class="feat-num">04</div><h3 data-ko="드래그로 재정렬" data-en="Drag to reorder">드래그로 재정렬</h3><p data-ko="중요한 종목을 위로. 변경 사항 자동 저장." data-en="Move your top picks to the top. Changes saved automatically.">중요한 종목을 위로. 변경 사항 자동 저장.</p></div>
+          <div class="feat-card"><div class="feat-num">05</div><h3 data-ko="자동 시작" data-en="Auto-start">자동 시작</h3><p data-ko="윈도우 부팅 시 트레이에 조용히. 켜둬도 부담 없음." data-en="Sits quietly in the system tray on boot. Zero overhead.">윈도우 부팅 시 트레이에 조용히. 켜둬도 부담 없음.</p></div>
         </div>
       </div>
     </section>
-
   </main>
 
   <footer>
     <div class="container footer-row">
       <div>
-        <div class="footer-brand">몰래주식</div>
-        <div class="footer-copy">© 2026 몰래주식</div>
+        <div class="footer-brand" data-ko="몰래주식" data-en="Stock Peek">몰래주식</div>
+        <div class="footer-copy">© 2026 Stock Peek</div>
       </div>
       <div class="footer-links">
         <a href="https://github.com/sngmng6506/stock-peek" target="_blank">GitHub</a>
         <a href="https://buymeacoffee.com/sngmng" target="_blank">Buy Me a Coffee ☕</a>
-        <a href="mailto:sngmng6506@gmail.com">문의</a>
+        <a href="mailto:sngmng6506@gmail.com" data-ko="문의" data-en="Contact">문의</a>
       </div>
     </div>
   </footer>
+
+  <script>
+  (function(){
+    var lang = (location.hash === '#en') ? 'en' : 'ko';
+    var btn = document.getElementById('langToggle');
+
+    function apply(l) {
+      lang = l;
+      document.documentElement.lang = l;
+      document.querySelectorAll('[data-' + l + ']').forEach(function(el) {
+        var val = el.getAttribute('data-' + l);
+        if (val !== null) el.innerHTML = val;
+      });
+      btn.textContent = (l === 'ko') ? 'EN' : '한국어';
+      history.replaceState(null, '', l === 'en' ? '#en' : location.pathname);
+    }
+
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      apply(lang === 'ko' ? 'en' : 'ko');
+    });
+
+    if (lang === 'en') apply('en');
+  })();
+  </script>
 </body>
 </html>
