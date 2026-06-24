@@ -20,6 +20,7 @@ import AddStockModal from './components/AddStockModal'
 import SettingsModal from './components/SettingsModal'
 import WelcomeModal from './components/WelcomeModal'
 import HoldingEditModal from './components/HoldingEditModal'
+import { useI18n } from './i18n'
 
 const idOf = (s) => `${s.market}-${s.symbol}`
 
@@ -52,6 +53,7 @@ function App() {
   const [refreshing, setRefreshing] = useState(false)
   const [dockEdge, setDockEdge] = useState('right')
   const [pinned, setPinned] = useState(false)
+  const { t } = useI18n()
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
   const cardsInnerRef = useRef(null)
@@ -182,21 +184,21 @@ function App() {
           <button
             className={`icon-btn ${refreshing ? 'spinning' : ''}`}
             onClick={handleRefresh}
-            title="새로고침"
+            title={t('app.refresh')}
           >
             ↻
           </button>
           <button
             className="icon-btn"
             onClick={() => setShowAdd(true)}
-            title="추가"
+            title={t('app.add')}
           >
             +
           </button>
           <button
             className="icon-btn"
             onClick={() => setShowSettings(true)}
-            title="설정"
+            title={t('app.settings')}
           >
             ⚙
           </button>
@@ -211,14 +213,14 @@ function App() {
                 window.api.pinPanel()
               }
             }}
-            title={pinned ? '고정 해제' : '고정'}
+            title={pinned ? t('app.unpin') : t('app.pin')}
           >
             📌
           </button>
           <button
             className="icon-btn quit-btn"
             onClick={() => window.api.quitApp()}
-            title="종료"
+            title={t('app.quit')}
           >
             ✕
           </button>
@@ -234,13 +236,13 @@ function App() {
           <div className="cards-inner" ref={cardsInnerRef}>
           {stocks.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-text">종목이 비어있어요</div>
+              <div className="empty-text">{t('app.empty')}</div>
               <button
                 type="button"
                 className="empty-btn"
                 onClick={() => setShowAdd(true)}
               >
-                + 종목 추가
+                {t('app.emptyAdd')}
               </button>
             </div>
           ) : (
