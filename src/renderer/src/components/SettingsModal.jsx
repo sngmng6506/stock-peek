@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useI18n } from '../i18n'
 
 const GITHUB_URL = 'https://github.com/sngmng6506/stock-peek'
 const CONTACT_EMAIL = 'sngmng6506@gmail.com'
+const BMC_URL = 'https://buymeacoffee.com/sngmng'
 
 function SettingsModal({ onClose }) {
+  const { t, lang, setLang } = useI18n()
   const [autoStart, setAutoStart] = useState(false)
   const [version, setVersion] = useState('')
-  const [qr, setQr] = useState(null)
   const [updateAvailable, setUpdateAvailable] = useState(null)
   const [updateReady, setUpdateReady] = useState(null)
 
@@ -14,12 +16,11 @@ function SettingsModal({ onClose }) {
     window.api.getSettings().then((s) => {
       setAutoStart(!!s.autoStart)
       setVersion(s.version || '')
-    })
-    window.api.getDonateQr().then(setQr)
+    }).catch(() => {})
     window.api.getUpdate().then((u) => {
       if (u?.available) setUpdateAvailable(u.available)
       if (u?.ready) setUpdateReady(u.ready)
-    })
+    }).catch(() => {})
     const u1 = window.api.onUpdateAvailable(setUpdateAvailable)
     const u2 = window.api.onUpdateReady(setUpdateReady)
     return () => {
@@ -38,7 +39,7 @@ function SettingsModal({ onClose }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <div className="modal settings-modal" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="modal-title">설정</div>
+        <div className="modal-title">{t('settings.title')}</div>
 
         {updateReady && (
           <button
@@ -46,37 +47,56 @@ function SettingsModal({ onClose }) {
             className="update-banner ready"
             onClick={() => window.api.installUpdate()}
           >
-            <span>v{updateReady.version} 다운로드 완료 — 클릭해서 재시작</span>
+            <span>v{updateReady.version} {t('settings.updateReady')}</span>
             <span>↻</span>
           </button>
         )}
         {!updateReady && updateAvailable && (
           <div className="update-banner downloading">
-            <span>v{updateAvailable.version} 다운로드 중…</span>
+            <span>v{updateAvailable.version} {t('settings.updateDownloading')}</span>
           </div>
         )}
 
         <label className="setting-row">
-          <span>윈도우 시작 시 자동 실행</span>
+          <span>{t('settings.autostart')}</span>
           <input type="checkbox" checked={autoStart} onChange={toggleAutoStart} />
         </label>
 
+        <div className="setting-row">
+          <span>{t('settings.language')}</span>
+          <div className="lang-seg">
+            <button
+              type="button"
+              className={lang === 'ko' ? 'active' : ''}
+              onClick={() => setLang('ko')}
+            >
+              {t('settings.langKo')}
+            </button>
+            <button
+              type="button"
+              className={lang === 'en' ? 'active' : ''}
+              onClick={() => setLang('en')}
+            >
+              {t('settings.langEn')}
+            </button>
+          </div>
+        </div>
+
         <div className="donate">
-          <div className="donate-title">☕ 커피값 후원</div>
-          {qr ? (
-            <img src={qr} className="donate-qr" alt="카카오페이 QR" />
-          ) : (
-            <div className="donate-placeholder">
-              QR 이미지를 찾을 수 없어요.<br />
-              <code>resources/icon_qr.jpg</code>에 파일이 있는지 확인하세요.
-            </div>
-          )}
-          <div className="donate-hint">카카오페이로 스캔</div>
+          <div className="donate-title">{t('settings.donate')}</div>
+          <div className="donate-desc">{t('settings.donateDesc')}</div>
+          <button
+            type="button"
+            className="bmc-btn"
+            onClick={openExternal(BMC_URL)}
+          >
+            ☕ {t('settings.donateBtn')}
+          </button>
         </div>
 
         <div className="about">
           <div className="about-row">
-            <span>버전</span>
+            <span>{t('settings.version')}</span>
             <span className="mono">{version || '-'}</span>
           </div>
           <button
@@ -91,16 +111,16 @@ function SettingsModal({ onClose }) {
             type="button"
             className="about-row link"
             onClick={openExternal(`mailto:${CONTACT_EMAIL}`)}
-            title="이메일로 문의 보내기"
+            title={t('settings.contactTitle')}
           >
-            <span>문의</span>
+            <span>{t('settings.contact')}</span>
             <span className="mono">{CONTACT_EMAIL}</span>
           </button>
         </div>
 
         <div className="modal-actions">
           <button type="button" onClick={onClose} className="primary">
-            닫기
+            {t('settings.close')}
           </button>
         </div>
       </div>
