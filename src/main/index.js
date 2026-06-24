@@ -30,7 +30,9 @@ import {
   markWelcomeShown,
   resetWelcome,
   getDockPosition,
-  setDockPosition
+  setDockPosition,
+  getLanguage,
+  setLanguage
 } from './preferences.js'
 import electronUpdater from 'electron-updater'
 const { autoUpdater } = electronUpdater
@@ -570,6 +572,18 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('dock:get-edge', () => getDock().edge)
+
+  ipcMain.handle('lang:get', () => {
+    const saved = getLanguage()
+    if (saved) return saved
+    // OS 언어 감지: 한국어면 ko, 그 외 en
+    const locale = (app.getLocale() || 'en').toLowerCase()
+    return locale.startsWith('ko') ? 'ko' : 'en'
+  })
+  ipcMain.handle('lang:set', (_e, lang) => {
+    setLanguage(lang)
+    return getLanguage()
+  })
 
   ipcMain.on('app:quit', () => {
     app.quit()
