@@ -63,8 +63,19 @@ let dragDebounce = null
 let updateInfo = null
 let updateReady = null
 
+function getDockedDisplay() {
+  const dock = getDock()
+  const displays = screen.getAllDisplays()
+  // 저장된 displayId의 모니터를 찾되, 없으면(연결 해제 등) primary로 폴백
+  if (dock.displayId != null) {
+    const found = displays.find((d) => d.id === dock.displayId)
+    if (found) return found
+  }
+  return screen.getPrimaryDisplay()
+}
+
 function getDisplayWorkArea() {
-  return screen.getPrimaryDisplay().workArea
+  return getDockedDisplay().workArea
 }
 
 function getDock() {
@@ -203,8 +214,8 @@ function getCurrentPanelHeight() {
   return mainWindow.getSize()[1]
 }
 
-function isOnPrimaryDisplay(cursor) {
-  const wa = screen.getPrimaryDisplay().workArea
+function isOnDockedDisplay(cursor) {
+  const wa = getDisplayWorkArea()
   return (
     cursor.x >= wa.x &&
     cursor.x < wa.x + wa.width &&
@@ -214,7 +225,7 @@ function isOnPrimaryDisplay(cursor) {
 }
 
 function isInTriggerZone(cursor) {
-  if (!isOnPrimaryDisplay(cursor)) return false
+  if (!isOnDockedDisplay(cursor)) return false
   const wa = getDisplayWorkArea()
   const dock = getDock()
   const y = getPanelY()
@@ -237,7 +248,7 @@ function isInTriggerZone(cursor) {
 function isInPanelArea(cursor) {
   if (!mainWindow) return false
   if (targetState !== 'shown') return false
-  if (!isOnPrimaryDisplay(cursor)) return false
+  if (!isOnDockedDisplay(cursor)) return false
   const shownX = getShownX()
   return (
     cursor.x >= shownX &&
@@ -254,7 +265,7 @@ function startHoverPolling() {
 
     const cursor = screen.getCursorScreenPoint()
 
-    if (!isOnPrimaryDisplay(cursor)) {
+    if (!isOnDockedDisplay(cursor)) {
       hoverEnterTime = null
       if (targetState === 'shown') setTarget('hidden')
       return
@@ -279,19 +290,27 @@ function startHoverPolling() {
   }, POLL_INTERVAL)
 }
 
-// 드래그 종료 시 가장 가까운 edge로 스냅
+// 드래그 종료 시 커서가 위치한 모니터의 가장 가까운 좌/우 edge로 스냅
 function snapToEdge() {
   if (!mainWindow || mainWindow.isDestroyed()) return
   const pos = mainWindow.getPosition()
   const wx = pos[0] || 0
   const wy = pos[1] || 0
-  const wa = getDisplayWorkArea()
-  const centerX = wx + PANEL_WIDTH / 2
 
+  // 패널 중심점이 속한 모니터를 찾음 (멀티모니터 지원)
+  const centerPoint = {
+    x: wx + Math.round(PANEL_WIDTH / 2),
+    y: wy + 40
+  }
+  const display = screen.getDisplayNearestPoint(centerPoint)
+  const wa = display.workArea
+
+  const centerX = wx + PANEL_WIDTH / 2
   const edge = centerX < wa.x + wa.width / 2 ? 'left' : 'right'
   const newY = Math.max(0, Math.min(wy - wa.y, wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN))
 
-  setDockPosition({ edge, y: newY })
+  // displayId까지 저장 → 다음 실행 및 위치 계산에 사용
+  setDockPosition({ edge, y: newY, displayId: display.id })
 
   // 스냅 위치로 이동
   const toX = getShownX()
