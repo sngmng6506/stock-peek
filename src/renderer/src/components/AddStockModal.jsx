@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useI18n } from '../i18n'
 
 function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
+  const { t } = useI18n()
   const [market, setMarket] = useState('KR')
   const [keyword, setKeyword] = useState('')
   const [results, setResults] = useState([])
@@ -28,7 +30,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
         const items = await window.api.searchStocks(market, kw)
         setResults(items || [])
       } catch (e) {
-        setError(e?.message || '검색 실패')
+        setError(e?.message || t('add.searchFail'))
         setResults([])
       } finally {
         setSearching(false)
@@ -68,7 +70,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
       <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
         {!selected ? (
           <>
-            <div className="modal-title">종목 추가</div>
+            <div className="modal-title">{t('add.title')}</div>
 
             <div className="seg">
               <button
@@ -76,14 +78,14 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
                 className={market === 'KR' ? 'active' : ''}
                 onClick={() => setMarket('KR')}
               >
-                한국
+                {t('add.korea')}
               </button>
               <button
                 type="button"
                 className={market === 'US' ? 'active' : ''}
                 onClick={() => setMarket('US')}
               >
-                미국
+                {t('add.us')}
               </button>
             </div>
 
@@ -91,7 +93,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
               autoFocus
               className="modal-input"
               placeholder={
-                market === 'KR' ? '예: 삼성전자, 005930' : '예: Apple, AAPL'
+                market === 'KR' ? t('add.searchPlaceholderKR') : t('add.searchPlaceholderUS')
               }
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
@@ -100,9 +102,9 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
             />
 
             <div className="search-results">
-              {searching && <div className="search-hint">검색 중…</div>}
+              {searching && <div className="search-hint">{t('add.searching')}</div>}
               {!searching && kw && results.length === 0 && !error && (
-                <div className="search-hint">결과 없음</div>
+                <div className="search-hint">{t('add.noResult')}</div>
               )}
               {results.map((r) => {
                 const key = `${r.market}-${r.symbol}`
@@ -114,12 +116,12 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
                     className="search-item"
                     onClick={() => !exists && handlePick(r)}
                     disabled={busy || exists}
-                    title={exists ? '이미 추가된 종목' : undefined}
+                    title={exists ? t('add.alreadyAddedTitle') : undefined}
                   >
                     <span className="search-name">{r.name}</span>
                     <span className="search-meta">
                       {exists
-                        ? '이미 추가됨'
+                        ? t('add.alreadyAdded')
                         : `${r.symbol}${r.type ? ` · ${r.type}` : ''}`}
                     </span>
                   </button>
@@ -131,30 +133,30 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
 
             <div className="modal-actions">
               <button type="button" onClick={onClose}>
-                닫기
+                {t('add.close')}
               </button>
             </div>
           </>
         ) : (
           <>
-            <div className="modal-title">매수 정보 (선택)</div>
+            <div className="modal-title">{t('add.holdingInfo')}</div>
 
             <div className="selected-stock">
               <span className="selected-name">{selected.name}</span>
               <span className="selected-meta">
-                {selected.symbol} · {selected.market === 'KR' ? '한국' : '미국'}
+                {selected.symbol} · {selected.market === 'KR' ? t('add.korea') : t('add.us')}
               </span>
             </div>
 
             <div className="holding-form">
               <label>
-                <span className="form-label">수량</span>
+                <span className="form-label">{t('add.quantity')}</span>
                 <input
                   className="modal-input"
                   type="number"
                   step="any"
                   min="0"
-                  placeholder="예: 10"
+                  placeholder={t('holding.qtyPlaceholder')}
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   autoFocus
@@ -162,14 +164,14 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
               </label>
               <label>
                 <span className="form-label">
-                  평단가 ({selected.market === 'KR' ? '원' : '$'})
+                  {t('add.avgPrice')} ({selected.market === 'KR' ? '₩' : '$'})
                 </span>
                 <input
                   className="modal-input"
                   type="number"
                   step="any"
                   min="0"
-                  placeholder={selected.market === 'KR' ? '예: 72400' : '예: 189.20'}
+                  placeholder={selected.market === 'KR' ? t('holding.pricePlaceholder') : 'e.g. 189.20'}
                   value={avgPrice}
                   onChange={(e) => setAvgPrice(e.target.value)}
                 />
@@ -177,7 +179,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
             </div>
 
             <div className="form-hint">
-              평단가는 나중에 편집 가능 · 입력 안 해도 OK
+              {t('holding.hint')}
             </div>
 
             {error && <div className="modal-err">{error}</div>}
@@ -188,14 +190,14 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
                 onClick={() => setSelected(null)}
                 disabled={busy}
               >
-                ← 뒤로
+                {t('add.back')}
               </button>
               <button
                 type="button"
                 onClick={() => submitAdd(false)}
                 disabled={busy}
               >
-                건너뛰기
+                {t('add.skip')}
               </button>
               <button
                 type="button"
@@ -203,7 +205,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
                 disabled={busy || (!quantity && !avgPrice)}
                 className="primary"
               >
-                {busy ? '...' : '추가'}
+                {busy ? '...' : t('add.add')}
               </button>
             </div>
           </>
