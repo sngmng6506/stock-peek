@@ -1,4 +1,5 @@
 import Sparkline from './Sparkline'
+import { useI18n } from '../i18n'
 
 function formatPrice(stock) {
   if (!Number.isFinite(stock.price)) return '—'
@@ -39,10 +40,11 @@ function CardBtn({ onClick, title, label, className }) {
 }
 
 function StockCard({ stock, onRemove, onEditHolding }) {
+  const { t } = useI18n()
   if (stock.error) {
     return (
       <div className="card card-err">
-        {onRemove && <CardBtn onClick={() => onRemove(stock)} title="삭제" label="×" className="card-remove" />}
+        {onRemove && <CardBtn onClick={() => onRemove(stock)} title={t('card.remove')} label="×" className="card-remove" />}
         <div className="row">
           <span className="name">{stock.symbol}</span>
           <span className="change down">err</span>
@@ -65,7 +67,7 @@ function StockCard({ stock, onRemove, onEditHolding }) {
         {onEditHolding && (
           <CardBtn
             onClick={() => onEditHolding(stock)}
-            title="보유 정보 편집"
+            title={t('card.editHolding')}
             label="✎"
             className="card-edit"
           />
@@ -73,7 +75,7 @@ function StockCard({ stock, onRemove, onEditHolding }) {
         {onRemove && (
           <CardBtn
             onClick={() => onRemove(stock)}
-            title="삭제"
+            title={t('card.remove')}
             label="×"
             className="card-remove"
           />
