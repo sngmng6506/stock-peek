@@ -55,6 +55,8 @@ const api = {
     return () => ipcRenderer.off('panel:pinned-changed', handler)
   },
   getDockEdge: () => ipcRenderer.invoke('dock:get-edge'),
+  getLanguage: () => ipcRenderer.invoke('lang:get'),
+  setLanguage: (lang) => ipcRenderer.invoke('lang:set', lang),
   onDockEdgeChanged: (cb) => {
     const handler = (_e, edge) => cb(edge)
     ipcRenderer.on('dock:edge-changed', handler)
