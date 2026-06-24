@@ -4,7 +4,8 @@ const store = new Store({
   name: 'preferences',
   defaults: {
     welcomeShown: false,
-    dockPosition: { edge: 'right', y: 100 }
+    dockPosition: { edge: 'right', y: 100 },
+    language: null // null이면 OS 언어 자동 감지
   }
 })
 
@@ -26,4 +27,12 @@ export function getDockPosition() {
 
 export function setDockPosition(pos) {
   store.set('dockPosition', pos)
+}
+
+export function getLanguage() {
+  return store.get('language', null)
+}
+
+export function setLanguage(lang) {
+  store.set('language', lang === 'en' ? 'en' : 'ko')
 }
