@@ -22,7 +22,7 @@ function normalize(market, symbol) {
 
 function validate({ market, symbol }) {
   if (market === 'KR') {
-    if (!/^\d{6}$/.test(symbol)) throw new Error('한국 종목코드는 6자리 숫자')
+    if (!/^[0-9A-Za-z]{6}$/.test(symbol)) throw new Error('한국 종목코드는 6자리 영문/숫자')
   } else if (market === 'US') {
     if (!/^[A-Z][A-Z0-9.-]{0,9}$/.test(symbol)) throw new Error('미국 티커는 1~10자 영문/숫자')
   } else {
