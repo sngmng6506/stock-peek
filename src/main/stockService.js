@@ -48,6 +48,11 @@ function anyMarketOpen() {
 // --- Fetch logic --------------------------------------------------
 
 async function fetchOne(item) {
+  // 보유 정보를 먼저 추출 — fetch 결과와 무관하게 항상 보존.
+  const holding = {}
+  if (item.quantity != null) holding.quantity = item.quantity
+  if (item.avgPrice != null) holding.avgPrice = item.avgPrice
+
   try {
     let result
     if (item.market === 'KR') {
@@ -65,14 +70,12 @@ async function fetchOne(item) {
     } else if (item.market === 'US') {
       result = await fetchUSStock(item.symbol)
     } else {
-      return { ...item, error: 'unknown market' }
+      return { ...item, ...holding, error: 'unknown market' }
     }
-    // 보유 정보 (watchlist에 기록된 quantity/avgPrice)를 합쳐서 렌더러로 전달.
-    if (item.quantity != null) result.quantity = item.quantity
-    if (item.avgPrice != null) result.avgPrice = item.avgPrice
-    return result
+    // holding이 result 필드를 덮어쓰도록 spread 순서 보장.
+    return { ...result, ...holding }
   } catch (e) {
-    return { ...item, error: e.message || String(e) }
+    return { ...item, ...holding, error: e.message || String(e) }
   }
 }
 
