@@ -4,7 +4,7 @@ const store = new Store({
   name: 'preferences',
   defaults: {
     welcomeShown: false,
-    dockPosition: { edge: 'right', y: 100 },
+    dockPosition: { edge: 'right', y: 100, displayId: null },
     language: null // null이면 OS 언어 자동 감지
   }
 })
@@ -22,7 +22,7 @@ export function resetWelcome() {
 }
 
 export function getDockPosition() {
-  return store.get('dockPosition', { edge: 'right', y: 100 })
+  return store.get('dockPosition', { edge: 'right', y: 100, displayId: null })
 }
 
 export function setDockPosition(pos) {
