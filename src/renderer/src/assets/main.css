@@ -799,3 +799,14 @@ body,
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(255, 221, 0, 0.3);
 }
+
+/* 연결 끊김 시 마지막 가격 옆 흐린 점 */
+.stale-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(235, 180, 80, 0.8);
+  margin-right: 5px;
+  vertical-align: middle;
+}
