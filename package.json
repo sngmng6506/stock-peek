@@ -1,6 +1,6 @@
 {
   "name": "stock-peek",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "몰래주식 - 데스크톱 주식 시세 위젯",
   "main": "./out/main/index.js",
   "author": "sngmng6506",
