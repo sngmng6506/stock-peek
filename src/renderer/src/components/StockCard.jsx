@@ -88,7 +88,10 @@ function StockCard({ stock, onRemove, onEditHolding }) {
         <span className={`change ${cls}`}>{formatRatio(stock.changeRatio)}</span>
       </div>
       <div className="row">
-        <span className="price">{formatPrice(stock)}</span>
+        <span className="price">
+          {stock.stale && <span className="stale-dot" title="연결 끊김 — 마지막 가격" />}
+          {formatPrice(stock)}
+        </span>
         <Sparkline prices={stock.prices} isUp={stock.isUp} />
       </div>
       {profit && (
