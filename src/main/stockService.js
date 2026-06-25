@@ -30,15 +30,34 @@ function isKoreanMarketOpen() {
   return min >= 9 * 60 && min < 15 * 60 + 30
 }
 
+// 미국 동부시간(ET) 기준 서머타임(DST) 여부 판단.
+// DST: 3월 둘째 일요일 ~ 11월 첫째 일요일 (현지 02:00 전환은 근사 무시).
+function isUSDaylightSaving(d) {
+  const year = d.getUTCFullYear()
+  // 3월 둘째 일요일 (UTC 기준 근사)
+  const march = new Date(Date.UTC(year, 2, 1))
+  const secondSunMar = 1 + ((7 - march.getUTCDay()) % 7) + 7
+  // 11월 첫째 일요일
+  const nov = new Date(Date.UTC(year, 10, 1))
+  const firstSunNov = 1 + ((7 - nov.getUTCDay()) % 7)
+
+  const dstStart = Date.UTC(year, 2, secondSunMar)
+  const dstEnd = Date.UTC(year, 10, firstSunNov)
+  const t = d.getTime()
+  return t >= dstStart && t < dstEnd
+}
+
 function isUSMarketOpen() {
-  // 미국 정규장은 KST 22:30~24:00 (월~금) + 00:00~06:00 (화~토)
-  // 서머타임 차이는 단순화. 충분히 근사.
-  const k = kstNow()
-  const day = k.getUTCDay()
-  const min = k.getUTCHours() * 60 + k.getUTCMinutes()
-  if (day >= 1 && day <= 5 && min >= 22 * 60 + 30) return true // 평일 밤
-  if (day >= 2 && day <= 6 && min < 6 * 60) return true // 새벽 (다음날)
-  return false
+  // 미 정규장: 현지 09:30~16:00 (월~금).
+  // DST면 ET=UTC-4, 아니면 ET=UTC-5.
+  const now = new Date()
+  const offset = isUSDaylightSaving(now) ? 4 : 5
+  // ET 시각 = UTC - offset
+  const et = new Date(now.getTime() - offset * 60 * 60 * 1000)
+  const day = et.getUTCDay() // 0=일, 6=토
+  if (day === 0 || day === 6) return false
+  const min = et.getUTCHours() * 60 + et.getUTCMinutes()
+  return min >= 9 * 60 + 30 && min < 16 * 60
 }
 
 function anyMarketOpen() {
@@ -47,7 +66,11 @@ function anyMarketOpen() {
 
 // --- Fetch logic --------------------------------------------------
 
+// 마지막으로 성공한 시세. key: "US-AAPL", value: 성공 결과 객체
+const lastGood = new Map()
+
 async function fetchOne(item) {
+  const key = `${item.market}-${item.symbol}`
   // 보유 정보를 먼저 추출 — fetch 결과와 무관하게 항상 보존.
   const holding = {}
   if (item.quantity != null) holding.quantity = item.quantity
@@ -56,7 +79,6 @@ async function fetchOne(item) {
   try {
     let result
     if (item.market === 'KR') {
-      const key = `${item.market}-${item.symbol}`
       const cached = chartCache.get(key)
       const useCachedChart = cached && Date.now() - cached.ts < CHART_TTL
       result = await fetchKoreanStock(item.symbol, {
@@ -72,9 +94,17 @@ async function fetchOne(item) {
     } else {
       return { ...item, ...holding, error: 'unknown market' }
     }
-    // holding이 result 필드를 덮어쓰도록 spread 순서 보장.
-    return { ...result, ...holding }
+    // 성공 → 마지막 정상값으로 저장.
+    const merged = { ...result, ...holding }
+    lastGood.set(key, merged)
+    return merged
   } catch (e) {
+    // 네트워크 끊김 등 실패 → 마지막 정상 가격을 유지하고 stale 플래그만 표시.
+    const prev = lastGood.get(key)
+    if (prev) {
+      return { ...prev, ...holding, stale: true }
+    }
+    // 한 번도 성공 못 한 경우에만 에러 표시.
     return { ...item, ...holding, error: e.message || String(e) }
   }
 }
