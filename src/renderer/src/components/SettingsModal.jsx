@@ -11,11 +11,15 @@ function SettingsModal({ onClose }) {
   const [version, setVersion] = useState('')
   const [updateAvailable, setUpdateAvailable] = useState(null)
   const [updateReady, setUpdateReady] = useState(null)
+  const [qr, setQr] = useState(null)
 
   useEffect(() => {
     window.api.getSettings().then((s) => {
       setAutoStart(!!s.autoStart)
       setVersion(s.version || '')
+    }).catch(() => {})
+    window.api.getDonateQr().then((d) => {
+      if (d) setQr(d)
     }).catch(() => {})
     window.api.getUpdate().then((u) => {
       if (u?.available) setUpdateAvailable(u.available)
@@ -92,6 +96,12 @@ function SettingsModal({ onClose }) {
           >
             ☕ {t('settings.donateBtn')}
           </button>
+          {qr && (
+            <div className="donate-qr">
+              <img src={qr} alt="KakaoPay QR" />
+              <div className="donate-qr-label">{t('settings.donateKakao')}</div>
+            </div>
+          )}
         </div>
 
         <div className="about">
