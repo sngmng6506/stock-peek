@@ -3,7 +3,7 @@ import { useProxy, proxyStock, proxySearch, eFetch } from './proxy.js'
 const CHART_URL = (ticker) =>
   `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
     ticker
-  )}?interval=5m&range=1d`
+  )}?interval=5m&range=5d`
 
 const HEADERS = {
   'User-Agent':
@@ -69,14 +69,23 @@ export async function fetchUSStock(ticker) {
   }
 
   const meta = result.meta || {}
-  const price = Number(meta.regularMarketPrice)
+  const closes = result.indicators?.quote?.[0]?.close || []
+  const validCloses = closes.filter((p) => p !== null && Number.isFinite(p))
+
+  // 장 마감 후에는 regularMarketPrice가 비거나 stale할 수 있음 →
+  // 마지막 유효 종가를 폴백으로 사용.
+  let price = Number(meta.regularMarketPrice)
+  if (!Number.isFinite(price) && validCloses.length) {
+    price = validCloses[validCloses.length - 1]
+  }
+
   const prev = Number(meta.previousClose ?? meta.chartPreviousClose)
   const change = Number.isFinite(prev) ? price - prev : 0
   const changeRatio = Number.isFinite(prev) && prev !== 0 ? (change / prev) * 100 : 0
   const name = meta.shortName || meta.longName || meta.symbol || ticker
 
-  const closes = result.indicators?.quote?.[0]?.close || []
-  const prices = closes.filter((p) => p !== null && Number.isFinite(p))
+  // 차트는 최근 1거래일치만 표시 (5d 중 마지막 ~78개 = 6.5h / 5min).
+  const prices = validCloses.slice(-78)
 
   return {
     market: 'US',
