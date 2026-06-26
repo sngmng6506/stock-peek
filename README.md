@@ -38,17 +38,99 @@ npm run build:win    # Windows installer 빌드 → dist/
 
 ## 아키텍처
 
+### 전체 구성
+
+```mermaid
+graph TB
+    subgraph Desktop["Electron 데스크톱 앱"]
+        R["Renderer (React)<br/>watchlist UI · hover panel"]
+        P["Preload<br/>contextBridge IPC"]
+        M["Main process<br/>창 제어 · 폴링 · 시세 fetch"]
+        R <-->|IPC| P
+        P <-->|IPC| M
+    end
+
+    subgraph Edge["Cloudflare Edge"]
+        W["Worker proxy<br/>Cache API · IP 분산"]
+        Pages["Pages<br/>랜딩 (한/영)"]
+    end
+
+    subgraph Source["데이터 소스"]
+        N["네이버 금융"]
+        Y["Yahoo Finance"]
+    end
+
+    M -->|"1차: net.fetch"| W
+    W --> N
+    W --> Y
+    M -.->|"프록시 실패 시<br/>직접 폴백"| N
+    M -.->|폴백| Y
+    Pages -.->|다운로드 링크| GH["GitHub Releases"]
+    M -->|auto-update| GH
 ```
-[Electron 앱] ──→ [Cloudflare Worker proxy] ──→ 네이버 / Yahoo
-        │                  (프록시 실패 시)
-        └──────── net.fetch 직접 호출 폴백 ───────→ 네이버 / Yahoo
+
+### 시세 요청 흐름
+
+```mermaid
+sequenceDiagram
+    participant UI as Renderer
+    participant Main as Main process
+    participant SVC as stockService
+    participant Proxy as Worker proxy
+    participant API as 네이버/Yahoo
+
+    Main->>SVC: startPolling()
+    loop 장중 5s / 장외 60s
+        SVC->>SVC: fetchOne(item)
+        SVC->>Proxy: GET /api/stock
+        alt 프록시 정상
+            Proxy->>API: fetch (Cache API)
+            API-->>Proxy: quote + chart
+            Proxy-->>SVC: JSON
+        else 프록시 실패
+            SVC->>API: net.fetch 직접 호출
+            API-->>SVC: JSON
+        end
+        SVC->>SVC: lastGood 캐시 저장
+        SVC-->>Main: 병합 결과 (holding + quote)
+        Main->>UI: webContents.send('stocks:update')
+    end
+```
+
+### 핵심 설계 결정
+
+| 영역 | 선택 | 이유 |
+|------|------|------|
+| HTTP 클라이언트 | Electron `net.fetch` | 시스템 프록시·인증서 자동 적용 → 사내망에서도 동작 |
+| 프록시 | Cloudflare Worker + 직접 폴백 | edge 캐싱·IP 분산을 얻되, 프록시 장애 시 앱이 직접 호출해 가용성 유지 |
+| 폴링 | 장중 5s / 장외 60s 적응형 | 불필요한 요청 최소화 (서머타임 반영 ET 계산) |
+| 시세 병합 | `{...quote, ...holding}` spread | API 응답이 사용자 입력(평단가·수량)을 덮어쓰지 못하게 |
+| 네트워크 방어 | `lastGood` Map 캐시 | 일시적 fetch 실패 시 마지막 가격 유지 + stale 표시 |
+| 멀티모니터 | `displayId` 저장 + `getDisplayNearestPoint` | 드롭한 모니터 판정, 연결 해제 시 primary 폴백 |
+| i18n | data-attr 사전 + Context | 런타임 토글, OS locale 자동 감지 |
+| 배포 | tag push → GitHub Actions → electron-builder | `latest.yml` 발행으로 인앱 자동 업데이트 |
+
+### 디렉터리
+
+```
+src/
+├── main/              # Electron 메인 프로세스
+│   ├── index.js       #   창·트레이·IPC·폴링·auto-update 오케스트레이션
+│   ├── stockService.js#   적응형 폴링 + lastGood 캐시 + 시세 병합
+│   ├── watchlist.js   #   관심종목 CRUD (electron-store)
+│   ├── preferences.js #   설정 영속화 (dock·언어·welcome)
+│   └── api/           #   naver.js · yahoo.js · proxy.js (net.fetch)
+├── preload/index.js   # contextBridge 화이트리스트 IPC
+└── renderer/src/      # React UI
+    ├── App.jsx        #   레이아웃·dnd·패널 높이 측정
+    ├── components/    #   StockCard · 모달들 · Sparkline
+    └── i18n/          #   번역 사전 + Provider
+
+server/src/worker.js   # Cloudflare Worker proxy (Cache API)
+website/               # 랜딩 페이지 (Pages, 한/영)
 ```
 
 Electron 메인 프로세스는 `net.fetch`로 시스템 프록시/인증서를 그대로 사용하므로 사내망 등에서도 동작합니다.
-
-- `src/` — Electron 앱 (main · preload · renderer)
-- `server/` — Cloudflare Worker proxy
-- `website/` — 랜딩 페이지 (Cloudflare Pages 배포, 한/영)
 
 ## 라이선스
 
