@@ -864,3 +864,59 @@ body,
   flex-shrink: 0;
   font-size: 13px;
 }
+
+/* 포트폴리오 한 줄 평 */
+.review-section {
+  margin: 0 8px 8px;
+}
+
+.review-btn {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid rgba(120, 160, 220, 0.25);
+  border-radius: 8px;
+  background: rgba(120, 160, 220, 0.08);
+  color: rgba(220, 230, 245, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms;
+}
+
+.review-btn:hover:not(:disabled) {
+  background: rgba(120, 160, 220, 0.16);
+  border-color: rgba(120, 160, 220, 0.4);
+}
+
+.review-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.review-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.review-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.review-text {
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(235, 235, 245, 0.85);
+}
+
+.review-msg {
+  margin-top: 6px;
+  font-size: 11px;
+  color: rgba(235, 235, 245, 0.5);
+  text-align: center;
+}
