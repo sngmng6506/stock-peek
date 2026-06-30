@@ -168,3 +168,29 @@ export function computePortfolioStats(cache) {
     computedAt: Date.now()
   }
 }
+
+// 버튼 클릭 시 호출: 보유 종목들의 일봉(3개월)을 받아 prices를 채운 뒤 통계 계산.
+// dailyFetchers: { KR: (code)=>Promise<number[]>, US: (ticker)=>Promise<number[]> }
+// cache의 현재가/보유정보는 그대로 쓰고, 추세·변동성용 prices만 일봉으로 교체.
+export async function computeStatsWithDailyData(cache, dailyFetchers) {
+  if (!Array.isArray(cache) || cache.length === 0) {
+    return { empty: true }
+  }
+  const enriched = await Promise.all(
+    cache.map(async (s) => {
+      try {
+        const fetcher =
+          s.market === 'KR' ? dailyFetchers.KR : dailyFetchers.US
+        if (!fetcher) return s
+        const daily = await fetcher(s.symbol)
+        if (Array.isArray(daily) && daily.length >= 5) {
+          return { ...s, prices: daily }
+        }
+        return s
+      } catch {
+        return s
+      }
+    })
+  )
+  return computePortfolioStats(enriched)
+}
