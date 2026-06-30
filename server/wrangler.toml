@@ -2,6 +2,17 @@ name = "stockpeek-proxy"
 main = "src/worker.js"
 compatibility_date = "2025-01-01"
 
-# Cache API는 별도 바인딩 불필요. KV 안 씁니다.
 # 배포: cd server && npx wrangler deploy
 # 로컬 테스트: cd server && npx wrangler dev
+
+# ---- 포트폴리오 한 줄 평 기능 ----
+# KV: 디바이스별 하루 1회 제한 + 전체 일일 호출 상한(killswitch) 기록.
+# 사용 전 KV namespace를 만들어야 함:
+#   cd server && npx wrangler kv namespace create REVIEW_KV
+# 출력된 id를 아래 id에 붙여넣기.
+[[kv_namespaces]]
+binding = "REVIEW_KV"
+id = "PLACEHOLDER_REPLACE_WITH_KV_ID"
+
+# 시크릿(OpenRouter API 키)은 toml에 넣지 말고 아래 명령으로 등록:
+#   cd server && npx wrangler secret put OPENROUTER_API_KEY
