@@ -54,7 +54,10 @@ function App() {
   const [dockEdge, setDockEdge] = useState('right')
   const [pinned, setPinned] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const { t } = useI18n()
+  const [review, setReview] = useState(null) // { text, date }
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewMsg, setReviewMsg] = useState(null) // 안내 메시지 키
+  const { t, lang } = useI18n()
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
   const cardsInnerRef = useRef(null)
@@ -144,6 +147,25 @@ function App() {
       await window.api.refreshStocks()
     } finally {
       setTimeout(() => setRefreshing(false), 400)
+    }
+  }
+
+  const handleReview = async () => {
+    if (reviewLoading) return
+    setReviewLoading(true)
+    setReviewMsg(null)
+    try {
+      const r = await window.api.generateReview(lang)
+      if (r.ok) {
+        setReview({ text: r.review, date: r.date })
+      } else {
+        // reason: empty | used_today | unavailable | error
+        setReviewMsg(`review.${r.reason}`)
+      }
+    } catch {
+      setReviewMsg('review.error')
+    } finally {
+      setReviewLoading(false)
     }
   }
 
@@ -245,6 +267,27 @@ function App() {
             <span className="help-icon">📊</span>
             <span>{t('help.stats')}</span>
           </div>
+        </div>
+      )}
+
+      {stocks.length > 0 && (
+        <div className="review-section">
+          {review ? (
+            <div className="review-result">
+              <span className="review-icon">💬</span>
+              <span className="review-text">{review.text}</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="review-btn"
+              onClick={handleReview}
+              disabled={reviewLoading}
+            >
+              {reviewLoading ? t('review.loading') : t('review.button')}
+            </button>
+          )}
+          {reviewMsg && <div className="review-msg">{t(reviewMsg)}</div>}
         </div>
       )}
 
