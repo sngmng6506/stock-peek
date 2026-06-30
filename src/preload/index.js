@@ -57,6 +57,7 @@ const api = {
   getDockEdge: () => ipcRenderer.invoke('dock:get-edge'),
   getLanguage: () => ipcRenderer.invoke('lang:get'),
   setLanguage: (lang) => ipcRenderer.invoke('lang:set', lang),
+  generateReview: (lang) => ipcRenderer.invoke('review:generate', lang),
   onDockEdgeChanged: (cb) => {
     const handler = (_e, edge) => cb(edge)
     ipcRenderer.on('dock:edge-changed', handler)
