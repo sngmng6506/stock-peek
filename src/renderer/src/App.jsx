@@ -53,6 +53,7 @@ function App() {
   const [refreshing, setRefreshing] = useState(false)
   const [dockEdge, setDockEdge] = useState('right')
   const [pinned, setPinned] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const { t } = useI18n()
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
@@ -203,6 +204,13 @@ function App() {
             ⚙
           </button>
           <button
+            className={`icon-btn help-btn ${showHelp ? 'active' : ''}`}
+            onClick={() => setShowHelp((v) => !v)}
+            title={t('app.help')}
+          >
+            ?
+          </button>
+          <button
             className={`icon-btn pin-btn ${pinned ? 'pinned' : ''}`}
             onClick={() => {
               if (pinned) {
@@ -226,6 +234,19 @@ function App() {
           </button>
         </div>
       </header>
+
+      {showHelp && (
+        <div className="help-popover">
+          <div className="help-row">
+            <span className="help-icon">📈</span>
+            <span>{t('help.chart')}</span>
+          </div>
+          <div className="help-row">
+            <span className="help-icon">📊</span>
+            <span>{t('help.stats')}</span>
+          </div>
+        </div>
+      )}
 
       <DndContext
         sensors={sensors}
