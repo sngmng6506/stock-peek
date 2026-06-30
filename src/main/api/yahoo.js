@@ -5,6 +5,12 @@ const CHART_URL = (ticker) =>
     ticker
   )}?interval=5m&range=5d`
 
+// 통계(추세·변동성)용 일봉 — 최근 3개월.
+const DAILY_URL = (ticker) =>
+  `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
+    ticker
+  )}?interval=1d&range=3mo`
+
 const HEADERS = {
   'User-Agent':
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
@@ -48,6 +54,20 @@ export async function searchUSStocks(keyword) {
             ? 'NASDAQ'
             : 'NYSE'
     }))
+}
+
+// 통계용 일봉 종가 배열만 반환 (최근 3개월). 실패 시 빈 배열.
+export async function fetchUSDailyCloses(ticker) {
+  try {
+    const res = await eFetch(DAILY_URL(ticker), { headers: HEADERS })
+    if (!res.ok) return []
+    const json = await res.json()
+    const result = json?.chart?.result?.[0]
+    const closes = result?.indicators?.quote?.[0]?.close || []
+    return closes.filter((p) => p !== null && Number.isFinite(p))
+  } catch {
+    return []
+  }
 }
 
 export async function fetchUSStock(ticker) {
