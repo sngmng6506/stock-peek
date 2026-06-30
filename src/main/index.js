@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, screen, shell, Tray } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, nativeImage, net, screen, shell, Tray } from 'electron'
 import { join } from 'path'
 import fs from 'node:fs/promises'
 import { electronApp, is } from '@electron-toolkit/utils'
@@ -23,8 +23,10 @@ import {
   setItems,
   updateHolding
 } from './watchlist.js'
-import { searchKoreanStocks } from './api/naver.js'
-import { searchUSStocks } from './api/yahoo.js'
+import { searchKoreanStocks, fetchKoreanDailyCloses } from './api/naver.js'
+import { searchUSStocks, fetchUSDailyCloses } from './api/yahoo.js'
+import { computeStatsWithDailyData } from './portfolioStats.js'
+import { WORKER_URL } from './api/proxy.js'
 import {
   isWelcomeShown,
   markWelcomeShown,
@@ -32,7 +34,8 @@ import {
   getDockPosition,
   setDockPosition,
   getLanguage,
-  setLanguage
+  setLanguage,
+  getDeviceId
 } from './preferences.js'
 import electronUpdater from 'electron-updater'
 const { autoUpdater } = electronUpdater
@@ -602,6 +605,44 @@ app.whenReady().then(() => {
   ipcMain.handle('lang:set', (_e, lang) => {
     setLanguage(lang)
     return getLanguage()
+  })
+
+  // 포트폴리오 한 줄 평: 일봉 받아 통계 계산 → Worker(LLM) 호출.
+  ipcMain.handle('review:generate', async (_e, lang) => {
+    try {
+      const cache = getCache()
+      if (!Array.isArray(cache) || cache.length === 0) {
+        return { ok: false, reason: 'empty' }
+      }
+      // 보유 종목 일봉(3개월)으로 통계 계산
+      const stats = await computeStatsWithDailyData(cache, {
+        KR: fetchKoreanDailyCloses,
+        US: fetchUSDailyCloses
+      })
+      if (stats.empty) return { ok: false, reason: 'empty' }
+
+      const deviceId = getDeviceId()
+      const res = await net.fetch(`${WORKER_URL}/api/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId, stats, lang: lang === 'en' ? 'en' : 'ko' })
+      })
+
+      if (res.status === 429) {
+        return { ok: false, reason: 'used_today' }
+      }
+      if (res.status === 503) {
+        return { ok: false, reason: 'unavailable' }
+      }
+      if (!res.ok) {
+        return { ok: false, reason: 'error' }
+      }
+      const json = await res.json()
+      return { ok: true, review: json.review, date: json.date }
+    } catch (e) {
+      console.error('review:generate error:', e?.message || e)
+      return { ok: false, reason: 'error' }
+    }
   })
 
   ipcMain.on('app:quit', () => {
