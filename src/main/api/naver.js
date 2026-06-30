@@ -103,6 +103,21 @@ function extractCloses(rows) {
 const SEARCH_URL = (kw) =>
   `https://ac.stock.naver.com/ac?q=${encodeURIComponent(kw)}&target=stock`
 
+// 통계(추세·변동성)용 일봉 종가 — 최근 ~3개월(70거래일 여유). 실패 시 빈 배열.
+const DAILY_URL = (code) =>
+  `https://m.stock.naver.com/api/stock/${code}/price?pageSize=70&page=1`
+
+export async function fetchKoreanDailyCloses(code) {
+  try {
+    const res = await eFetch(DAILY_URL(code), { headers: CHART_HEADERS })
+    if (!res.ok) return []
+    const rows = await res.json()
+    return extractCloses(rows)
+  } catch {
+    return []
+  }
+}
+
 export async function searchKoreanStocks(keyword) {
   if (useProxy()) {
     try {
