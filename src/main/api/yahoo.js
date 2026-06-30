@@ -3,12 +3,6 @@ import { useProxy, proxyStock, proxySearch, eFetch } from './proxy.js'
 const CHART_URL = (ticker) =>
   `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
     ticker
-  )}?interval=5m&range=5d`
-
-// 통계(추세·변동성)용 일봉 — 최근 3개월.
-const DAILY_URL = (ticker) =>
-  `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
-    ticker
   )}?interval=1d&range=3mo`
 
 const HEADERS = {
@@ -59,7 +53,7 @@ export async function searchUSStocks(keyword) {
 // 통계용 일봉 종가 배열만 반환 (최근 3개월). 실패 시 빈 배열.
 export async function fetchUSDailyCloses(ticker) {
   try {
-    const res = await eFetch(DAILY_URL(ticker), { headers: HEADERS })
+    const res = await eFetch(CHART_URL(ticker), { headers: HEADERS })
     if (!res.ok) return []
     const json = await res.json()
     const result = json?.chart?.result?.[0]
@@ -104,8 +98,8 @@ export async function fetchUSStock(ticker) {
   const changeRatio = Number.isFinite(prev) && prev !== 0 ? (change / prev) * 100 : 0
   const name = meta.shortName || meta.longName || meta.symbol || ticker
 
-  // 차트는 최근 1거래일치만 표시 (5d 중 마지막 ~78개 = 6.5h / 5min).
-  const prices = validCloses.slice(-78)
+  // 차트: 일봉 3개월치. (한국과 동일하게 일봉으로 통일 → 마감 후에도 유지)
+  const prices = validCloses
 
   return {
     market: 'US',
