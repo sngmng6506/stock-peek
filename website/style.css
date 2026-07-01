@@ -65,9 +65,9 @@ a { color: inherit; text-decoration: none; }
 .demo { position: relative; height: 340px; border: 1.5px solid var(--line); background: repeating-linear-gradient(var(--paper-2) 0 23px, transparent 23px 24px); overflow: hidden; }
 .demo-edge { position: absolute; top: 0; right: 0; bottom: 0; width: 6px; background: var(--ink); }
 .demo-hint { position: absolute; top: 14px; left: 16px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--ink-3); max-width: 44%; line-height: 1.5; }
-.demo-cursor { position: absolute; font-size: 15px; color: var(--ink); animation: cursorMove 4.5s ease-in-out infinite; }
-@keyframes cursorMove { 0%, 15% { top: 62%; right: 46%; opacity: 0; } 25% { opacity: 1; } 45%, 70% { top: 40%; right: 8px; opacity: 1; } 85%, 100% { top: 40%; right: 8px; opacity: 0; } }
-.demo-panel { position: absolute; top: 26px; bottom: 26px; right: 6px; width: 210px; background: var(--panel); border: 1px solid var(--panel-line); transform: translateX(230px); animation: panelSlide 4.5s ease-in-out infinite; padding: 12px; display: flex; flex-direction: column; gap: 9px; }
+.demo-cursor { position: absolute; z-index: 3; width: 20px; height: 24px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25)); animation: cursorMove 4.5s ease-in-out infinite; }
+@keyframes cursorMove { 0%, 15% { top: 62%; right: 46%; opacity: 0; } 25% { opacity: 1; } 45%, 70% { top: 42%; right: 214px; opacity: 1; } 85%, 100% { top: 42%; right: 214px; opacity: 0; } }
+.demo-panel { position: absolute; z-index: 2; top: 26px; bottom: 26px; right: 6px; width: 210px; background: var(--panel); border: 1px solid var(--panel-line); transform: translateX(230px); animation: panelSlide 4.5s ease-in-out infinite; padding: 12px; display: flex; flex-direction: column; gap: 9px; }
 @keyframes panelSlide { 0%, 30% { transform: translateX(230px); } 45%, 78% { transform: translateX(0); } 92%, 100% { transform: translateX(230px); } }
 .dp-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--panel-line); }
 .dp-head span { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.45); }
