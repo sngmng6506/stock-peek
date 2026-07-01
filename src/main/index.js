@@ -17,7 +17,6 @@ import {
   reorderCache
 } from './stockService.js'
 import {
-  getItems,
   addItem,
   removeItem,
   setItems,
@@ -30,7 +29,6 @@ import { WORKER_URL } from './api/proxy.js'
 import {
   isWelcomeShown,
   markWelcomeShown,
-  resetWelcome,
   getDockPosition,
   setDockPosition,
   getLanguage,
@@ -548,7 +546,6 @@ app.whenReady().then(() => {
     }
   })
 
-  ipcMain.handle('watchlist:get', () => getItems())
   ipcMain.handle('watchlist:add', async (_e, { market, symbol, quantity, avgPrice }) => {
     const list = addItem(market, symbol, { quantity, avgPrice })
     refreshAll()
@@ -580,11 +577,6 @@ app.whenReady().then(() => {
     panelLocked = false
     return true
   })
-  ipcMain.handle('welcome:show-again', () => {
-    resetWelcome()
-    return true
-  })
-
   ipcMain.handle('search:stocks', async (_e, { market, keyword }) => {
     const kw = String(keyword || '').trim()
     if (!kw) return []
