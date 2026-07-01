@@ -11,11 +11,9 @@ const api = {
   },
   checkWelcome: () => ipcRenderer.invoke('welcome:check'),
   dismissWelcome: () => ipcRenderer.invoke('welcome:dismiss'),
-  showWelcomeAgain: () => ipcRenderer.invoke('welcome:show-again'),
   panelLock: () => ipcRenderer.send('panel:lock'),
   panelUnlock: () => ipcRenderer.send('panel:unlock'),
   setPanelHeight: (h) => ipcRenderer.send('panel:set-height', h),
-  getWatchlist: () => ipcRenderer.invoke('watchlist:get'),
   addStock: (market, symbol, holding) =>
     ipcRenderer.invoke('watchlist:add', { market, symbol, ...(holding || {}) }),
   updateHolding: (market, symbol, holding) =>
