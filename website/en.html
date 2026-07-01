@@ -4,28 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Stock Peek — Free Desktop Stock Widget for Windows</title>
-  <meta name="description" content="Check stock prices while you work. Hover at the screen edge and a sleek panel slides in with real-time quotes for Korean (KOSPI, KOSDAQ) and US (NYSE, NASDAQ) markets. Free for Windows 10/11." />
-  <meta name="keywords" content="desktop stock widget, stock ticker widget, Windows stock widget, real-time stock prices, KOSPI, KOSDAQ, NYSE, NASDAQ, free stock app, stock peek, stock monitor" />
+  <title>Stock Peek — Desktop Stock Ticker Widget (KR & US, Free)</title>
+  <meta name="description" content="Hover at the right screen edge and Korean & US stock quotes slide in as a desktop widget. KOSPI, KOSDAQ, NASDAQ, NYSE. Free for Windows 10/11." />
+  <meta name="keywords" content="desktop stock widget, stock ticker widget, Windows stock app, Korean stocks, US stocks, KOSPI, KOSDAQ, NYSE, NASDAQ, sparkline" />
   <meta name="author" content="sngmng6506" />
   <link rel="canonical" href="https://stock-peek.com/en" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
   <link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
   <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
 
+  <meta name="naver-site-verification" content="3ca8cb70d6914d69849cad717dc26a1ab494b21c" />
+
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Stock Peek" />
-  <meta property="og:title" content="Stock Peek — Free Desktop Stock Widget" />
-  <meta property="og:description" content="Hover at the screen edge to see real-time stock prices. Korean & US markets. Free for Windows." />
+  <meta property="og:title" content="Stock Peek — Desktop Stock Widget" />
+  <meta property="og:description" content="Hover at the screen edge — Korean & US stock quotes slide in. Free Windows widget." />
   <meta property="og:url" content="https://stock-peek.com/en" />
   <meta property="og:image" content="https://stock-peek.com/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Stock Peek — Free Desktop Stock Widget" />
-  <meta name="twitter:description" content="Hover at the edge — real-time Korean & US stock quotes slide in." />
+  <meta name="twitter:title" content="Stock Peek — Desktop Stock Widget" />
+  <meta name="twitter:description" content="Hover to the right edge — Korean & US quotes, sliding in." />
   <meta name="twitter:image" content="https://stock-peek.com/og.png" />
 
   <script type="application/ld+json">
@@ -33,178 +35,142 @@
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "Stock Peek",
-    "description": "A free Windows desktop widget that shows real-time Korean and US stock quotes on hover at the screen edge.",
-    "url": "https://stock-peek.com/en",
+    "alternateName": "몰래주식",
+    "description": "A Windows desktop widget that shows Korean & US stock quotes when you hover at the right screen edge.",
+    "url": "https://stock-peek.com/",
     "image": "https://stock-peek.com/og.png",
     "operatingSystem": "Windows 10, Windows 11",
     "applicationCategory": "FinanceApplication",
-    "softwareVersion": "1.2.3",
+    "softwareVersion": "1.6.0",
     "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "author": {
-      "@type": "Person",
-      "name": "sngmng6506",
-      "url": "https://github.com/sngmng6506"
-    },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+    "author": { "@type": "Person", "name": "sngmng6506", "email": "sngmng6506@gmail.com" },
     "inLanguage": "en",
     "featureList": [
-      "Korean stocks (KOSPI & KOSDAQ) real-time quotes",
-      "US stocks (NYSE & NASDAQ) real-time quotes",
-      "30-day sparkline charts",
-      "Drag-and-drop watchlist reorder",
-      "System tray with auto-start",
-      "Mouse hover trigger — no clicks needed"
+      "Korean stocks (KOSPI, KOSDAQ)",
+      "US stocks (NYSE, NASDAQ)",
+      "3-month daily sparkline",
+      "Drag-and-drop reordering",
+      "Multi-monitor edge docking",
+      "System tray + auto-start",
+      "Mouse-hover trigger"
     ]
   }
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300C8FF'/%3E%3Ctext x='50' y='70' font-size='55' text-anchor='middle' fill='%23000' font-weight='800'%3ESP%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="/style.css" />
-  <style>.lang-toggle{font-weight:600;font-size:13px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;color:var(--text-2)}.lang-toggle:hover{color:var(--text);border-color:var(--text-3)}</style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2317171A'/%3E%3Ctext x='50' y='68' font-size='46' font-family='monospace' text-anchor='middle' fill='%23EDEAE3' font-weight='700'%3ESP%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="nav">
+  <nav class="nav">
     <div class="nav-inner">
-      <a href="/en" class="logo">Stock Peek</a>
-      <nav class="nav-links">
-        <a href="#features">Features</a>
-        <a href="https://github.com/sngmng6506/stock-peek" target="_blank">GitHub</a>
-        <a href="/" class="lang-toggle" title="한국어">KR</a>
-        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-cta">Download</a>
-      </nav>
+      <a href="/" class="brand"><span class="brand-mark">SP</span> Stock Peek</a>
+      <div class="nav-right">
+        <a href="#how" class="muted">Features</a>
+        <a href="https://github.com/sngmng6506/stock-peek" class="muted" target="_blank" rel="noopener">GitHub</a>
+        <a href="/" class="lang">한국어</a>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">Download</a>
+      </div>
     </div>
-  </header>
+  </nav>
 
-  <main>
+  <main class="wrap">
     <section class="hero">
-      <div class="hero-inner">
-        <div class="eyebrow">Windows · Free</div>
-        <h1 class="hero-title">
-          <span class="grad">Peek at prices,</span><br />
-          just hover.
-        </h1>
+      <div class="hero-copy">
+        <div class="hero-tag">WINDOWS · FREE · NO ADS</div>
+        <h1>Peek at prices,<br />just <span class="down">hover.</span></h1>
         <p class="hero-sub">
-          Working, gaming, in a meeting — doesn't matter.<br />
-          Move your mouse to the screen edge and stock quotes slide right in.
+          Working, in a meeting, whatever. Move your mouse to the right edge
+          and your watchlist slides in — move away and it quietly disappears.
         </p>
         <div class="hero-cta">
-          <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-primary">
-            <span>↓ Download for Windows</span>
-            <span class="btn-sub">Always the latest version</span>
+          <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">
+            Download <span class="sub">.exe / Win 10·11</span>
           </a>
+          <span class="hero-meta">v1.6.0 · KR + US</span>
         </div>
       </div>
 
-      <div class="showcase">
-        <div class="showcase-bg"></div>
-        <div class="peek-cursor" aria-hidden="true">↖</div>
-        <div class="showcase-panel">
-          <div class="sp-head">
-            <span class="sp-title">Watchlist</span>
-            <div class="sp-actions">
-              <span>↻</span><span>+</span><span>⚙</span>
-            </div>
+      <div class="demo" aria-hidden="true">
+        <div class="demo-hint">Move to the right edge →</div>
+        <div class="demo-edge"></div>
+        <div class="demo-cursor">▖</div>
+        <div class="demo-panel">
+          <div class="dp-head"><span>WATCHLIST</span><span>+</span></div>
+          <div class="dp-row">
+            <div class="dp-line"><span class="dp-name">Samsung</span><span class="dp-chg up">+2.14%</span></div>
+            <div class="dp-line"><span class="dp-code">005930</span><span class="dp-price">80,200</span></div>
           </div>
-          <div class="sp-cards">
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">Samsung</span>
-                <span class="sp-change up">+5.08%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">₩284,250</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,16 12,14 22,12 32,15 42,10 52,8 62,5 72,3 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">SK Hynix</span>
-                <span class="sp-change down">−0.52%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">₩198,500</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,4 12,6 22,10 32,8 42,12 52,11 62,14 72,16 78,18" fill="none" stroke="#A32D2D" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
-            <div class="sp-divider"></div>
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">AAPL</span>
-                <span class="sp-change up">+0.83%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">$189.20</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,14 12,11 22,12 32,9 42,8 52,10 62,6 72,5 78,4" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
-            <div class="sp-card">
-              <div class="sp-row">
-                <span class="sp-name">NVDA</span>
-                <span class="sp-change up">+2.14%</span>
-              </div>
-              <div class="sp-row">
-                <span class="sp-price">$632.40</span>
-                <svg width="80" height="22" viewBox="0 0 80 22"><polyline points="2,18 12,15 22,13 32,12 42,8 52,9 62,6 72,4 78,2" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              </div>
-            </div>
+          <div class="dp-row">
+            <div class="dp-line"><span class="dp-name">SK Hynix</span><span class="dp-chg down">−0.86%</span></div>
+            <div class="dp-line"><span class="dp-code">000660</span><span class="dp-price">183,500</span></div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="features" id="features">
-      <div class="container">
-        <h2 class="section-title">
-          <span class="grad">Just enough,</span><br />nothing more.
-        </h2>
-        <div class="feat-grid">
-          <div class="feat-card">
-            <div class="feat-num">01</div>
-            <h3>Just hover</h3>
-            <p>Move your mouse to the edge and the panel appears. Move away and it's gone. No shortcuts, no clicks.</p>
+          <div class="dp-row">
+            <div class="dp-line"><span class="dp-name">NVIDIA</span><span class="dp-chg up">+1.09%</span></div>
+            <div class="dp-line"><span class="dp-code">NVDA</span><span class="dp-price">$142.30</span></div>
           </div>
-          <div class="feat-card">
-            <div class="feat-num">02</div>
-            <h3>Korean + US markets</h3>
-            <p>Search by name or ticker. KOSPI, KOSDAQ, NYSE, and NASDAQ all supported.</p>
-          </div>
-          <div class="feat-card">
-            <div class="feat-num">03</div>
-            <h3>30-day sparkline</h3>
-            <p>See the trend at a glance with 30 daily candles. Green for up, red for down.</p>
-          </div>
-          <div class="feat-card">
-            <div class="feat-num">04</div>
-            <h3>Drag to reorder</h3>
-            <p>Move your top picks to the top. Changes saved automatically.</p>
-          </div>
-          <div class="feat-card">
-            <div class="feat-num">05</div>
-            <h3>Auto-start</h3>
-            <p>Sits quietly in the system tray on boot. Zero overhead.</p>
+          <div class="dp-row">
+            <div class="dp-line"><span class="dp-name">Apple</span><span class="dp-chg down">−0.42%</span></div>
+            <div class="dp-line"><span class="dp-code">AAPL</span><span class="dp-price">$228.10</span></div>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="container footer-row">
-      <div>
-        <div class="footer-brand">Stock Peek</div>
-        <div class="footer-copy">© 2026 Stock Peek</div>
+  <section class="features" id="how">
+    <div class="wrap">
+      <div class="feat">
+        <div class="feat-no">01</div>
+        <div class="feat-body">
+          <h3>Just hover</h3>
+          <p>No shortcuts, no clicks. Bring your cursor to the right edge and the panel slides in; move away and it hides. Dock it to the left edge or another monitor if you like.</p>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="https://github.com/sngmng6506/stock-peek" target="_blank">GitHub</a>
-        <a href="https://buymeacoffee.com/sngmng" target="_blank">Buy Me a Coffee ☕</a>
+      <div class="feat">
+        <div class="feat-no">02</div>
+        <div class="feat-body">
+          <h3>Korea + US, together</h3>
+          <p>From KOSPI and KOSDAQ to NYSE and NASDAQ. Search by name or ticker, and add your shares and average price to see live profit and loss.</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-no">03</div>
+        <div class="feat-body">
+          <h3>Last 3 months at a glance</h3>
+          <p>Three months of daily candles as a compact sparkline. Green for up, red for down. The chart stays put after hours and on weekends.</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-no">04</div>
+        <div class="feat-body">
+          <h3>Set it and forget it</h3>
+          <p>It sits quietly in the system tray and launches on startup. It only appears when you reach for it, so it never gets in your way.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Keep it quietly running.</h2>
+      <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">
+        Download <span class="sub">.exe / Win 10·11</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <div class="foot">
+      <div class="foot-left">© 2026 Stock Peek · 몰래주식</div>
+      <div class="foot-links">
+        <a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">Buy me a coffee</a>
         <a href="mailto:sngmng6506@gmail.com">Contact</a>
+        <a href="/">한국어</a>
       </div>
     </div>
   </footer>
