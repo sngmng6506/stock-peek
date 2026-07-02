@@ -90,7 +90,7 @@
           <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">
             다운로드 <span class="sub">.exe / Win 10·11</span>
           </a>
-          <span class="hero-meta">v1.6.0 · 한국 + 미국</span>
+          <span class="hero-meta"><span id="appVer">v1.6.2</span> · 한국 + 미국</span>
         </div>
       </div>
 
@@ -129,6 +129,7 @@
           <h3>마우스만 살짝</h3>
           <p>단축키도, 클릭도 없습니다. 화면 오른쪽 가장자리에 커서를 가져가면 패널이 슬라이드로 나타나고, 벗어나면 사라집니다. 왼쪽 끝이나 다른 모니터로 옮겨 붙일 수도 있어요.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="1" width="138" height="74" fill="none" stroke="var(--ink)" stroke-width="1.5"/><rect x="133" y="1" width="6" height="74" fill="var(--ink)"/><rect x="92" y="12" width="41" height="52" fill="var(--panel)"/><path d="M78 34L78 47L81.6 43.7L83.9 49L86.2 48L83.9 42.8L88.4 42.6L78 34Z" fill="#F7F5F0" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round"/></svg></div>
       </div>
       <div class="feat">
         <div class="feat-no">02</div>
@@ -136,6 +137,7 @@
           <h3>한국 + 미국, 한 곳에서</h3>
           <p>코스피·코스닥부터 NYSE·나스닥까지. 종목명이나 티커로 검색해 추가하고, 보유 수량과 평단가를 넣으면 평가손익도 함께 보여줍니다.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="4" y="12" width="62" height="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="35" y="28" font-family="monospace" font-size="11" fill="var(--ink)" text-anchor="middle" font-weight="bold">005930</text><rect x="74" y="12" width="62" height="24" fill="var(--ink)"/><text x="105" y="28" font-family="monospace" font-size="11" fill="var(--paper)" text-anchor="middle" font-weight="bold">NVDA</text><text x="35" y="56" font-family="monospace" font-size="9" fill="var(--ink-3)" text-anchor="middle">KOSPI</text><text x="105" y="56" font-family="monospace" font-size="9" fill="var(--ink-3)" text-anchor="middle">NASDAQ</text></svg></div>
       </div>
       <div class="feat">
         <div class="feat-no">03</div>
@@ -143,6 +145,7 @@
           <h3>최근 3개월 흐름</h3>
           <p>각 종목의 3개월 일봉을 작은 sparkline으로. 상승은 녹색, 하락은 붉은색. 장이 끝난 뒤에도, 주말에도 차트가 사라지지 않습니다.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><polyline points="6,54 20,48 34,52 48,40 62,44 76,30 90,34 104,22 118,26 134,14" fill="none" stroke="var(--up)" stroke-width="2" stroke-linejoin="round"/><polyline points="6,62 24,64 42,60 60,66 78,63 96,68 114,66 134,70" fill="none" stroke="var(--down)" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/></svg></div>
       </div>
       <div class="feat">
         <div class="feat-no">04</div>
@@ -150,7 +153,36 @@
           <h3>켜두면 잊게 됩니다</h3>
           <p>시스템 트레이에 조용히 머무르고, 윈도우 시작할 때 자동으로 실행됩니다. 필요할 때만 슬쩍 나타나니 작업에 방해되지 않아요.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="50" width="138" height="25" fill="var(--ink)"/><circle cx="96" cy="62" r="4" fill="rgba(237,234,227,0.35)"/><circle cx="110" cy="62" r="4" fill="rgba(237,234,227,0.35)"/><rect x="119" y="56" width="13" height="13" fill="none" stroke="#EDEAE3" stroke-width="1.5"/><text x="125.5" y="66" font-family="monospace" font-size="7" fill="#EDEAE3" text-anchor="middle" font-weight="bold">SP</text><g fill="rgba(237,234,227,0.5)"><rect x="9" y="57" width="4.5" height="4.5"/><rect x="15" y="57" width="4.5" height="4.5"/><rect x="9" y="63" width="4.5" height="4.5"/><rect x="15" y="63" width="4.5" height="4.5"/></g></svg></div>
       </div>
+    </div>
+  </section>
+
+
+  <section class="faq">
+    <div class="wrap">
+      <div class="faq-head">FAQ</div>
+      <h2>자주 묻는 질문</h2>
+      <details>
+        <summary>정말 무료인가요?</summary>
+        <div class="faq-a">네. 광고도, 결제도, 회원가입도 없습니다. 코드 전체가 GitHub에 공개되어 있는 개인 프로젝트예요.</div>
+      </details>
+      <details>
+        <summary>설치할 때 Windows 경고가 떠요.</summary>
+        <div class="faq-a">개인 개발 앱이라 코드 서명 인증서가 없어서 SmartScreen 경고가 뜰 수 있어요. "추가 정보 → 실행"을 누르면 설치됩니다. 소스가 공개되어 있으니 직접 확인하고 빌드할 수도 있어요.</div>
+      </details>
+      <details>
+        <summary>시세는 어디서 가져오나요?</summary>
+        <div class="faq-a">한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터를 사용합니다. 장중에는 5초, 장외에는 60초 간격으로 갱신돼요.</div>
+      </details>
+      <details>
+        <summary>회사 PC에서도 되나요?</summary>
+        <div class="faq-a">네. 시스템 프록시와 인증서를 그대로 사용하도록 만들어서 사내망에서도 동작합니다. 다만 설치 권한은 필요해요.</div>
+      </details>
+      <details>
+        <summary>Mac은 지원하나요?</summary>
+        <div class="faq-a">현재는 Windows 10/11 전용입니다. Mac 지원 계획은 아직 없어요.</div>
+      </details>
     </div>
   </section>
 
@@ -174,5 +206,29 @@
       </div>
     </div>
   </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "몰래주식은 무료인가요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 광고, 결제, 회원가입 없이 완전히 무료이며 코드 전체가 GitHub에 공개되어 있습니다."}},
+      {"@type": "Question", "name": "설치할 때 Windows SmartScreen 경고가 뜨는 이유는?", "acceptedAnswer": {"@type": "Answer", "text": "개인 개발 앱이라 코드 서명 인증서가 없기 때문입니다. 추가 정보 → 실행으로 설치할 수 있으며, 소스가 공개되어 있어 직접 확인 가능합니다."}},
+      {"@type": "Question", "name": "주식 시세는 어디서 가져오나요?", "acceptedAnswer": {"@type": "Answer", "text": "한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터를 사용하며 장중 5초 간격으로 갱신됩니다."}},
+      {"@type": "Question", "name": "회사 PC에서도 사용할 수 있나요?", "acceptedAnswer": {"@type": "Answer", "text": "시스템 프록시와 인증서를 그대로 사용하므로 사내망에서도 동작합니다. 설치 권한은 필요합니다."}},
+      {"@type": "Question", "name": "Mac을 지원하나요?", "acceptedAnswer": {"@type": "Answer", "text": "현재는 Windows 10/11 전용입니다."}}
+    ]
+  }
+  </script>
+  <script>
+  (function () {
+    var el = document.getElementById('appVer');
+    if (!el) return;
+    fetch('https://api.github.com/repos/sngmng6506/stock-peek/releases/latest')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.tag_name) el.textContent = j.tag_name; })
+      .catch(function () {});
+  })();
+  </script>
 </body>
 </html>
