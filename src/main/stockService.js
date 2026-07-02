@@ -5,7 +5,7 @@ import { getItems } from './watchlist.js'
 const REFRESH_FAST = 3_000 // 어느 한 시장이라도 열려있을 때
 const REFRESH_SLOW = 60_000 // 한/미 모두 닫혔을 때
 const JITTER = 250 // ms, 다중 사용자 호출 분산용
-const CHART_TTL = 60_000 // 차트(일봉)는 1분만 캐시해도 충분 — 하루에 1번 변함
+const CHART_TTL = 600_000 // 차트는 일봉(3개월)이라 10분 캐시로 충분 — 네이버 차트 요청 1/10로 감소
 
 let polling = false
 let timer = null
