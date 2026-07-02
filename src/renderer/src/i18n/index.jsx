@@ -27,7 +27,6 @@ export const translations = {
     'holding.title': '보유 정보 편집',
     'holding.quantity': '수량',
     'holding.avgPrice': '평단가',
-    'holding.avgPriceWon': '평단가 (원)',
     'holding.qtyPlaceholder': '예: 10',
     'holding.pricePlaceholder': '예: 72400',
     'holding.save': '저장',
@@ -56,7 +55,6 @@ export const translations = {
     'settings.title': '설정',
     'settings.autostart': '윈도우 시작 시 자동 실행',
     'settings.donate': '☕ 커피값 후원',
-    'settings.donateScan': 'Buy Me a Coffee',
     'settings.version': '버전',
     'settings.contact': '문의',
     'settings.contactTitle': '이메일로 문의 보내기',
@@ -77,8 +75,7 @@ export const translations = {
     'welcome.step3': '트레이 아이콘 ⚙ 에서 설정',
     'welcome.start': '시작하기',
     'welcome.step2desc': '종목명이나 티커로 검색해서 추가하세요.',
-    'welcome.step3desc': '자동 시작 토글 · 앱 종료는 트레이에서.',
-    'welcome.next': '다음'
+    'welcome.step3desc': '자동 시작 토글 · 앱 종료는 트레이에서.'
   },
   en: {
     // App
@@ -106,7 +103,6 @@ export const translations = {
     'holding.title': 'Edit Holding',
     'holding.quantity': 'Quantity',
     'holding.avgPrice': 'Avg. Price',
-    'holding.avgPriceWon': 'Avg. Price',
     'holding.qtyPlaceholder': 'e.g. 10',
     'holding.pricePlaceholder': 'e.g. 72400',
     'holding.save': 'Save',
@@ -135,7 +131,6 @@ export const translations = {
     'settings.title': 'Settings',
     'settings.autostart': 'Launch on Windows startup',
     'settings.donate': '☕ Buy me a coffee',
-    'settings.donateScan': 'Buy Me a Coffee',
     'settings.version': 'Version',
     'settings.contact': 'Contact',
     'settings.contactTitle': 'Send an email',
@@ -156,8 +151,7 @@ export const translations = {
     'welcome.step3': 'Configure from the tray icon ⚙',
     'welcome.start': 'Get started',
     'welcome.step2desc': 'Search by name or ticker to add.',
-    'welcome.step3desc': 'Toggle auto-start · quit from the tray.',
-    'welcome.next': 'Next'
+    'welcome.step3desc': 'Toggle auto-start · quit from the tray.'
   }
 }
 
