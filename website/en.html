@@ -90,7 +90,7 @@
           <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">
             Download <span class="sub">.exe / Win 10·11</span>
           </a>
-          <span class="hero-meta">v1.6.0 · KR + US</span>
+          <span class="hero-meta"><span id="appVer">v1.6.2</span> · KR + US</span>
         </div>
       </div>
 
@@ -129,6 +129,7 @@
           <h3>Just hover</h3>
           <p>No shortcuts, no clicks. Bring your cursor to the right edge and the panel slides in; move away and it hides. Dock it to the left edge or another monitor if you like.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="1" width="138" height="74" fill="none" stroke="var(--ink)" stroke-width="1.5"/><rect x="133" y="1" width="6" height="74" fill="var(--ink)"/><rect x="92" y="12" width="41" height="52" fill="var(--panel)"/><path d="M78 34L78 47L81.6 43.7L83.9 49L86.2 48L83.9 42.8L88.4 42.6L78 34Z" fill="#F7F5F0" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round"/></svg></div>
       </div>
       <div class="feat">
         <div class="feat-no">02</div>
@@ -136,6 +137,7 @@
           <h3>Korea + US, together</h3>
           <p>From KOSPI and KOSDAQ to NYSE and NASDAQ. Search by name or ticker, and add your shares and average price to see live profit and loss.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="4" y="12" width="62" height="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="35" y="28" font-family="monospace" font-size="11" fill="var(--ink)" text-anchor="middle" font-weight="bold">005930</text><rect x="74" y="12" width="62" height="24" fill="var(--ink)"/><text x="105" y="28" font-family="monospace" font-size="11" fill="var(--paper)" text-anchor="middle" font-weight="bold">NVDA</text><text x="35" y="56" font-family="monospace" font-size="9" fill="var(--ink-3)" text-anchor="middle">KOSPI</text><text x="105" y="56" font-family="monospace" font-size="9" fill="var(--ink-3)" text-anchor="middle">NASDAQ</text></svg></div>
       </div>
       <div class="feat">
         <div class="feat-no">03</div>
@@ -143,6 +145,7 @@
           <h3>Last 3 months at a glance</h3>
           <p>Three months of daily candles as a compact sparkline. Green for up, red for down. The chart stays put after hours and on weekends.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><polyline points="6,54 20,48 34,52 48,40 62,44 76,30 90,34 104,22 118,26 134,14" fill="none" stroke="var(--up)" stroke-width="2" stroke-linejoin="round"/><polyline points="6,62 24,64 42,60 60,66 78,63 96,68 114,66 134,70" fill="none" stroke="var(--down)" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/></svg></div>
       </div>
       <div class="feat">
         <div class="feat-no">04</div>
@@ -150,7 +153,36 @@
           <h3>Set it and forget it</h3>
           <p>It sits quietly in the system tray and launches on startup. It only appears when you reach for it, so it never gets in your way.</p>
         </div>
+        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="50" width="138" height="25" fill="var(--ink)"/><circle cx="96" cy="62" r="4" fill="rgba(237,234,227,0.35)"/><circle cx="110" cy="62" r="4" fill="rgba(237,234,227,0.35)"/><rect x="119" y="56" width="13" height="13" fill="none" stroke="#EDEAE3" stroke-width="1.5"/><text x="125.5" y="66" font-family="monospace" font-size="7" fill="#EDEAE3" text-anchor="middle" font-weight="bold">SP</text><g fill="rgba(237,234,227,0.5)"><rect x="9" y="57" width="4.5" height="4.5"/><rect x="15" y="57" width="4.5" height="4.5"/><rect x="9" y="63" width="4.5" height="4.5"/><rect x="15" y="63" width="4.5" height="4.5"/></g></svg></div>
       </div>
+    </div>
+  </section>
+
+
+  <section class="faq">
+    <div class="wrap">
+      <div class="faq-head">FAQ</div>
+      <h2>Frequently asked questions</h2>
+      <details>
+        <summary>Is it really free?</summary>
+        <div class="faq-a">Yes. No ads, no payments, no sign-up. It's a personal open-source project — the full code is on GitHub.</div>
+      </details>
+      <details>
+        <summary>Windows shows a warning during install.</summary>
+        <div class="faq-a">The app isn't code-signed (it's an indie project), so SmartScreen may warn you. Click "More info → Run anyway" to install. The source is public if you'd rather inspect or build it yourself.</div>
+      </details>
+      <details>
+        <summary>Where do the quotes come from?</summary>
+        <div class="faq-a">Korean stocks from Naver Finance, US stocks from Yahoo Finance — public data, refreshed every 5 seconds during market hours and every 60 seconds after close.</div>
+      </details>
+      <details>
+        <summary>Does it work on a corporate PC?</summary>
+        <div class="faq-a">Yes. It uses the system proxy and certificates, so it works on corporate networks. You do need permission to install software.</div>
+      </details>
+      <details>
+        <summary>Is there a Mac version?</summary>
+        <div class="faq-a">Windows 10/11 only for now. No Mac plans yet.</div>
+      </details>
     </div>
   </section>
 
@@ -174,5 +206,29 @@
       </div>
     </div>
   </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "Is Stock Peek free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. No ads, payments, or sign-up. It is an open-source personal project with the full code on GitHub."}},
+      {"@type": "Question", "name": "Why does Windows show a SmartScreen warning?", "acceptedAnswer": {"@type": "Answer", "text": "The app is not code-signed, so SmartScreen may warn. Click More info, then Run anyway. The source is public for inspection."}},
+      {"@type": "Question", "name": "Where do the stock quotes come from?", "acceptedAnswer": {"@type": "Answer", "text": "Korean stocks from Naver Finance and US stocks from Yahoo Finance, refreshed every 5 seconds during market hours."}},
+      {"@type": "Question", "name": "Does it work on a corporate PC?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, it uses the system proxy and certificates so it works on corporate networks. Install permission is required."}},
+      {"@type": "Question", "name": "Is there a Mac version?", "acceptedAnswer": {"@type": "Answer", "text": "Windows 10/11 only for now."}}
+    ]
+  }
+  </script>
+  <script>
+  (function () {
+    var el = document.getElementById('appVer');
+    if (!el) return;
+    fetch('https://api.github.com/repos/sngmng6506/stock-peek/releases/latest')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.tag_name) el.textContent = j.tag_name; })
+      .catch(function () {});
+  })();
+  </script>
 </body>
 </html>
