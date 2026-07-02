@@ -684,26 +684,6 @@ body,
   object-fit: contain;
 }
 
-.donate-placeholder {
-  font-size: 11px;
-  color: rgba(235, 235, 245, 0.5);
-  text-align: center;
-  padding: 24px 8px;
-  line-height: 1.5;
-}
-
-.donate-placeholder code {
-  font-size: 11px;
-  padding: 1px 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 3px;
-}
-
-.donate-hint {
-  font-size: 11px;
-  color: rgba(235, 235, 245, 0.45);
-}
-
 .about {
   display: flex;
   flex-direction: column;
