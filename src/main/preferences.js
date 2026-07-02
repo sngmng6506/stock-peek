@@ -19,10 +19,6 @@ export function markWelcomeShown() {
   store.set('welcomeShown', true)
 }
 
-export function resetWelcome() {
-  store.set('welcomeShown', false)
-}
-
 export function getDockPosition() {
   return store.get('dockPosition', { edge: 'right', y: 100, displayId: null })
 }
