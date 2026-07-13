@@ -1,7 +1,7 @@
 # 몰래주식 (Stock Peek)
 
 [![Download](https://img.shields.io/github/v/release/sngmng6506/stock-peek?label=download&style=flat-square)](https://github.com/sngmng6506/stock-peek/releases/latest)
-[![License](https://img.shields.io/badge/license-BSL-blue?style=flat-square)](#라이선스)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
 화면 가장자리에 마우스만 가져가면 관심 종목 시세가 슬라이드로 나타나는 Windows 데스크톱 위젯. 한국·미국 주식 지원.
 
@@ -21,11 +21,11 @@
 - 화면 가장자리 hover → 패널 슬라이드 인, 벗어나면 사라짐
 - 한국 종목 (네이버 금융) + 미국 종목 (Yahoo Finance)
 - 종목명·티커로 검색해서 추가, 보유 수량·평단가 입력 시 평가손익 표시
-- 1거래일 sparkline 차트
+- 최근 3개월 일봉 sparkline 차트
 - 드래그로 순서 변경 / 좌·우 모서리 도킹 / 멀티모니터 지원
 - 한국어·English (OS 언어 자동 감지 + 설정에서 전환)
 - 트레이 아이콘 + 윈도우 시작 시 자동 실행
-- 장 시간 5초 / 장 외 60초 적응형 갱신
+- 장중 5초 / 장외 60초 적응형 갱신
 - 네트워크 끊김 시 마지막 가격 유지
 
 ## 개발
@@ -134,7 +134,7 @@ Electron 메인 프로세스는 `net.fetch`로 시스템 프록시/인증서를 
 
 ## 라이선스
 
-BSL.
+[MIT License](LICENSE)
 
 ## 문의
 
