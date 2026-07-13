@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Peek Latest Version and Release Notes — Windows Stock Widget</title>
+  <meta name="description" content="See the latest Stock Peek Windows version, release date, changes, automatic update behavior, and SHA-256 installer verification steps." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <link rel="canonical" href="https://stock-peek.com/en/releases/" />
+  <link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
+  <link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
+  <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Stock Peek" />
+  <meta property="og:title" content="Stock Peek Latest Version and Release Notes" />
+  <meta property="og:description" content="Check the latest installer, release date, changes, and file verification steps." />
+  <meta property="og:url" content="https://stock-peek.com/en/releases/" />
+  <meta property="og:image" content="https://stock-peek.com/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Stock Peek Latest Version and Release Notes" />
+  <meta name="twitter:description" content="Latest installer, release date, changes, and file verification steps." />
+  <meta name="twitter:image" content="https://stock-peek.com/og.png" />
+  <link rel="stylesheet" href="../../style.css" />
+  <style>
+    .doc { max-width: 860px; margin: 0 auto; padding: 72px 28px 96px; }
+    .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 30px; }
+    .breadcrumb a { text-decoration: underline; text-underline-offset: 3px; }
+    .doc h1 { font-size: clamp(36px, 6vw, 58px); line-height: 1.08; letter-spacing: -0.04em; margin-bottom: 20px; }
+    .lead { font-size: 18px; line-height: 1.75; color: var(--ink-2); margin-bottom: 38px; }
+    .release-card { border: 1.5px solid var(--line); padding: 26px; background: var(--paper-2); margin: 28px 0 46px; }
+    .release-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline; margin-bottom: 14px; }
+    .release-version { font: 700 24px/1.2 'Space Mono', monospace; }
+    .release-date { color: var(--ink-3); font-size: 14px; }
+    .release-note { color: var(--ink-2); line-height: 1.75; white-space: pre-wrap; }
+    .doc section { padding: 34px 0; border-top: 1px solid var(--line-soft); }
+    .doc h2 { font-size: 27px; letter-spacing: -0.025em; margin-bottom: 16px; }
+    .doc p, .doc li { color: var(--ink-2); font-size: 16px; line-height: 1.75; }
+    .doc ul, .doc ol { padding-left: 22px; display: grid; gap: 9px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .release-list { display: grid; gap: 14px; margin-top: 18px; }
+    .release-item { border-top: 1px solid var(--line-soft); padding-top: 14px; }
+    .release-item a { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+    code { font-family: 'Space Mono', monospace; background: var(--paper-2); padding: 2px 5px; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://stock-peek.com/en/releases/#webpage",
+        "url": "https://stock-peek.com/en/releases/",
+        "name": "Stock Peek Latest Version and Release Notes",
+        "description": "Latest Windows installer, changes, automatic update behavior, and file verification instructions for Stock Peek.",
+        "inLanguage": "en",
+        "dateModified": "2026-07-13",
+        "isPartOf": { "@id": "https://stock-peek.com/#website" },
+        "about": { "@id": "https://stock-peek.com/#software" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://stock-peek.com/en/releases/#breadcrumb",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Stock Peek", "item": "https://stock-peek.com/en" },
+          { "@type": "ListItem", "position": 2, "name": "Release notes", "item": "https://stock-peek.com/en/releases/" }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/en" class="brand"><span class="brand-mark">SP</span><span class="brand-name">Stock Peek</span></a>
+      <div class="nav-right">
+        <a href="/en/guide/" class="muted">Guide</a>
+        <a href="/en/privacy/" class="muted">Privacy</a>
+        <a href="/releases/" class="lang" lang="ko">한국어</a>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="doc">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/en">Stock Peek</a> / Release notes</nav>
+    <h1>Latest version and release notes</h1>
+    <p class="lead">This page lists the current Windows installer and recent changes. Stock Peek is distributed through GitHub Releases and also checks for updates from inside the app.</p>
+
+    <article class="release-card" aria-labelledby="latest-heading">
+      <div class="release-meta">
+        <h2 id="latest-heading" class="release-version">Latest version <span id="appVer">v1.6.2</span></h2>
+        <span id="releaseDate" class="release-date">Available from GitHub Releases</span>
+      </div>
+      <p id="latestNote" class="release-note">This Windows 10/11 release supports Korean and US watchlist quotes, three-month charts, portfolio P&amp;L, multi-monitor placement, and automatic updates.</p>
+      <div class="actions">
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Latest installer</a>
+        <a id="releaseLink" href="https://github.com/sngmng6506/stock-peek/releases/latest" class="btn-dl" style="background:transparent;color:var(--ink)">View GitHub release</a>
+      </div>
+    </article>
+
+    <section>
+      <h2>How to verify the installer</h2>
+      <p>When available, each release includes <code>SHA256SUMS.txt</code>. Compare the SHA-256 hash of the installer with the value in that file to confirm that the download was not modified.</p>
+      <ol>
+        <li>Download the installer and <code>SHA256SUMS.txt</code> from the latest GitHub release.</li>
+        <li>Run <code>Get-FileHash .\stock-peek-setup.exe -Algorithm SHA256</code> in Windows PowerShell.</li>
+        <li>Confirm that the printed hash matches the value in <code>SHA256SUMS.txt</code>.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Automatic updates</h2>
+      <p>The installed app checks GitHub Releases when it starts and approximately once every 24 hours afterward. When an update is available, it is downloaded and can be installed when the user chooses or when the app exits.</p>
+    </section>
+
+    <section>
+      <h2>Requirements and notes</h2>
+      <ul>
+        <li>Supported operating systems: Windows 10 and Windows 11</li>
+        <li>An internet connection is required. Corporate security policy or install permissions may restrict use.</li>
+        <li>Because the independent app is not code-signed, Windows SmartScreen may display a notice.</li>
+        <li>Displayed quotes are not official execution data or investment advice.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Recent releases</h2>
+      <div id="releaseList" class="release-list">
+        <p>See the complete history on <a href="https://github.com/sngmng6506/stock-peek/releases">GitHub Releases</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="/en">Home</a><a href="/en/guide/">Product guide</a><a href="/en/privacy/">Privacy</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a></div></div>
+  </footer>
+
+  <script>
+  (function () {
+    fetch('https://api.github.com/repos/sngmng6506/stock-peek/releases?per_page=10')
+      .then(function (response) { return response.ok ? response.json() : []; })
+      .then(function (releases) {
+        if (!Array.isArray(releases) || releases.length === 0) return;
+        var latest = releases[0];
+        var version = document.getElementById('appVer');
+        var date = document.getElementById('releaseDate');
+        var note = document.getElementById('latestNote');
+        var link = document.getElementById('releaseLink');
+        if (version && latest.tag_name) version.textContent = latest.tag_name;
+        if (date && latest.published_at) date.textContent = new Date(latest.published_at).toLocaleDateString('en-US');
+        if (note && latest.body) note.textContent = latest.body;
+        if (link && latest.html_url) link.href = latest.html_url;
+
+        var list = document.getElementById('releaseList');
+        if (!list) return;
+        list.textContent = '';
+        releases.forEach(function (release) {
+          var item = document.createElement('article');
+          item.className = 'release-item';
+          var anchor = document.createElement('a');
+          anchor.href = release.html_url;
+          anchor.textContent = release.name || release.tag_name;
+          anchor.target = '_blank';
+          anchor.rel = 'noopener';
+          var meta = document.createElement('p');
+          var published = release.published_at ? new Date(release.published_at).toLocaleDateString('en-US') : 'Unknown release date';
+          meta.textContent = release.tag_name + ' · ' + published;
+          item.appendChild(anchor);
+          item.appendChild(meta);
+          list.appendChild(item);
+        });
+      })
+      .catch(function () {});
+  })();
+  </script>
+</body>
+</html>
