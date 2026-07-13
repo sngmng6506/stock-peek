@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>몰래주식 — 데스크톱 주식 시세 위젯 (한국·미국 무료)</title>
-  <meta name="description" content="화면 오른쪽 끝에 마우스만 가져가면 한국·미국 관심 종목 시세와 평가손익이 슬라이드로 나타나는 무료 Windows 데스크톱 위젯." />
-  <meta name="keywords" content="데스크톱 주식 위젯, 주식 시세 위젯, 윈도우 주식 알림, 직장인 주식, 몰래 주식 보기, 한국 주식, 미국 주식, 코스피, 코스닥, sparkline" />
+  <meta name="description" content="화면 오른쪽 끝으로 마우스를 가져가면 한국·미국 관심 종목의 시세와 평가손익이 나타나는 무료 Windows 데스크톱 위젯." />
+  <meta name="keywords" content="데스크톱 주식 위젯, 주식 시세 위젯, 윈도우 주식 알림, 직장인 주식, 몰래 주식 보기, 한국 주식, 미국 주식, 코스피, 코스닥, 미니 차트" />
   <meta name="author" content="sngmng6506" />
   <link rel="canonical" href="https://stock-peek.com/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
@@ -16,14 +16,14 @@
   <meta property="og:locale" content="ko_KR" />
   <meta property="og:site_name" content="몰래주식" />
   <meta property="og:title" content="몰래주식 — 데스크톱 주식 시세 위젯" />
-  <meta property="og:description" content="화면 끝에 마우스만 가져가면 한국·미국 관심 종목 시세가 슬라이드. 무료 Windows 위젯." />
+  <meta property="og:description" content="화면 끝으로 마우스를 가져가면 한국·미국 관심 종목의 시세가 나타나는 무료 Windows 위젯." />
   <meta property="og:url" content="https://stock-peek.com/" />
   <meta property="og:image" content="https://stock-peek.com/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="몰래주식 — 데스크톱 주식 시세 위젯" />
-  <meta name="twitter:description" content="마우스만 화면 끝으로 — 한국·미국 관심 종목 시세를 슬라이드로." />
+  <meta name="twitter:description" content="마우스만 화면 끝으로 — 한국·미국 관심 종목 시세를 빠르게 확인하세요." />
   <meta name="twitter:image" content="https://stock-peek.com/og.png" />
   <script type="application/ld+json">
   {
@@ -31,7 +31,7 @@
     "@type": "SoftwareApplication",
     "name": "몰래주식",
     "alternateName": "Stock Peek",
-    "description": "화면 가장자리 hover로 한국·미국 관심 종목 시세와 평가손익을 보여주는 Windows 데스크톱 위젯.",
+    "description": "화면 가장자리로 마우스를 가져가면 한국·미국 관심 종목의 시세와 평가손익을 보여주는 Windows 데스크톱 위젯.",
     "url": "https://stock-peek.com/",
     "image": "https://stock-peek.com/og.png",
     "operatingSystem": "Windows 10, Windows 11",
@@ -45,12 +45,12 @@
     "featureList": [
       "한국 주식 시세 조회",
       "미국 주식 시세 조회",
-      "최근 3개월 일봉 sparkline",
+      "최근 3개월 일봉 미니 차트",
       "평가손익 표시",
       "드래그앤드롭 종목 순서 변경",
-      "멀티모니터 좌·우 도킹",
-      "시스템 트레이와 자동 시작",
-      "마우스 hover 트리거"
+      "멀티모니터 좌·우 배치",
+      "시스템 트레이 상주와 자동 시작",
+      "화면 가장자리 마우스 감지"
     ]
   }
   </script>
@@ -80,7 +80,7 @@
         <div class="hero-copy">
           <div class="hero-tag">WINDOWS 주식 시세 위젯 · 무료 · 광고 없음</div>
           <h1>시세는 몰래,<br />마우스만 <span class="down">살짝.</span></h1>
-          <p class="hero-sub">일하다가, 회의 중에도. 화면 오른쪽 끝에 마우스를 가져가면 관심 종목 시세와 평가손익이 나타나고, 벗어나면 조용히 사라집니다.</p>
+          <p class="hero-sub">일할 때도, 회의 중에도. 화면 오른쪽 끝으로 마우스를 가져가면 관심 종목의 시세와 평가손익이 나타나고, 커서를 옮기면 조용히 사라집니다.</p>
           <div class="hero-cta">
             <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">다운로드 <span class="sub">.exe / Win 10·11</span></a>
             <span class="hero-meta"><span id="appVer">v1.6.2</span> · 한국 + 미국 · <a href="#install">설치 안내</a></span>
@@ -112,31 +112,31 @@
 
     <section class="features" id="how">
       <div class="wrap">
-        <div class="feat"><div class="feat-no">01</div><div class="feat-body"><h3>마우스만 살짝</h3><p>단축키도, 클릭도 없습니다. 화면 오른쪽 가장자리에 커서를 가져가면 패널이 나타나고, 벗어나면 사라집니다. 왼쪽 끝이나 다른 모니터로 옮겨 붙일 수도 있어요.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="1" width="138" height="74" fill="none" stroke="var(--ink)" stroke-width="1.5"/><rect x="133" y="1" width="6" height="74" fill="var(--ink)"/><rect x="92" y="12" width="41" height="52" fill="var(--panel)"/><path d="M78 34L78 47L81.6 43.7L83.9 49L86.2 48L83.9 42.8L88.4 42.6L78 34Z" fill="#F7F5F0" stroke="var(--ink)" stroke-width="1.1"/></svg></div></div>
-        <div class="feat"><div class="feat-no">02</div><div class="feat-body"><h3>한국 + 미국, 한 곳에서</h3><p>코스피·코스닥부터 NYSE·나스닥까지. 종목명이나 티커로 검색해 추가하고, 보유 수량과 평단가를 넣으면 평가손익도 함께 보여줍니다.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="4" y="12" width="62" height="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="35" y="28" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold">005930</text><rect x="74" y="12" width="62" height="24" fill="var(--ink)"/><text x="105" y="28" font-family="monospace" font-size="11" fill="var(--paper)" text-anchor="middle" font-weight="bold">NVDA</text></svg></div></div>
-        <div class="feat"><div class="feat-no">03</div><div class="feat-body"><h3>최근 3개월 흐름</h3><p>각 종목의 최근 3개월 일봉을 작은 sparkline으로 보여줍니다. 장이 끝난 뒤나 주말에도 마지막 차트와 가격을 유지합니다.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><polyline points="6,54 20,48 34,52 48,40 62,44 76,30 90,34 104,22 118,26 134,14" fill="none" stroke="var(--up)" stroke-width="2"/><polyline points="6,62 24,64 42,60 60,66 78,63 96,68 114,66 134,70" fill="none" stroke="var(--down)" stroke-width="1.5" opacity="0.7"/></svg></div></div>
-        <div class="feat"><div class="feat-no">04</div><div class="feat-body"><h3>켜두면 잊게 됩니다</h3><p>시스템 트레이에 조용히 머무르고 Windows 시작 시 자동 실행할 수 있습니다. 필요할 때만 나타나므로 작업 공간을 차지하지 않습니다.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="50" width="138" height="25" fill="var(--ink)"/><rect x="119" y="56" width="13" height="13" fill="none" stroke="#EDEAE3" stroke-width="1.5"/><text x="125.5" y="66" font-family="monospace" font-size="7" fill="#EDEAE3" text-anchor="middle" font-weight="bold">SP</text></svg></div></div>
+        <div class="feat"><div class="feat-no">01</div><div class="feat-body"><h3>마우스만 살짝</h3><p>단축키도, 클릭도 필요 없습니다. 화면 가장자리로 커서를 가져가면 패널이 나타나고, 커서를 옮기면 다시 사라집니다. 패널은 화면 왼쪽이나 다른 모니터에도 배치할 수 있습니다.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="1" width="138" height="74" fill="none" stroke="var(--ink)" stroke-width="1.5"/><rect x="133" y="1" width="6" height="74" fill="var(--ink)"/><rect x="92" y="12" width="41" height="52" fill="var(--panel)"/><path d="M78 34L78 47L81.6 43.7L83.9 49L86.2 48L83.9 42.8L88.4 42.6L78 34Z" fill="#F7F5F0" stroke="var(--ink)" stroke-width="1.1"/></svg></div></div>
+        <div class="feat"><div class="feat-no">02</div><div class="feat-body"><h3>한국과 미국 주식을 한곳에서</h3><p>코스피·코스닥부터 NYSE·나스닥까지 지원합니다. 종목명이나 티커를 검색해 관심 종목에 추가하고, 보유 수량과 평균 매입가를 입력하면 평가손익도 함께 확인할 수 있습니다.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="4" y="12" width="62" height="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="35" y="28" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold">005930</text><rect x="74" y="12" width="62" height="24" fill="var(--ink)"/><text x="105" y="28" font-family="monospace" font-size="11" fill="var(--paper)" text-anchor="middle" font-weight="bold">NVDA</text></svg></div></div>
+        <div class="feat"><div class="feat-no">03</div><div class="feat-body"><h3>최근 3개월 흐름</h3><p>최근 3개월의 일별 주가 흐름을 작은 차트로 한눈에 확인할 수 있습니다. 장이 끝난 뒤나 주말에도 마지막 차트와 가격을 유지합니다.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><polyline points="6,54 20,48 34,52 48,40 62,44 76,30 90,34 104,22 118,26 134,14" fill="none" stroke="var(--up)" stroke-width="2"/><polyline points="6,62 24,64 42,60 60,66 78,63 96,68 114,66 134,70" fill="none" stroke="var(--down)" stroke-width="1.5" opacity="0.7"/></svg></div></div>
+        <div class="feat"><div class="feat-no">04</div><div class="feat-body"><h3>켜두고 잊어도 됩니다</h3><p>시스템 트레이에 조용히 머무르며, 윈도우를 켤 때 자동으로 실행되도록 설정할 수 있습니다. 필요할 때만 나타나므로 작업 공간을 차지하지 않습니다.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="50" width="138" height="25" fill="var(--ink)"/><rect x="119" y="56" width="13" height="13" fill="none" stroke="#EDEAE3" stroke-width="1.5"/><text x="125.5" y="66" font-family="monospace" font-size="7" fill="#EDEAE3" text-anchor="middle" font-weight="bold">SP</text></svg></div></div>
       </div>
     </section>
 
     <section class="steps" id="start">
       <div class="wrap">
-        <div class="steps-head"><div><div class="section-kicker">HOW IT WORKS</div><h2 class="section-title">사용법은 세 단계</h2></div><p class="steps-note">복잡한 계정 연결이나 증권사 로그인 없이, 관심 종목만 추가하면 바로 사용할 수 있습니다.</p></div>
+        <div class="steps-head"><div><div class="section-kicker">HOW IT WORKS</div><h2 class="section-title">사용법은 세 단계</h2></div><p class="steps-note">복잡한 계정 연결이나 증권사 로그인 없이 관심 종목만 추가하면 바로 사용할 수 있습니다.</p></div>
         <div class="steps-grid">
-          <article class="step"><div class="step-no">STEP 01</div><h3>설치하기</h3><p>최신 Windows 설치 파일을 내려받아 실행합니다. 설치 후 앱은 시스템 트레이에서 실행됩니다.</p></article>
-          <article class="step"><div class="step-no">STEP 02</div><h3>관심 종목 추가</h3><p>종목명이나 티커를 검색해 추가하고, 필요하면 보유 수량과 평단가를 입력합니다.</p></article>
-          <article class="step"><div class="step-no">STEP 03</div><h3>화면 끝에 마우스 올리기</h3><p>설정한 화면 가장자리로 커서를 이동하면 패널이 나타납니다. 벗어나면 자동으로 숨겨집니다.</p></article>
+          <article class="step"><div class="step-no">STEP 01</div><h3>설치하기</h3><p>최신 Windows 설치 파일을 내려받아 실행합니다. 설치가 끝나면 앱이 실행되어 시스템 트레이에 상주합니다.</p></article>
+          <article class="step"><div class="step-no">STEP 02</div><h3>관심 종목 추가</h3><p>종목명이나 티커를 검색해 추가하고, 필요하면 보유 수량과 평균 매입가를 입력합니다.</p></article>
+          <article class="step"><div class="step-no">STEP 03</div><h3>화면 끝으로 마우스 가져가기</h3><p>앱에서 지정한 화면 가장자리로 커서를 이동하면 패널이 나타납니다. 커서를 옮기면 자동으로 숨겨집니다.</p></article>
         </div>
       </div>
     </section>
 
     <section class="privacy">
       <div class="wrap privacy-grid">
-        <div><div class="section-kicker">SIMPLE & OPEN</div><h2 class="section-title">필요한 것만,<br />투명하게.</h2></div>
+        <div><div class="section-kicker">SIMPLE & OPEN</div><h2 class="section-title">시세만 간단하게,<br />코드는 투명하게.</h2></div>
         <div class="privacy-list">
-          <div class="privacy-item"><div class="privacy-icon">01</div><div><strong>증권사 로그인 없음</strong><p>계좌나 주문 기능과 연결하지 않습니다. 관심 종목 시세를 확인하는 데 집중합니다.</p></div></div>
-          <div class="privacy-item"><div class="privacy-icon">02</div><div><strong>회원가입과 광고 없음</strong><p>계정을 만들거나 광고를 볼 필요 없이 설치 후 바로 사용할 수 있습니다.</p></div></div>
-          <div class="privacy-item"><div class="privacy-icon">03</div><div><strong>MIT 오픈소스</strong><p>전체 소스 코드를 GitHub에서 확인하고, MIT 라이선스에 따라 사용·수정할 수 있습니다.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">01</div><div><strong>증권사 로그인 없음</strong><p>증권사 계좌나 주문 기능을 연결하지 않습니다. 관심 종목의 시세만 간단히 확인할 수 있습니다.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">02</div><div><strong>회원가입도 광고도 없음</strong><p>계정을 만들거나 광고를 볼 필요 없이 설치 후 바로 사용할 수 있습니다.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">03</div><div><strong>MIT 오픈소스</strong><p>전체 소스 코드를 GitHub에서 확인하고, MIT 라이선스에 따라 자유롭게 사용하고 수정할 수 있습니다.</p></div></div>
         </div>
       </div>
     </section>
@@ -145,15 +145,15 @@
       <div class="wrap">
         <div class="section-kicker">FAQ</div><h2>자주 묻는 질문</h2>
         <details><summary>정말 무료인가요?</summary><div class="faq-a">네. 광고도, 결제도, 회원가입도 없습니다. 전체 코드는 GitHub에 공개되어 있으며 MIT 라이선스로 배포합니다.</div></details>
-        <details><summary>설치할 때 Windows 경고가 떠요.</summary><div class="faq-a">개인 개발 앱이라 코드 서명 인증서가 없어 SmartScreen 경고가 표시될 수 있습니다. “추가 정보 → 실행”을 선택하면 설치할 수 있으며, GitHub에서 소스를 직접 확인하거나 빌드할 수도 있습니다.</div></details>
-        <details><summary>시세는 어디서 가져오나요?</summary><div class="faq-a">한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터를 사용합니다. 장중에는 약 5초, 장외에는 약 60초 간격으로 데이터를 확인합니다. 거래소와 데이터 제공처에 따라 지연될 수 있습니다.</div></details>
-        <details><summary>회사 PC에서도 되나요?</summary><div class="faq-a">시스템 프록시와 인증서를 사용하도록 구성되어 사내망에서도 동작하도록 설계했습니다. 다만 회사 정책과 설치 권한에 따라 사용할 수 없을 수 있습니다.</div></details>
+        <details><summary>설치할 때 Windows 경고가 떠요.</summary><div class="faq-a">개인이 개발한 앱이라 코드 서명 인증서가 없어 Windows SmartScreen 경고가 표시될 수 있습니다. “추가 정보”를 누른 뒤 “실행”을 선택하면 설치할 수 있으며, GitHub에서 소스를 직접 확인하거나 빌드할 수도 있습니다.</div></details>
+        <details><summary>시세는 어디서 가져오나요?</summary><div class="faq-a">한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터를 사용합니다. 장중에는 약 5초마다, 장 마감 후에는 약 60초마다 시세를 갱신합니다. 거래소와 데이터 제공처에 따라 실제 시세가 지연될 수 있습니다.</div></details>
+        <details><summary>회사 PC에서도 되나요?</summary><div class="faq-a">시스템 프록시와 인증서를 사용하므로 사내망 환경에서도 동작할 수 있습니다. 다만 회사 보안 정책이나 설치 권한에 따라 사용이 제한될 수 있습니다.</div></details>
         <details><summary>Mac은 지원하나요?</summary><div class="faq-a">현재는 Windows 10/11 전용입니다.</div></details>
       </div>
     </section>
 
     <section class="band">
-      <div class="wrap"><h2>지금 조용히 켜두세요.</h2><p>회원가입 없이 설치하고, 필요할 때 화면 끝에서 바로 확인하세요.</p><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">다운로드 <span class="sub">.exe / Win 10·11</span></a></div>
+      <div class="wrap"><h2>지금 조용히 켜두세요.</h2><p>회원가입 없이 설치하고, 필요할 때 마우스만 화면 끝으로 가져가세요.</p><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">다운로드 <span class="sub">.exe / Win 10·11</span></a></div>
     </section>
   </main>
 
@@ -165,7 +165,7 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
     {"@type":"Question","name":"몰래주식은 무료인가요?","acceptedAnswer":{"@type":"Answer","text":"광고, 결제, 회원가입 없이 무료이며 MIT 라이선스 오픈소스입니다."}},
-    {"@type":"Question","name":"설치할 때 Windows SmartScreen 경고가 뜨는 이유는?","acceptedAnswer":{"@type":"Answer","text":"개인 개발 앱이라 코드 서명 인증서가 없기 때문입니다. 추가 정보, 실행을 선택해 설치할 수 있습니다."}},
+    {"@type":"Question","name":"설치할 때 Windows SmartScreen 경고가 뜨는 이유는?","acceptedAnswer":{"@type":"Answer","text":"개인이 개발한 앱이라 코드 서명 인증서가 없기 때문입니다. 추가 정보를 누른 뒤 실행을 선택하면 설치할 수 있습니다."}},
     {"@type":"Question","name":"주식 시세는 어디서 가져오나요?","acceptedAnswer":{"@type":"Answer","text":"한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance 데이터를 사용하며 데이터 제공처에 따라 지연될 수 있습니다."}},
     {"@type":"Question","name":"회사 PC에서도 사용할 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"시스템 프록시와 인증서를 사용하도록 설계했지만 회사 정책과 설치 권한에 따라 제한될 수 있습니다."}},
     {"@type":"Question","name":"Mac을 지원하나요?","acceptedAnswer":{"@type":"Answer","text":"현재 Windows 10과 Windows 11만 지원합니다."}}
