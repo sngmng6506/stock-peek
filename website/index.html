@@ -6,7 +6,8 @@
   <title>몰래주식 — 데스크톱 주식 시세 위젯 (한국·미국 무료)</title>
   <meta name="description" content="화면 오른쪽 끝으로 마우스를 가져가면 한국·미국 관심 종목의 시세와 평가손익이 나타나는 무료 Windows 데스크톱 위젯." />
   <meta name="keywords" content="데스크톱 주식 위젯, 주식 시세 위젯, 윈도우 주식 알림, 직장인 주식, 몰래 주식 보기, 한국 주식, 미국 주식, 코스피, 코스닥, 미니 차트" />
-  <meta name="author" content="sngmng6506" />
+  <meta name="author" content="Sangmyeong Lee" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://stock-peek.com/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
   <link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
@@ -28,29 +29,67 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "몰래주식",
-    "alternateName": "Stock Peek",
-    "description": "화면 가장자리로 마우스를 가져가면 한국·미국 관심 종목의 시세와 평가손익을 보여주는 Windows 데스크톱 위젯.",
-    "url": "https://stock-peek.com/",
-    "image": "https://stock-peek.com/og.png",
-    "operatingSystem": "Windows 10, Windows 11",
-    "applicationCategory": "FinanceApplication",
-    "softwareVersion": "1.6.2",
-    "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
-    "license": "https://opensource.org/license/mit",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
-    "author": { "@type": "Person", "name": "Sangmyeong Lee", "email": "sngmng6506@gmail.com" },
-    "inLanguage": "ko",
-    "featureList": [
-      "한국 주식 시세 조회",
-      "미국 주식 시세 조회",
-      "최근 3개월 일봉 미니 차트",
-      "평가손익 표시",
-      "드래그앤드롭 종목 순서 변경",
-      "멀티모니터 좌·우 배치",
-      "시스템 트레이 상주와 자동 시작",
-      "화면 가장자리 마우스 감지"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://stock-peek.com/#website",
+        "url": "https://stock-peek.com/",
+        "name": "몰래주식",
+        "alternateName": "Stock Peek",
+        "inLanguage": ["ko", "en"],
+        "publisher": { "@id": "https://stock-peek.com/#author" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://stock-peek.com/#author",
+        "name": "Sangmyeong Lee",
+        "email": "sngmng6506@gmail.com",
+        "url": "https://github.com/sngmng6506",
+        "sameAs": ["https://github.com/sngmng6506"]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://stock-peek.com/#software",
+        "name": "몰래주식",
+        "alternateName": "Stock Peek",
+        "description": "화면 가장자리로 마우스를 가져가면 한국·미국 관심 종목의 시세와 평가손익을 보여주는 Windows 데스크톱 위젯.",
+        "url": "https://stock-peek.com/",
+        "image": "https://stock-peek.com/og.png",
+        "operatingSystem": "Windows 10, Windows 11",
+        "softwareRequirements": "Windows 10 또는 Windows 11과 인터넷 연결",
+        "applicationCategory": "FinanceApplication",
+        "softwareVersion": "1.6.2",
+        "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
+        "installUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
+        "releaseNotes": "https://stock-peek.com/releases/",
+        "license": "https://opensource.org/license/mit",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+        "author": { "@id": "https://stock-peek.com/#author" },
+        "sameAs": ["https://github.com/sngmng6506/stock-peek"],
+        "inLanguage": ["ko", "en"],
+        "featureList": [
+          "한국 주식 시세 조회",
+          "미국 주식 시세 조회",
+          "최근 3개월 일봉 미니 차트",
+          "평가손익 표시",
+          "드래그앤드롭 종목 순서 변경",
+          "멀티모니터 좌·우 배치",
+          "시스템 트레이 상주와 자동 시작",
+          "화면 가장자리 마우스 감지"
+        ],
+        "mainEntityOfPage": { "@id": "https://stock-peek.com/#webpage" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://stock-peek.com/#webpage",
+        "url": "https://stock-peek.com/",
+        "name": "몰래주식 — 데스크톱 주식 시세 위젯",
+        "description": "화면 끝에서 한국·미국 관심 종목의 시세와 평가손익을 확인하는 무료 Windows 위젯.",
+        "inLanguage": "ko",
+        "dateModified": "2026-07-13",
+        "isPartOf": { "@id": "https://stock-peek.com/#website" },
+        "about": { "@id": "https://stock-peek.com/#software" }
+      }
     ]
   }
   </script>
@@ -67,6 +106,7 @@
       <div class="nav-right">
         <a href="#how" class="muted">기능</a>
         <a href="#start" class="muted">사용법</a>
+        <a href="/guide/" class="muted">가이드</a>
         <a href="https://github.com/sngmng6506/stock-peek" class="muted" target="_blank" rel="noopener">GitHub</a>
         <a href="/en" class="lang" lang="en">EN</a>
         <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">다운로드</a>
@@ -83,7 +123,7 @@
           <p class="hero-sub">일할 때도, 회의 중에도. 화면 오른쪽 끝으로 마우스를 가져가면 관심 종목의 시세와 평가손익이 나타나고, 커서를 옮기면 조용히 사라집니다.</p>
           <div class="hero-cta">
             <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">다운로드 <span class="sub">.exe / Win 10·11</span></a>
-            <span class="hero-meta"><span id="appVer">v1.6.2</span> · 한국 + 미국 · <a href="#install">설치 안내</a></span>
+            <span class="hero-meta"><span id="appVer">v1.6.2</span> · 한국 + 미국 · <a href="/guide/#install">설치 안내</a></span>
           </div>
           <div class="trust-line" aria-label="제품 특징">
             <span>회원가입 없음</span><span>광고 없음</span><span>MIT 오픈소스</span>
@@ -151,6 +191,7 @@
         <details><summary>시세는 어디서 가져오나요?</summary><div class="faq-a">한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터를 사용합니다. 장중에는 약 5초마다, 장 마감 후에는 약 60초마다 시세를 갱신합니다. 거래소와 데이터 제공처에 따라 실제 시세가 지연될 수 있습니다.</div></details>
         <details><summary>회사 PC에서도 되나요?</summary><div class="faq-a">시스템 프록시와 인증서를 사용하므로 사내망 환경에서도 동작할 수 있습니다. 다만 회사 보안 정책이나 설치 권한에 따라 사용이 제한될 수 있습니다.</div></details>
         <details><summary>Mac은 지원하나요?</summary><div class="faq-a">현재는 Windows 10/11 전용입니다.</div></details>
+        <p style="margin-top:28px"><a href="/guide/"><strong>설치 방법과 지원 범위를 자세히 보기 →</strong></a></p>
       </div>
     </section>
 
@@ -160,19 +201,25 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 몰래주식 · Stock Peek</div><div class="foot-links"><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/PRIVACY.md" target="_blank" rel="noopener">개인정보 안내</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">커피 후원</a><a href="mailto:sngmng6506@gmail.com">문의</a><a href="/en">English</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 몰래주식 · Stock Peek</div><div class="foot-links"><a href="/guide/">제품 가이드</a><a href="/releases/">업데이트 내역</a><a href="/privacy/">개인정보 안내</a><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">커피 후원</a><a href="mailto:sngmng6506@gmail.com">문의</a><a href="/en">English</a></div></div>
     <p class="disclaimer">표시되는 시세는 투자 판단이나 주문 체결을 위한 공식 거래 데이터가 아닙니다. 데이터 제공처와 시장 상황에 따라 지연되거나 실제 거래 가격과 차이가 있을 수 있습니다.</p>
   </footer>
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-    {"@type":"Question","name":"몰래주식은 무료인가요?","acceptedAnswer":{"@type":"Answer","text":"광고, 결제, 회원가입 없이 무료이며 MIT 라이선스 오픈소스입니다."}},
-    {"@type":"Question","name":"몰래주식의 사용자 정보는 어디에 저장되나요?","acceptedAnswer":{"@type":"Answer","text":"관심 종목과 보유 정보, 앱 설정은 사용자 PC에 저장됩니다. 포트폴리오 한 줄 평 사용 시 무작위 식별자와 계산된 통계가 Worker로 전송됩니다."}},
-    {"@type":"Question","name":"설치할 때 Windows SmartScreen 경고가 뜨는 이유는?","acceptedAnswer":{"@type":"Answer","text":"개인이 개발한 앱이라 코드 서명 인증서가 없기 때문입니다. 추가 정보를 누른 뒤 실행을 선택하면 설치할 수 있습니다."}},
-    {"@type":"Question","name":"주식 시세는 어디서 가져오나요?","acceptedAnswer":{"@type":"Answer","text":"한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance 데이터를 사용하며 데이터 제공처에 따라 지연될 수 있습니다."}},
-    {"@type":"Question","name":"회사 PC에서도 사용할 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"시스템 프록시와 인증서를 사용하도록 설계했지만 회사 정책과 설치 권한에 따라 제한될 수 있습니다."}},
-    {"@type":"Question","name":"Mac을 지원하나요?","acceptedAnswer":{"@type":"Answer","text":"현재 Windows 10과 Windows 11만 지원합니다."}}
-  ]}
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://stock-peek.com/#faq",
+    "isPartOf": { "@id": "https://stock-peek.com/#webpage" },
+    "mainEntity": [
+      {"@type":"Question","name":"몰래주식은 무료인가요?","acceptedAnswer":{"@type":"Answer","text":"광고, 결제, 회원가입 없이 무료이며 MIT 라이선스 오픈소스입니다."}},
+      {"@type":"Question","name":"몰래주식의 사용자 정보는 어디에 저장되나요?","acceptedAnswer":{"@type":"Answer","text":"관심 종목과 보유 정보, 앱 설정은 사용자 PC에 저장됩니다. 포트폴리오 한 줄 평 사용 시 무작위 식별자와 계산된 통계가 Worker로 전송됩니다."}},
+      {"@type":"Question","name":"설치할 때 Windows SmartScreen 경고가 뜨는 이유는?","acceptedAnswer":{"@type":"Answer","text":"개인이 개발한 앱이라 코드 서명 인증서가 없기 때문입니다. 추가 정보를 누른 뒤 실행을 선택하면 설치할 수 있습니다."}},
+      {"@type":"Question","name":"주식 시세는 어디서 가져오나요?","acceptedAnswer":{"@type":"Answer","text":"한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance 데이터를 사용하며 데이터 제공처에 따라 지연될 수 있습니다."}},
+      {"@type":"Question","name":"회사 PC에서도 사용할 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"시스템 프록시와 인증서를 사용하도록 설계했지만 회사 정책과 설치 권한에 따라 제한될 수 있습니다."}},
+      {"@type":"Question","name":"Mac을 지원하나요?","acceptedAnswer":{"@type":"Answer","text":"현재 Windows 10과 Windows 11만 지원합니다."}}
+    ]
+  }
   </script>
   <script>
   (function () {
