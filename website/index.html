@@ -135,8 +135,9 @@
         <div><div class="section-kicker">SIMPLE & OPEN</div><h2 class="section-title">시세만 간단하게,<br />코드는 투명하게.</h2></div>
         <div class="privacy-list">
           <div class="privacy-item"><div class="privacy-icon">01</div><div><strong>증권사 로그인 없음</strong><p>증권사 계좌나 주문 기능을 연결하지 않습니다. 관심 종목의 시세만 간단히 확인할 수 있습니다.</p></div></div>
-          <div class="privacy-item"><div class="privacy-icon">02</div><div><strong>회원가입도 광고도 없음</strong><p>계정을 만들거나 광고를 볼 필요 없이 설치 후 바로 사용할 수 있습니다.</p></div></div>
-          <div class="privacy-item"><div class="privacy-icon">03</div><div><strong>MIT 오픈소스</strong><p>전체 소스 코드를 GitHub에서 확인하고, MIT 라이선스에 따라 자유롭게 사용하고 수정할 수 있습니다.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">02</div><div><strong>내 PC에 저장</strong><p>관심 종목, 보유 수량, 평균 매입가와 앱 설정은 사용자 PC에 저장됩니다.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">03</div><div><strong>회원가입도 광고도 없음</strong><p>계정을 만들거나 광고를 볼 필요 없이 설치 후 바로 사용할 수 있습니다.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">04</div><div><strong>MIT 오픈소스</strong><p>전체 소스 코드를 GitHub에서 확인하고, MIT 라이선스에 따라 자유롭게 사용하고 수정할 수 있습니다.</p></div></div>
         </div>
       </div>
     </section>
@@ -145,6 +146,7 @@
       <div class="wrap">
         <div class="section-kicker">FAQ</div><h2>자주 묻는 질문</h2>
         <details><summary>정말 무료인가요?</summary><div class="faq-a">네. 광고도, 결제도, 회원가입도 없습니다. 전체 코드는 GitHub에 공개되어 있으며 MIT 라이선스로 배포합니다.</div></details>
+        <details><summary>내 정보는 어디에 저장되나요?</summary><div class="faq-a">관심 종목, 보유 수량, 평균 매입가와 앱 설정은 사용자 PC에 저장됩니다. 다만 “포트폴리오 한 줄 평” 기능을 직접 사용할 때는 일일 사용 제한과 결과 생성을 위해 무작위 기기 식별자, 계산된 포트폴리오 통계, 선택 언어가 Stock Peek Worker로 전송됩니다. 증권사 계정 정보는 요청하지 않습니다.</div></details>
         <details><summary>설치할 때 Windows 경고가 떠요.</summary><div class="faq-a">개인이 개발한 앱이라 코드 서명 인증서가 없어 Windows SmartScreen 경고가 표시될 수 있습니다. “추가 정보”를 누른 뒤 “실행”을 선택하면 설치할 수 있으며, GitHub에서 소스를 직접 확인하거나 빌드할 수도 있습니다.</div></details>
         <details><summary>시세는 어디서 가져오나요?</summary><div class="faq-a">한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터를 사용합니다. 장중에는 약 5초마다, 장 마감 후에는 약 60초마다 시세를 갱신합니다. 거래소와 데이터 제공처에 따라 실제 시세가 지연될 수 있습니다.</div></details>
         <details><summary>회사 PC에서도 되나요?</summary><div class="faq-a">시스템 프록시와 인증서를 사용하므로 사내망 환경에서도 동작할 수 있습니다. 다만 회사 보안 정책이나 설치 권한에 따라 사용이 제한될 수 있습니다.</div></details>
@@ -158,13 +160,14 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 몰래주식 · Stock Peek</div><div class="foot-links"><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">커피 후원</a><a href="mailto:sngmng6506@gmail.com">문의</a><a href="/en">English</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 몰래주식 · Stock Peek</div><div class="foot-links"><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/PRIVACY.md" target="_blank" rel="noopener">개인정보 안내</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">커피 후원</a><a href="mailto:sngmng6506@gmail.com">문의</a><a href="/en">English</a></div></div>
     <p class="disclaimer">표시되는 시세는 투자 판단이나 주문 체결을 위한 공식 거래 데이터가 아닙니다. 데이터 제공처와 시장 상황에 따라 지연되거나 실제 거래 가격과 차이가 있을 수 있습니다.</p>
   </footer>
 
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
     {"@type":"Question","name":"몰래주식은 무료인가요?","acceptedAnswer":{"@type":"Answer","text":"광고, 결제, 회원가입 없이 무료이며 MIT 라이선스 오픈소스입니다."}},
+    {"@type":"Question","name":"몰래주식의 사용자 정보는 어디에 저장되나요?","acceptedAnswer":{"@type":"Answer","text":"관심 종목과 보유 정보, 앱 설정은 사용자 PC에 저장됩니다. 포트폴리오 한 줄 평 사용 시 무작위 식별자와 계산된 통계가 Worker로 전송됩니다."}},
     {"@type":"Question","name":"설치할 때 Windows SmartScreen 경고가 뜨는 이유는?","acceptedAnswer":{"@type":"Answer","text":"개인이 개발한 앱이라 코드 서명 인증서가 없기 때문입니다. 추가 정보를 누른 뒤 실행을 선택하면 설치할 수 있습니다."}},
     {"@type":"Question","name":"주식 시세는 어디서 가져오나요?","acceptedAnswer":{"@type":"Answer","text":"한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance 데이터를 사용하며 데이터 제공처에 따라 지연될 수 있습니다."}},
     {"@type":"Question","name":"회사 PC에서도 사용할 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"시스템 프록시와 인증서를 사용하도록 설계했지만 회사 정책과 설치 권한에 따라 제한될 수 있습니다."}},
