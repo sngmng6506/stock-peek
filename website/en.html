@@ -3,61 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Stock Peek — Desktop Stock Ticker Widget (KR & US, Free)</title>
-  <meta name="description" content="Hover at the right screen edge and Korean & US stock quotes slide in as a desktop widget. KOSPI, KOSDAQ, NASDAQ, NYSE. Free for Windows 10/11." />
+  <meta name="description" content="Move your mouse to the screen edge and Korean and US watchlist quotes, charts, and portfolio P&L slide in. A free Windows desktop widget." />
   <meta name="keywords" content="desktop stock widget, stock ticker widget, Windows stock app, Korean stocks, US stocks, KOSPI, KOSDAQ, NYSE, NASDAQ, sparkline" />
   <meta name="author" content="sngmng6506" />
   <link rel="canonical" href="https://stock-peek.com/en" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
   <link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
   <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
-
-  <meta name="naver-site-verification" content="3ca8cb70d6914d69849cad717dc26a1ab494b21c" />
-
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Stock Peek" />
   <meta property="og:title" content="Stock Peek — Desktop Stock Widget" />
-  <meta property="og:description" content="Hover at the screen edge — Korean & US stock quotes slide in. Free Windows widget." />
+  <meta property="og:description" content="Move to the screen edge and Korean and US watchlist quotes slide in. Free for Windows." />
   <meta property="og:url" content="https://stock-peek.com/en" />
   <meta property="og:image" content="https://stock-peek.com/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Stock Peek — Desktop Stock Widget" />
-  <meta name="twitter:description" content="Hover to the right edge — Korean & US quotes, sliding in." />
+  <meta name="twitter:description" content="Move to the screen edge — Korean and US watchlist quotes slide in." />
   <meta name="twitter:image" content="https://stock-peek.com/og.png" />
-
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "Stock Peek",
     "alternateName": "몰래주식",
-    "description": "A Windows desktop widget that shows Korean & US stock quotes when you hover at the right screen edge.",
-    "url": "https://stock-peek.com/",
+    "description": "A Windows desktop widget that reveals Korean and US watchlist quotes and portfolio P&L when you hover at the screen edge.",
+    "url": "https://stock-peek.com/en",
     "image": "https://stock-peek.com/og.png",
     "operatingSystem": "Windows 10, Windows 11",
     "applicationCategory": "FinanceApplication",
-    "softwareVersion": "1.6.0",
+    "softwareVersion": "1.6.2",
     "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
-    "author": { "@type": "Person", "name": "sngmng6506", "email": "sngmng6506@gmail.com" },
+    "license": "https://opensource.org/license/mit",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Sangmyeong Lee", "email": "sngmng6506@gmail.com" },
     "inLanguage": "en",
-    "featureList": [
-      "Korean stocks (KOSPI, KOSDAQ)",
-      "US stocks (NYSE, NASDAQ)",
-      "3-month daily sparkline",
-      "Drag-and-drop reordering",
-      "Multi-monitor edge docking",
-      "System tray + auto-start",
-      "Mouse-hover trigger"
-    ]
+    "featureList": ["Korean stocks","US stocks","3-month daily sparklines","Portfolio P&L","Drag-and-drop reordering","Multi-monitor edge docking","System tray and auto-start","Mouse-hover trigger"]
   }
   </script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -65,160 +51,111 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
-      <a href="/" class="brand"><span class="brand-mark">SP</span> Stock Peek</a>
+      <a href="/en" class="brand"><span class="brand-mark">SP</span><span class="brand-name">Stock Peek</span></a>
       <div class="nav-right">
         <a href="#how" class="muted">Features</a>
+        <a href="#start" class="muted">How it works</a>
         <a href="https://github.com/sngmng6506/stock-peek" class="muted" target="_blank" rel="noopener">GitHub</a>
-        <a href="/" class="lang">한국어</a>
+        <a href="/" class="lang" lang="ko">한국어</a>
         <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">Download</a>
       </div>
     </div>
   </nav>
 
-  <main class="wrap">
-    <section class="hero">
-      <div class="hero-copy">
-        <div class="hero-tag">WINDOWS · FREE · NO ADS</div>
-        <h1>Peek at prices,<br />just <span class="down">hover.</span></h1>
-        <p class="hero-sub">
-          Working, in a meeting, whatever. Move your mouse to the right edge
-          and your watchlist slides in — move away and it quietly disappears.
-        </p>
-        <div class="hero-cta">
-          <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">
-            Download <span class="sub">.exe / Win 10·11</span>
-          </a>
-          <span class="hero-meta"><span id="appVer">v1.6.2</span> · KR + US</span>
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="hero-tag">WINDOWS STOCK WIDGET · FREE · NO ADS</div>
+          <h1>Peek at prices,<br />just <span class="down">hover.</span></h1>
+          <p class="hero-sub">Working, in a meeting, or gaming. Move your mouse to the screen edge and your watchlist, charts, and portfolio P&amp;L slide in — move away and they quietly disappear.</p>
+          <div class="hero-cta">
+            <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Download <span class="sub">.exe / Win 10·11</span></a>
+            <span class="hero-meta"><span id="appVer">v1.6.2</span> · KR + US · <a href="#install">Install guide</a></span>
+          </div>
+          <div class="trust-line" aria-label="Product highlights"><span>No sign-up</span><span>No ads</span><span>MIT open source</span></div>
         </div>
-      </div>
 
-      <div class="demo" aria-hidden="true">
-        <div class="demo-hint">Move to the right edge →</div>
-        <div class="demo-edge"></div>
-        <svg class="demo-cursor" width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 2L2 18L6.5 13.8L9.4 20.5L12.3 19.2L9.4 12.7L15 12.5L2 2Z" fill="#F7F5F0" stroke="#17171A" stroke-width="1.4" stroke-linejoin="round"/></svg>
-        <div class="demo-panel">
-          <div class="dp-head"><span>WATCHLIST</span><span>+</span></div>
-          <div class="dp-row">
-            <div class="dp-line"><span class="dp-name">Samsung</span><span class="dp-chg up">+2.14%</span></div>
-            <div class="dp-line"><span class="dp-code">005930</span><span class="dp-price">80,200</span></div>
+        <div class="demo" aria-hidden="true">
+          <div class="demo-hint">Move to the right edge →</div>
+          <div class="demo-edge"></div>
+          <svg class="demo-cursor" width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L2 18L6.5 13.8L9.4 20.5L12.3 19.2L9.4 12.7L15 12.5L2 2Z" fill="#F7F5F0" stroke="#17171A" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <div class="demo-panel">
+            <div class="dp-head"><span>WATCHLIST</span><span>+</span></div>
+            <div class="dp-row">
+              <div class="dp-line"><span class="dp-name">Samsung</span><span class="dp-chg up">+2.14%</span></div>
+              <div class="dp-line"><span class="dp-code">005930</span><span class="dp-price">80,200</span></div>
+              <svg class="dp-spark" viewBox="0 0 180 22" preserveAspectRatio="none"><polyline points="0,18 20,15 38,17 58,10 78,12 100,6 122,9 145,3 180,5" fill="none" stroke="#4ADE9A" stroke-width="1.5"/></svg>
+              <div class="dp-profit"><span>P&amp;L</span><span>+₩42,300</span></div>
+            </div>
+            <div class="dp-row"><div class="dp-line"><span class="dp-name">SK Hynix</span><span class="dp-chg down">−0.86%</span></div><div class="dp-line"><span class="dp-code">000660</span><span class="dp-price">183,500</span></div></div>
+            <div class="dp-row"><div class="dp-line"><span class="dp-name">NVIDIA</span><span class="dp-chg up">+1.09%</span></div><div class="dp-line"><span class="dp-code">NVDA</span><span class="dp-price">$142.30</span></div></div>
+            <div class="dp-row"><div class="dp-line"><span class="dp-name">Apple</span><span class="dp-chg down">−0.42%</span></div><div class="dp-line"><span class="dp-code">AAPL</span><span class="dp-price">$228.10</span></div></div>
           </div>
-          <div class="dp-row">
-            <div class="dp-line"><span class="dp-name">SK Hynix</span><span class="dp-chg down">−0.86%</span></div>
-            <div class="dp-line"><span class="dp-code">000660</span><span class="dp-price">183,500</span></div>
-          </div>
-          <div class="dp-row">
-            <div class="dp-line"><span class="dp-name">NVIDIA</span><span class="dp-chg up">+1.09%</span></div>
-            <div class="dp-line"><span class="dp-code">NVDA</span><span class="dp-price">$142.30</span></div>
-          </div>
-          <div class="dp-row">
-            <div class="dp-line"><span class="dp-name">Apple</span><span class="dp-chg down">−0.42%</span></div>
-            <div class="dp-line"><span class="dp-code">AAPL</span><span class="dp-price">$228.10</span></div>
-          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="features" id="how">
+      <div class="wrap">
+        <div class="feat"><div class="feat-no">01</div><div class="feat-body"><h3>Just hover</h3><p>No shortcuts and no clicks. Move your cursor to the screen edge and the panel slides in; move away and it hides. You can dock it to the left edge or another monitor.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="1" width="138" height="74" fill="none" stroke="var(--ink)" stroke-width="1.5"/><rect x="133" y="1" width="6" height="74" fill="var(--ink)"/><rect x="92" y="12" width="41" height="52" fill="var(--panel)"/><path d="M78 34L78 47L81.6 43.7L83.9 49L86.2 48L83.9 42.8L88.4 42.6L78 34Z" fill="#F7F5F0" stroke="var(--ink)" stroke-width="1.1"/></svg></div></div>
+        <div class="feat"><div class="feat-no">02</div><div class="feat-body"><h3>Korea + US, together</h3><p>From KOSPI and KOSDAQ to NYSE and NASDAQ. Search by name or ticker, then add shares and average price to see portfolio profit and loss.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="4" y="12" width="62" height="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="35" y="28" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold">005930</text><rect x="74" y="12" width="62" height="24" fill="var(--ink)"/><text x="105" y="28" font-family="monospace" font-size="11" fill="var(--paper)" text-anchor="middle" font-weight="bold">NVDA</text></svg></div></div>
+        <div class="feat"><div class="feat-no">03</div><div class="feat-body"><h3>Three months at a glance</h3><p>Each stock includes a compact sparkline based on the last three months of daily prices. The latest chart and price remain visible after hours and on weekends.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><polyline points="6,54 20,48 34,52 48,40 62,44 76,30 90,34 104,22 118,26 134,14" fill="none" stroke="var(--up)" stroke-width="2"/><polyline points="6,62 24,64 42,60 60,66 78,63 96,68 114,66 134,70" fill="none" stroke="var(--down)" stroke-width="1.5" opacity="0.7"/></svg></div></div>
+        <div class="feat"><div class="feat-no">04</div><div class="feat-body"><h3>Set it and forget it</h3><p>It sits quietly in the system tray and can launch with Windows. It appears only when you reach for it, so it never occupies your workspace.</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="50" width="138" height="25" fill="var(--ink)"/><rect x="119" y="56" width="13" height="13" fill="none" stroke="#EDEAE3" stroke-width="1.5"/><text x="125.5" y="66" font-family="monospace" font-size="7" fill="#EDEAE3" text-anchor="middle" font-weight="bold">SP</text></svg></div></div>
+      </div>
+    </section>
+
+    <section class="steps" id="start">
+      <div class="wrap">
+        <div class="steps-head"><div><div class="section-kicker">HOW IT WORKS</div><h2 class="section-title">Three simple steps</h2></div><p class="steps-note">No brokerage connection or account setup. Add the stocks you care about and start peeking.</p></div>
+        <div class="steps-grid">
+          <article class="step"><div class="step-no">STEP 01</div><h3>Install</h3><p>Download and run the latest Windows installer. The app starts from the system tray.</p></article>
+          <article class="step"><div class="step-no">STEP 02</div><h3>Add your watchlist</h3><p>Search by company name or ticker. Optionally enter your shares and average purchase price.</p></article>
+          <article class="step"><div class="step-no">STEP 03</div><h3>Move to the edge</h3><p>Move the cursor to your chosen screen edge. The panel appears and automatically hides when you move away.</p></article>
         </div>
       </div>
     </section>
+
+    <section class="privacy">
+      <div class="wrap privacy-grid">
+        <div><div class="section-kicker">SIMPLE & OPEN</div><h2 class="section-title">Only what you need,<br />clearly explained.</h2></div>
+        <div class="privacy-list">
+          <div class="privacy-item"><div class="privacy-icon">01</div><div><strong>No brokerage login</strong><p>Stock Peek does not connect to your trading account or place orders. It focuses on displaying your watchlist.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">02</div><div><strong>No sign-up or ads</strong><p>Install it and start using it without creating an account or viewing advertisements.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">03</div><div><strong>MIT open source</strong><p>Inspect the full source on GitHub and use or modify it under the MIT License.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="install">
+      <div class="wrap">
+        <div class="section-kicker">FAQ</div><h2>Frequently asked questions</h2>
+        <details><summary>Is it really free?</summary><div class="faq-a">Yes. There are no ads, payments, or sign-up. The full code is available on GitHub under the MIT License.</div></details>
+        <details><summary>Windows shows a warning during install.</summary><div class="faq-a">The app is not code-signed because it is an independent project, so SmartScreen may display a warning. Choose “More info → Run anyway” to install. You can also inspect or build the source from GitHub.</div></details>
+        <details><summary>Where do the quotes come from?</summary><div class="faq-a">Korean quotes come from Naver Finance and US quotes from Yahoo Finance public data. The app checks roughly every 5 seconds during market hours and every 60 seconds after close. Quotes may be delayed by the exchange or data provider.</div></details>
+        <details><summary>Does it work on a corporate PC?</summary><div class="faq-a">It is designed to use the system proxy and certificates. Availability still depends on your organization’s policies and your permission to install software.</div></details>
+        <details><summary>Is there a Mac version?</summary><div class="faq-a">Stock Peek currently supports Windows 10 and Windows 11 only.</div></details>
+      </div>
+    </section>
+
+    <section class="band"><div class="wrap"><h2>Keep it quietly running.</h2><p>Install without an account and check your watchlist from the screen edge whenever you need it.</p><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Download <span class="sub">.exe / Win 10·11</span></a></div></section>
   </main>
 
-  <section class="features" id="how">
-    <div class="wrap">
-      <div class="feat">
-        <div class="feat-no">01</div>
-        <div class="feat-body">
-          <h3>Just hover</h3>
-          <p>No shortcuts, no clicks. Bring your cursor to the right edge and the panel slides in; move away and it hides. Dock it to the left edge or another monitor if you like.</p>
-        </div>
-        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="1" width="138" height="74" fill="none" stroke="var(--ink)" stroke-width="1.5"/><rect x="133" y="1" width="6" height="74" fill="var(--ink)"/><rect x="92" y="12" width="41" height="52" fill="var(--panel)"/><path d="M78 34L78 47L81.6 43.7L83.9 49L86.2 48L83.9 42.8L88.4 42.6L78 34Z" fill="#F7F5F0" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round"/></svg></div>
-      </div>
-      <div class="feat">
-        <div class="feat-no">02</div>
-        <div class="feat-body">
-          <h3>Korea + US, together</h3>
-          <p>From KOSPI and KOSDAQ to NYSE and NASDAQ. Search by name or ticker, and add your shares and average price to see live profit and loss.</p>
-        </div>
-        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="4" y="12" width="62" height="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="35" y="28" font-family="monospace" font-size="11" fill="var(--ink)" text-anchor="middle" font-weight="bold">005930</text><rect x="74" y="12" width="62" height="24" fill="var(--ink)"/><text x="105" y="28" font-family="monospace" font-size="11" fill="var(--paper)" text-anchor="middle" font-weight="bold">NVDA</text><text x="35" y="56" font-family="monospace" font-size="9" fill="var(--ink-3)" text-anchor="middle">KOSPI</text><text x="105" y="56" font-family="monospace" font-size="9" fill="var(--ink-3)" text-anchor="middle">NASDAQ</text></svg></div>
-      </div>
-      <div class="feat">
-        <div class="feat-no">03</div>
-        <div class="feat-body">
-          <h3>Last 3 months at a glance</h3>
-          <p>Three months of daily candles as a compact sparkline. Green for up, red for down. The chart stays put after hours and on weekends.</p>
-        </div>
-        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><polyline points="6,54 20,48 34,52 48,40 62,44 76,30 90,34 104,22 118,26 134,14" fill="none" stroke="var(--up)" stroke-width="2" stroke-linejoin="round"/><polyline points="6,62 24,64 42,60 60,66 78,63 96,68 114,66 134,70" fill="none" stroke="var(--down)" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/></svg></div>
-      </div>
-      <div class="feat">
-        <div class="feat-no">04</div>
-        <div class="feat-body">
-          <h3>Set it and forget it</h3>
-          <p>It sits quietly in the system tray and launches on startup. It only appears when you reach for it, so it never gets in your way.</p>
-        </div>
-        <div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="1" y="50" width="138" height="25" fill="var(--ink)"/><circle cx="96" cy="62" r="4" fill="rgba(237,234,227,0.35)"/><circle cx="110" cy="62" r="4" fill="rgba(237,234,227,0.35)"/><rect x="119" y="56" width="13" height="13" fill="none" stroke="#EDEAE3" stroke-width="1.5"/><text x="125.5" y="66" font-family="monospace" font-size="7" fill="#EDEAE3" text-anchor="middle" font-weight="bold">SP</text><g fill="rgba(237,234,227,0.5)"><rect x="9" y="57" width="4.5" height="4.5"/><rect x="15" y="57" width="4.5" height="4.5"/><rect x="9" y="63" width="4.5" height="4.5"/><rect x="15" y="63" width="4.5" height="4.5"/></g></svg></div>
-      </div>
-    </div>
-  </section>
-
-
-  <section class="faq">
-    <div class="wrap">
-      <div class="faq-head">FAQ</div>
-      <h2>Frequently asked questions</h2>
-      <details>
-        <summary>Is it really free?</summary>
-        <div class="faq-a">Yes. No ads, no payments, no sign-up. It's a personal open-source project — the full code is on GitHub.</div>
-      </details>
-      <details>
-        <summary>Windows shows a warning during install.</summary>
-        <div class="faq-a">The app isn't code-signed (it's an indie project), so SmartScreen may warn you. Click "More info → Run anyway" to install. The source is public if you'd rather inspect or build it yourself.</div>
-      </details>
-      <details>
-        <summary>Where do the quotes come from?</summary>
-        <div class="faq-a">Korean stocks from Naver Finance, US stocks from Yahoo Finance — public data, refreshed every 5 seconds during market hours and every 60 seconds after close.</div>
-      </details>
-      <details>
-        <summary>Does it work on a corporate PC?</summary>
-        <div class="faq-a">Yes. It uses the system proxy and certificates, so it works on corporate networks. You do need permission to install software.</div>
-      </details>
-      <details>
-        <summary>Is there a Mac version?</summary>
-        <div class="faq-a">Windows 10/11 only for now. No Mac plans yet.</div>
-      </details>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap">
-      <h2>Keep it quietly running.</h2>
-      <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">
-        Download <span class="sub">.exe / Win 10·11</span>
-      </a>
-    </div>
-  </section>
-
   <footer class="wrap">
-    <div class="foot">
-      <div class="foot-left">© 2026 Stock Peek · 몰래주식</div>
-      <div class="foot-links">
-        <a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">Buy me a coffee</a>
-        <a href="mailto:sngmng6506@gmail.com">Contact</a>
-        <a href="/">한국어</a>
-      </div>
-    </div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">Buy me a coffee</a><a href="mailto:sngmng6506@gmail.com">Contact</a><a href="/">한국어</a></div></div>
+    <p class="disclaimer">Quotes shown by Stock Peek are not official execution data or investment advice. Prices may be delayed or differ from actual tradable prices depending on the market and data provider.</p>
   </footer>
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {"@type": "Question", "name": "Is Stock Peek free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. No ads, payments, or sign-up. It is an open-source personal project with the full code on GitHub."}},
-      {"@type": "Question", "name": "Why does Windows show a SmartScreen warning?", "acceptedAnswer": {"@type": "Answer", "text": "The app is not code-signed, so SmartScreen may warn. Click More info, then Run anyway. The source is public for inspection."}},
-      {"@type": "Question", "name": "Where do the stock quotes come from?", "acceptedAnswer": {"@type": "Answer", "text": "Korean stocks from Naver Finance and US stocks from Yahoo Finance, refreshed every 5 seconds during market hours."}},
-      {"@type": "Question", "name": "Does it work on a corporate PC?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, it uses the system proxy and certificates so it works on corporate networks. Install permission is required."}},
-      {"@type": "Question", "name": "Is there a Mac version?", "acceptedAnswer": {"@type": "Answer", "text": "Windows 10/11 only for now."}}
-    ]
-  }
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"Is Stock Peek free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It has no ads, payments, or sign-up and is open source under the MIT License."}},
+    {"@type":"Question","name":"Why does Windows show a SmartScreen warning?","acceptedAnswer":{"@type":"Answer","text":"The independent app is not code-signed. Select More info and Run anyway to install."}},
+    {"@type":"Question","name":"Where do the stock quotes come from?","acceptedAnswer":{"@type":"Answer","text":"Korean quotes come from Naver Finance and US quotes from Yahoo Finance. Data may be delayed."}},
+    {"@type":"Question","name":"Does it work on a corporate PC?","acceptedAnswer":{"@type":"Answer","text":"It is designed to use system proxy and certificate settings, but company policies and install permissions may restrict it."}},
+    {"@type":"Question","name":"Is there a Mac version?","acceptedAnswer":{"@type":"Answer","text":"Stock Peek currently supports Windows 10 and Windows 11 only."}}
+  ]}
   </script>
   <script>
   (function () {
