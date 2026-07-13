@@ -51,8 +51,22 @@
         "name": "Stock Peek Guide",
         "description": "Installation, features, quote sources, privacy, and FAQ for the free Windows stock widget.",
         "inLanguage": "en",
+        "dateModified": "2026-07-13",
         "isPartOf": { "@id": "https://stock-peek.com/#website" },
-        "about": { "@id": "https://stock-peek.com/#software" }
+        "about": { "@id": "https://stock-peek.com/#software" },
+        "breadcrumb": { "@id": "https://stock-peek.com/en/guide/#breadcrumb" },
+        "mainEntity": [
+          { "@id": "https://stock-peek.com/en/guide/#howto" },
+          { "@id": "https://stock-peek.com/en/guide/#faq" }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://stock-peek.com/en/guide/#breadcrumb",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Stock Peek", "item": "https://stock-peek.com/en" },
+          { "@type": "ListItem", "position": 2, "name": "Product guide", "item": "https://stock-peek.com/en/guide/" }
+        ]
       },
       {
         "@type": "HowTo",
@@ -88,6 +102,8 @@
       <a href="/en" class="brand"><span class="brand-mark">SP</span><span class="brand-name">Stock Peek</span></a>
       <div class="nav-right">
         <a href="/en" class="muted">Home</a>
+        <a href="/en/releases/" class="muted">Releases</a>
+        <a href="/en/privacy/" class="muted">Privacy</a>
         <a href="/guide/" class="lang" lang="ko">한국어</a>
         <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">Download</a>
       </div>
@@ -95,7 +111,7 @@
   </nav>
 
   <main class="guide">
-    <div class="guide-breadcrumb"><a href="/en">Stock Peek</a> / Product guide</div>
+    <nav class="guide-breadcrumb" aria-label="Breadcrumb"><a href="/en">Stock Peek</a> / Product guide</nav>
     <h1>What is Stock Peek?</h1>
     <p class="guide-lead">Stock Peek is a free Windows desktop stock widget designed for checking a watchlist without switching away from your current work.</p>
 
@@ -134,7 +150,7 @@
     <section>
       <h2>Privacy and local storage</h2>
       <p>Stock Peek does not connect to a brokerage account or place orders. Watchlist items, shares, average purchase prices, language, and panel position are stored on the user's PC.</p>
-      <p>If the optional portfolio one-line review is requested, a random device identifier and calculated portfolio statistics are sent to the project's Cloudflare Worker to generate the response and enforce a daily limit. See the <a href="https://github.com/sngmng6506/stock-peek/blob/main/PRIVACY.md">privacy notice</a> for details.</p>
+      <p>If the optional portfolio one-line review is requested, a random device identifier and calculated portfolio statistics are sent to the project's Cloudflare Worker to generate the response and enforce a daily limit. See the <a href="/en/privacy/">privacy and data handling page</a> for details.</p>
     </section>
 
     <section id="faq">
@@ -150,12 +166,13 @@
 
     <div class="guide-cta">
       <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Download for Windows</a>
+      <a href="/en/releases/" class="btn-dl" style="background:transparent;color:var(--ink)">View release notes</a>
       <a href="https://github.com/sngmng6506/stock-peek" class="btn-dl" style="background:transparent;color:var(--ink)">View source on GitHub</a>
     </div>
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="/en">Home</a><a href="/guide/">한국어</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="/en">Home</a><a href="/en/releases/">Release notes</a><a href="/en/privacy/">Privacy</a><a href="/guide/">한국어</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a></div></div>
   </footer>
 </body>
 </html>
