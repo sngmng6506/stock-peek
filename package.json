@@ -4,10 +4,12 @@
   "description": "몰래주식 - 데스크톱 주식 시세 위젯",
   "main": "./out/main/index.js",
   "author": "sngmng6506",
+  "license": "MIT",
   "homepage": "https://stock-peek.com",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
+    "sync:version": "node scripts/sync-version.mjs",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "electron-vite build",
