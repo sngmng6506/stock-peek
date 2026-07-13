@@ -123,8 +123,9 @@
         <div><div class="section-kicker">SIMPLE & OPEN</div><h2 class="section-title">Only what you need,<br />clearly explained.</h2></div>
         <div class="privacy-list">
           <div class="privacy-item"><div class="privacy-icon">01</div><div><strong>No brokerage login</strong><p>Stock Peek does not connect to your trading account or place orders. It focuses on displaying your watchlist.</p></div></div>
-          <div class="privacy-item"><div class="privacy-icon">02</div><div><strong>No sign-up or ads</strong><p>Install it and start using it without creating an account or viewing advertisements.</p></div></div>
-          <div class="privacy-item"><div class="privacy-icon">03</div><div><strong>MIT open source</strong><p>Inspect the full source on GitHub and use or modify it under the MIT License.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">02</div><div><strong>Stored on your PC</strong><p>Your watchlist, holdings, average purchase prices, and app settings are stored locally on your computer.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">03</div><div><strong>No sign-up or ads</strong><p>Install it and start using it without creating an account or viewing advertisements.</p></div></div>
+          <div class="privacy-item"><div class="privacy-icon">04</div><div><strong>MIT open source</strong><p>Inspect the full source on GitHub and use or modify it under the MIT License.</p></div></div>
         </div>
       </div>
     </section>
@@ -133,6 +134,7 @@
       <div class="wrap">
         <div class="section-kicker">FAQ</div><h2>Frequently asked questions</h2>
         <details><summary>Is it really free?</summary><div class="faq-a">Yes. There are no ads, payments, or sign-up. The full code is available on GitHub under the MIT License.</div></details>
+        <details><summary>Where is my information stored?</summary><div class="faq-a">Your watchlist, holdings, average purchase prices, and settings are stored on your PC. When you explicitly use the portfolio one-line review, a random device identifier, calculated portfolio statistics, and selected language are sent to the Stock Peek Worker to enforce the daily limit and generate the result. Brokerage credentials are never requested.</div></details>
         <details><summary>Windows shows a warning during install.</summary><div class="faq-a">The app is not code-signed because it is an independent project, so SmartScreen may display a warning. Choose “More info → Run anyway” to install. You can also inspect or build the source from GitHub.</div></details>
         <details><summary>Where do the quotes come from?</summary><div class="faq-a">Korean quotes come from Naver Finance and US quotes from Yahoo Finance public data. The app checks roughly every 5 seconds during market hours and every 60 seconds after close. Quotes may be delayed by the exchange or data provider.</div></details>
         <details><summary>Does it work on a corporate PC?</summary><div class="faq-a">It is designed to use the system proxy and certificates. Availability still depends on your organization’s policies and your permission to install software.</div></details>
@@ -144,13 +146,14 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">Buy me a coffee</a><a href="mailto:sngmng6506@gmail.com">Contact</a><a href="/">한국어</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacy</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">Buy me a coffee</a><a href="mailto:sngmng6506@gmail.com">Contact</a><a href="/">한국어</a></div></div>
     <p class="disclaimer">Quotes shown by Stock Peek are not official execution data or investment advice. Prices may be delayed or differ from actual tradable prices depending on the market and data provider.</p>
   </footer>
 
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
     {"@type":"Question","name":"Is Stock Peek free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It has no ads, payments, or sign-up and is open source under the MIT License."}},
+    {"@type":"Question","name":"Where is Stock Peek user information stored?","acceptedAnswer":{"@type":"Answer","text":"Watchlist, holdings, and settings are stored on the user's PC. A random identifier and calculated statistics are sent only when the portfolio one-line review is requested."}},
     {"@type":"Question","name":"Why does Windows show a SmartScreen warning?","acceptedAnswer":{"@type":"Answer","text":"The independent app is not code-signed. Select More info and Run anyway to install."}},
     {"@type":"Question","name":"Where do the stock quotes come from?","acceptedAnswer":{"@type":"Answer","text":"Korean quotes come from Naver Finance and US quotes from Yahoo Finance. Data may be delayed."}},
     {"@type":"Question","name":"Does it work on a corporate PC?","acceptedAnswer":{"@type":"Answer","text":"It is designed to use system proxy and certificate settings, but company policies and install permissions may restrict it."}},
