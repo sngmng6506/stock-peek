@@ -25,16 +25,19 @@ const datedTargets = [
 for (const target of versionTargets) {
   const current = await readFile(target, 'utf8')
   let next = current
+  let markerFound = false
 
   if (/"softwareVersion":\s*"[^"]+"/.test(next)) {
+    markerFound = true
     next = next.replace(/"softwareVersion":\s*"[^"]+"/, `"softwareVersion": "${version}"`)
   }
 
   if (/<span id="appVer">v[^<]+<\/span>/.test(next)) {
+    markerFound = true
     next = next.replace(/<span id="appVer">v[^<]+<\/span>/, `<span id="appVer">v${version}</span>`)
   }
 
-  if (next === current) {
+  if (!markerFound) {
     throw new Error(`Version markers were not found in ${target.pathname}`)
   }
 
@@ -44,23 +47,24 @@ for (const target of versionTargets) {
 
 for (const target of datedTargets) {
   const current = await readFile(target, 'utf8')
-  const next = current.replace(/"dateModified":\s*"\d{4}-\d{2}-\d{2}"/g, `"dateModified": "${today}"`)
+  const markerFound = /"dateModified":\s*"\d{4}-\d{2}-\d{2}"/.test(current)
 
-  if (next === current && !current.includes(`"dateModified": "${today}"`)) {
+  if (!markerFound) {
     throw new Error(`dateModified marker was not found in ${target.pathname}`)
   }
 
+  const next = current.replace(/"dateModified":\s*"\d{4}-\d{2}-\d{2}"/g, `"dateModified": "${today}"`)
   await writeFile(target, next)
   console.log(`Updated ${target.pathname} dateModified to ${today}`)
 }
 
 const sitemapTarget = new URL('../website/sitemap.xml', import.meta.url)
 const sitemapCurrent = await readFile(sitemapTarget, 'utf8')
-const sitemapNext = sitemapCurrent.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`)
 
-if (sitemapNext === sitemapCurrent && !sitemapCurrent.includes(`<lastmod>${today}</lastmod>`)) {
+if (!/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/.test(sitemapCurrent)) {
   throw new Error('Sitemap lastmod markers were not found')
 }
 
+const sitemapNext = sitemapCurrent.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`)
 await writeFile(sitemapTarget, sitemapNext)
 console.log(`Updated sitemap lastmod values to ${today}`)
