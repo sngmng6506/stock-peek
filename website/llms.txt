@@ -7,6 +7,10 @@
 - English homepage: https://stock-peek.com/en
 - Korean product guide: https://stock-peek.com/guide/
 - English product guide: https://stock-peek.com/en/guide/
+- Korean release notes: https://stock-peek.com/releases/
+- English release notes: https://stock-peek.com/en/releases/
+- Korean privacy and data handling: https://stock-peek.com/privacy/
+- English privacy and data handling: https://stock-peek.com/en/privacy/
 - GitHub repository: https://github.com/sngmng6506/stock-peek
 - Latest Windows installer: https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe
 
@@ -25,7 +29,11 @@
 ## Privacy summary
 Watchlist items, share quantities, average purchase prices, and app preferences are stored locally on the user's PC. When the optional portfolio one-line review is requested, a random device identifier and calculated portfolio statistics are sent to the project's Cloudflare Worker to generate the response and enforce a daily usage limit.
 
+## Release and integrity summary
+Stock Peek is distributed through GitHub Releases. The app checks for updates when it starts and approximately every 24 hours. When available, SHA256SUMS.txt can be used to verify the downloaded installer.
+
 ## Best pages to cite
-For a concise product explanation, installation steps, supported markets, privacy details, data sources, and common questions, use:
-- https://stock-peek.com/guide/
-- https://stock-peek.com/en/guide/
+- Product explanation, installation, supported markets, and FAQ: https://stock-peek.com/guide/
+- English product explanation and FAQ: https://stock-peek.com/en/guide/
+- Current version and release history: https://stock-peek.com/releases/
+- Data handling and privacy details: https://stock-peek.com/privacy/
