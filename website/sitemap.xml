@@ -29,4 +29,32 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/guide/" />
     <lastmod>2026-07-13</lastmod>
   </url>
+  <url>
+    <loc>https://stock-peek.com/releases/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
+    <lastmod>2026-07-13</lastmod>
+  </url>
+  <url>
+    <loc>https://stock-peek.com/en/releases/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
+    <lastmod>2026-07-13</lastmod>
+  </url>
+  <url>
+    <loc>https://stock-peek.com/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/privacy/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/privacy/" />
+    <lastmod>2026-07-13</lastmod>
+  </url>
+  <url>
+    <loc>https://stock-peek.com/en/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/privacy/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/privacy/" />
+    <lastmod>2026-07-13</lastmod>
+  </url>
 </urlset>
