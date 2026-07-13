@@ -6,7 +6,8 @@
   <title>Stock Peek — Desktop Stock Ticker Widget (KR & US, Free)</title>
   <meta name="description" content="Move your mouse to the screen edge and Korean and US watchlist quotes, charts, and portfolio P&L slide in. A free Windows desktop widget." />
   <meta name="keywords" content="desktop stock widget, stock ticker widget, Windows stock app, Korean stocks, US stocks, KOSPI, KOSDAQ, NYSE, NASDAQ, sparkline" />
-  <meta name="author" content="sngmng6506" />
+  <meta name="author" content="Sangmyeong Lee" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://stock-peek.com/en" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
   <link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
@@ -27,21 +28,59 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Stock Peek",
-    "alternateName": "몰래주식",
-    "description": "A Windows desktop widget that reveals Korean and US watchlist quotes and portfolio P&L when you hover at the screen edge.",
-    "url": "https://stock-peek.com/en",
-    "image": "https://stock-peek.com/og.png",
-    "operatingSystem": "Windows 10, Windows 11",
-    "applicationCategory": "FinanceApplication",
-    "softwareVersion": "1.6.2",
-    "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
-    "license": "https://opensource.org/license/mit",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Sangmyeong Lee", "email": "sngmng6506@gmail.com" },
-    "inLanguage": "en",
-    "featureList": ["Korean stocks","US stocks","3-month daily sparklines","Portfolio P&L","Drag-and-drop reordering","Multi-monitor edge docking","System tray and auto-start","Mouse-hover trigger"]
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://stock-peek.com/#website",
+        "url": "https://stock-peek.com/",
+        "name": "Stock Peek",
+        "alternateName": "몰래주식",
+        "inLanguage": ["ko", "en"],
+        "publisher": { "@id": "https://stock-peek.com/#author" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://stock-peek.com/#author",
+        "name": "Sangmyeong Lee",
+        "email": "sngmng6506@gmail.com",
+        "url": "https://github.com/sngmng6506",
+        "sameAs": ["https://github.com/sngmng6506"]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://stock-peek.com/#software",
+        "name": "Stock Peek",
+        "alternateName": "몰래주식",
+        "description": "A Windows desktop widget that reveals Korean and US watchlist quotes and portfolio P&L when you hover at the screen edge.",
+        "url": "https://stock-peek.com/en",
+        "image": "https://stock-peek.com/og.png",
+        "operatingSystem": "Windows 10, Windows 11",
+        "softwareRequirements": "Windows 10 or Windows 11 with internet access",
+        "applicationCategory": "FinanceApplication",
+        "softwareVersion": "1.6.2",
+        "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
+        "installUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
+        "releaseNotes": "https://stock-peek.com/en/releases/",
+        "license": "https://opensource.org/license/mit",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": { "@id": "https://stock-peek.com/#author" },
+        "sameAs": ["https://github.com/sngmng6506/stock-peek"],
+        "inLanguage": ["ko", "en"],
+        "featureList": ["Korean stocks","US stocks","3-month daily sparklines","Portfolio P&L","Drag-and-drop reordering","Multi-monitor edge docking","System tray and auto-start","Mouse-hover trigger"],
+        "mainEntityOfPage": { "@id": "https://stock-peek.com/en#webpage" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://stock-peek.com/en#webpage",
+        "url": "https://stock-peek.com/en",
+        "name": "Stock Peek — Desktop Stock Widget",
+        "description": "A free Windows widget for checking Korean and US watchlist quotes and portfolio P&L from the screen edge.",
+        "inLanguage": "en",
+        "dateModified": "2026-07-13",
+        "isPartOf": { "@id": "https://stock-peek.com/#website" },
+        "about": { "@id": "https://stock-peek.com/#software" }
+      }
+    ]
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -57,6 +96,7 @@
       <div class="nav-right">
         <a href="#how" class="muted">Features</a>
         <a href="#start" class="muted">How it works</a>
+        <a href="/en/guide/" class="muted">Guide</a>
         <a href="https://github.com/sngmng6506/stock-peek" class="muted" target="_blank" rel="noopener">GitHub</a>
         <a href="/" class="lang" lang="ko">한국어</a>
         <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">Download</a>
@@ -73,7 +113,7 @@
           <p class="hero-sub">Working, in a meeting, or gaming. Move your mouse to the screen edge and your watchlist, charts, and portfolio P&amp;L slide in — move away and they quietly disappear.</p>
           <div class="hero-cta">
             <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Download <span class="sub">.exe / Win 10·11</span></a>
-            <span class="hero-meta"><span id="appVer">v1.6.2</span> · KR + US · <a href="#install">Install guide</a></span>
+            <span class="hero-meta"><span id="appVer">v1.6.2</span> · KR + US · <a href="/en/guide/#install">Install guide</a></span>
           </div>
           <div class="trust-line" aria-label="Product highlights"><span>No sign-up</span><span>No ads</span><span>MIT open source</span></div>
         </div>
@@ -139,6 +179,7 @@
         <details><summary>Where do the quotes come from?</summary><div class="faq-a">Korean quotes come from Naver Finance and US quotes from Yahoo Finance public data. The app checks roughly every 5 seconds during market hours and every 60 seconds after close. Quotes may be delayed by the exchange or data provider.</div></details>
         <details><summary>Does it work on a corporate PC?</summary><div class="faq-a">It is designed to use the system proxy and certificates. Availability still depends on your organization’s policies and your permission to install software.</div></details>
         <details><summary>Is there a Mac version?</summary><div class="faq-a">Stock Peek currently supports Windows 10 and Windows 11 only.</div></details>
+        <p style="margin-top:28px"><a href="/en/guide/"><strong>Read the complete installation and feature guide →</strong></a></p>
       </div>
     </section>
 
@@ -146,19 +187,25 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacy</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">Buy me a coffee</a><a href="mailto:sngmng6506@gmail.com">Contact</a><a href="/">한국어</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek · 몰래주식</div><div class="foot-links"><a href="/en/guide/">Product guide</a><a href="/en/releases/">Release notes</a><a href="/en/privacy/">Privacy</a><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">Buy me a coffee</a><a href="mailto:sngmng6506@gmail.com">Contact</a><a href="/">한국어</a></div></div>
     <p class="disclaimer">Quotes shown by Stock Peek are not official execution data or investment advice. Prices may be delayed or differ from actual tradable prices depending on the market and data provider.</p>
   </footer>
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-    {"@type":"Question","name":"Is Stock Peek free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It has no ads, payments, or sign-up and is open source under the MIT License."}},
-    {"@type":"Question","name":"Where is Stock Peek user information stored?","acceptedAnswer":{"@type":"Answer","text":"Watchlist, holdings, and settings are stored on the user's PC. A random identifier and calculated statistics are sent only when the portfolio one-line review is requested."}},
-    {"@type":"Question","name":"Why does Windows show a SmartScreen warning?","acceptedAnswer":{"@type":"Answer","text":"The independent app is not code-signed. Select More info and Run anyway to install."}},
-    {"@type":"Question","name":"Where do the stock quotes come from?","acceptedAnswer":{"@type":"Answer","text":"Korean quotes come from Naver Finance and US quotes from Yahoo Finance. Data may be delayed."}},
-    {"@type":"Question","name":"Does it work on a corporate PC?","acceptedAnswer":{"@type":"Answer","text":"It is designed to use system proxy and certificate settings, but company policies and install permissions may restrict it."}},
-    {"@type":"Question","name":"Is there a Mac version?","acceptedAnswer":{"@type":"Answer","text":"Stock Peek currently supports Windows 10 and Windows 11 only."}}
-  ]}
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://stock-peek.com/en#faq",
+    "isPartOf": { "@id": "https://stock-peek.com/en#webpage" },
+    "mainEntity": [
+      {"@type":"Question","name":"Is Stock Peek free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It has no ads, payments, or sign-up and is open source under the MIT License."}},
+      {"@type":"Question","name":"Where is Stock Peek user information stored?","acceptedAnswer":{"@type":"Answer","text":"Watchlist, holdings, and settings are stored on the user's PC. A random identifier and calculated statistics are sent only when the portfolio one-line review is requested."}},
+      {"@type":"Question","name":"Why does Windows show a SmartScreen warning?","acceptedAnswer":{"@type":"Answer","text":"The independent app is not code-signed. Select More info and Run anyway to install."}},
+      {"@type":"Question","name":"Where do the stock quotes come from?","acceptedAnswer":{"@type":"Answer","text":"Korean quotes come from Naver Finance and US quotes from Yahoo Finance. Data may be delayed."}},
+      {"@type":"Question","name":"Does it work on a corporate PC?","acceptedAnswer":{"@type":"Answer","text":"It is designed to use system proxy and certificate settings, but company policies and install permissions may restrict it."}},
+      {"@type":"Question","name":"Is there a Mac version?","acceptedAnswer":{"@type":"Answer","text":"Stock Peek currently supports Windows 10 and Windows 11 only."}}
+    ]
+  }
   </script>
   <script>
   (function () {
