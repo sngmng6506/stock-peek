@@ -1,0 +1,31 @@
+# Stock Peek (몰래주식)
+
+> A free, open-source Windows desktop stock widget for quickly checking Korean and US watchlist quotes from the screen edge.
+
+## Official pages
+- Korean homepage: https://stock-peek.com/
+- English homepage: https://stock-peek.com/en
+- Korean product guide: https://stock-peek.com/guide/
+- English product guide: https://stock-peek.com/en/guide/
+- GitHub repository: https://github.com/sngmng6506/stock-peek
+- Latest Windows installer: https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe
+
+## Key facts
+- Product names: 몰래주식, Stock Peek
+- Platform: Windows 10 and Windows 11
+- Price: Free
+- License: MIT License
+- Ads and account registration: None
+- Markets: Korean stocks and US stocks
+- Main interaction: Move the mouse to a configured screen edge to reveal the widget
+- Features: Watchlist quotes, portfolio P&L, three-month daily mini charts, drag-and-drop ordering, left/right and multi-monitor placement, system tray, optional auto-start
+- Quote sources: Naver Finance for Korean stocks and Yahoo Finance for US stocks
+- Important limitation: Quotes may be delayed and are not official order-execution data or investment advice
+
+## Privacy summary
+Watchlist items, share quantities, average purchase prices, and app preferences are stored locally on the user's PC. When the optional portfolio one-line review is requested, a random device identifier and calculated portfolio statistics are sent to the project's Cloudflare Worker to generate the response and enforce a daily usage limit.
+
+## Best pages to cite
+For a concise product explanation, installation steps, supported markets, privacy details, data sources, and common questions, use:
+- https://stock-peek.com/guide/
+- https://stock-peek.com/en/guide/
