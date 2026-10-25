@@ -82,7 +82,7 @@ function StockCard({ stock, onRemove, onEditHolding }) {
       <div className="row">
         <span className="price">
           {stock.stale && <span className="stale-dot" title="연결 끊김 — 마지막 가격" />}
-          {formatMoney(stock.price, stock.market, lang)}
+          <span className="num">{formatMoney(stock.price, stock.market, lang)}</span>
           {delay ? <span className="delay">{t('card.delayed', { n: delay })}</span> : null}
         </span>
         <Sparkline prices={stock.prices} isUp={stock.isUp} />
@@ -93,8 +93,10 @@ function StockCard({ stock, onRemove, onEditHolding }) {
             {t('unit.shares', { n: formatNumber(stock.quantity, lang) })}
           </span>
           <span className={`holding-profit ${profit.isUp ? 'up' : 'down'}`}>
-            {formatMoney(profit.profit, stock.market, lang, { signed: true })} (
-            {formatRatio(profit.ratio)})
+            <span className="num">
+              {formatMoney(profit.profit, stock.market, lang, { signed: true })}
+            </span>{' '}
+            (<span className="num">{formatRatio(profit.ratio)}</span>)
           </span>
         </div>
       )}

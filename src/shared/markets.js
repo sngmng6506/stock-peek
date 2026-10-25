@@ -66,6 +66,19 @@ export const MARKETS = [
         .replace(/\.NS$/i, '')
         .replace(/[^0-9A-Za-z&-]/g, '')
         .toUpperCase()
+  },
+  {
+    id: 'SA',
+    currency: 'SAR',
+    decimals: 2,
+    timeZone: 'Asia/Riyadh',
+    weekdays: [0, 1, 2, 3, 4], // 일–목 (금·토 휴장)
+    sessions: [['10:00', '15:00']], // 라마단 기간 시간 변경은 미반영
+    delayMinutes: 15, // Yahoo 사우디 증권거래소(Tadawul) 시세 지연
+    examplePrice: 27.5,
+    // 4자리 숫자 (2222 아람코 등)
+    symbolPattern: /^[0-9]{4}$/,
+    normalizeSymbol: (s) => s.replace(/\.SR$/i, '').replace(/[^0-9]/g, '')
   }
 ]
 

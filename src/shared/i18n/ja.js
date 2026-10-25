@@ -38,6 +38,7 @@ export default {
   'add.searchPlaceholder.US': '例: Apple, AAPL',
   'add.searchPlaceholder.JP': '例: トヨタ, 7203',
   'add.searchPlaceholder.IN': '例: Reliance, RELIANCE',
+  'add.searchPlaceholder.SA': '例: Aramco, 2222',
   'add.alreadyAdded': '追加済み',
   'add.alreadyAddedTitle': 'ウォッチリストに追加済み',
   'add.searchFail': '検索に失敗しました',
@@ -75,6 +76,7 @@ export default {
   'market.US': '米国',
   'market.JP': '日本',
   'market.IN': 'インド',
+  'market.SA': 'サウジ',
   // 共通表記（{v}・{n} は値の位置）
   'common.example': '例: {v}',
   'unit.shares': '{n}株',

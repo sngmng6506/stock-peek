@@ -3,12 +3,13 @@ import { getLanguageInfo } from '../../../shared/languages.js'
 
 // 금액·숫자 표기. 통화와 자릿수는 시장(src/shared/markets.js), 숫자 모양은 화면 언어를 따름.
 
+// 숫자는 모든 언어에서 라틴 숫자(0-9): 아랍어 화면도 시세·금액은 라틴 숫자가 관례
 const formatters = new Map()
 function nf(locale, options) {
   const key = locale + JSON.stringify(options)
   let f = formatters.get(key)
   if (!f) {
-    f = new Intl.NumberFormat(locale, options)
+    f = new Intl.NumberFormat(locale, { numberingSystem: 'latn', ...options })
     formatters.set(key, f)
   }
   return f

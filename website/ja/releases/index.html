@@ -11,11 +11,13 @@
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
   <link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
   <link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/releases/" />
+  <link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/releases/" />
   <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:locale:alternate" content="ko_KR" />
   <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="ar_SA" />
   <meta property="og:site_name" content="Stock Peek" />
   <meta property="og:title" content="Stock Peek 最新バージョンとリリースノート" />
   <meta property="og:description" content="最新のインストーラー、リリース日、変更内容。" />
@@ -32,7 +34,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="stylesheet" href="/style.css?v=8" />
+  <link rel="stylesheet" href="/style.css?v=9" />
   <style>
     .doc { max-width: 860px; margin: 0 auto; padding: 72px 28px 96px; }
     .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 30px; }
@@ -90,6 +92,7 @@
         <a href="/ja/privacy/" class="muted">プライバシー</a>
         <a href="/releases/" class="lang" lang="ko" hreflang="ko">한국어</a>
         <a href="/en/releases/" class="lang" lang="en" hreflang="en">EN</a>
+        <a href="/ar/releases/" class="lang" lang="ar" hreflang="ar">العربية</a>
         <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl" data-dl>ダウンロード</a>
       </div>
     </div>
@@ -105,7 +108,7 @@
         <h2 id="latest-heading" class="release-version">最新バージョン <span id="appVer">v1.6.13</span></h2>
         <span id="releaseDate" class="release-date">GitHub Releases で配布中</span>
       </div>
-      <p id="latestNote" class="release-note">Windows 10・11 と macOS 12 以降に対応。日本・米国・韓国・インドの株価、直近3か月のチャート、評価損益、マルチモニター配置、アップデート通知に対応しています。</p>
+      <p id="latestNote" class="release-note">Windows 10・11 と macOS 12 以降に対応。日本・米国・韓国・インド・サウジの株価、直近3か月のチャート、評価損益、マルチモニター配置、アップデート通知に対応しています。</p>
       <div class="actions">
         <span class="dl-pair"><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl-os="win">Windows 版をダウンロード</a><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg" class="btn-dl btn-dl-alt" data-dl-os="mac">Mac 版をダウンロード</a></span>
         <a id="releaseLink" href="https://github.com/sngmng6506/stock-peek/releases/latest" class="btn-dl btn-dl-alt">GitHub のリリースを見る</a>
@@ -124,7 +127,7 @@
         <li>対応 OS: Windows 10・11、macOS 12 以降</li>
         <li>インターネット接続が必要です。会社のセキュリティポリシーやインストール権限によっては使えない場合があります。</li>
         <li>個人開発のアプリでコード署名がないため、Windows では SmartScreen の警告が表示されることがあり、Mac では初回起動時にシステム設定での許可が必要です。</li>
-        <li>表示される株価は公式の約定データや投資助言ではありません。日本株の株価は20分遅れです。</li>
+        <li>表示される株価は公式の約定データや投資助言ではありません。日本株の株価は20分、サウジ株は15分遅れです。</li>
         <li>ファイル確認用の SHA-256 チェックサムは <a href="https://github.com/sngmng6506/stock-peek/releases/latest">GitHub のリリース</a>に添付しています。</li>
       </ul>
     </section>
@@ -138,7 +141,7 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/ja">ホーム</a><a href="/ja/guide/">製品ガイド</a><a href="/ja/privacy/">プライバシー</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/releases/" lang="ko">한국어</a><a href="/en/releases/" lang="en">English</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/ja">ホーム</a><a href="/ja/guide/">製品ガイド</a><a href="/ja/privacy/">プライバシー</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/releases/" lang="ko">한국어</a><a href="/en/releases/" lang="en">English</a><a href="/ar/releases/" lang="ar">العربية</a></div></div>
   </footer>
   <script>
   (function () {
@@ -178,6 +181,6 @@
       .catch(function () {});
   })();
   </script>
-  <script src="/demo.js?v=8" defer></script>
+  <script src="/demo.js?v=9" defer></script>
 </body>
 </html>

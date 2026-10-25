@@ -122,7 +122,7 @@ body,
 .card-actions {
   position: absolute;
   top: 8px;
-  right: 8px;
+  inset-inline-end: 8px;
   display: flex;
   gap: 3px;
   opacity: 0;
@@ -423,7 +423,7 @@ body,
   width: 100%;
   background: transparent;
   border: none;
-  text-align: left;
+  text-align: start;
   padding: 8px 10px;
   border-radius: 6px;
   cursor: pointer;
@@ -502,7 +502,7 @@ body,
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
   width: 100%;
 }
 
@@ -741,7 +741,7 @@ body,
   padding: 6px 0;
   background: transparent;
   border: none;
-  text-align: left;
+  text-align: start;
 }
 
 .about-row.link {
@@ -830,7 +830,7 @@ body,
   height: 5px;
   border-radius: 5px;
   background: rgba(235, 180, 80, 0.8);
-  margin-right: 5px;
+  margin-inline-end: 5px;
   vertical-align: middle;
 }
 
@@ -896,7 +896,7 @@ body,
 
 .card:hover > .card-actions + .row,
 .card:focus-within > .card-actions + .row {
-  padding-right: 48px;
+  padding-inline-end: 48px;
 }
 
 .card .name {
@@ -904,7 +904,7 @@ body,
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
-  padding-right: 8px;
+  padding-inline-end: 8px;
   font-size: 12px;
   font-weight: 500;
 }
@@ -943,7 +943,7 @@ body,
 }
 
 .panel.is-sorting .card:hover > .card-actions + .row {
-  padding-right: 0;
+  padding-inline-end: 0;
 }
 
 /* 언어·시장이 많아지면 세그먼트 대신 드롭다운 */
@@ -959,7 +959,7 @@ body,
 
 /* 시세 지연 시장 (일본 등) */
 .price .delay {
-  margin-left: 6px;
+  margin-inline-start: 6px;
   font-size: 10px;
   font-weight: 500;
   color: rgba(235, 235, 245, 0.4);
@@ -989,4 +989,19 @@ body,
 .check-update:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+/* 오른쪽→왼쪽 언어(아랍어): 배치는 dir="rtl"로 뒤집히고, 숫자는 왼쪽→오른쪽 고정(+1.23%가 1.23%+로 뒤집히지 않게),
+   종목명은 내용 기준 방향(영문 이름 끝의 '.'이 앞으로 가지 않게). 화면 좌·우 도킹은 물리 위치라 별개 */
+.num,
+.card .change,
+.holding-profit {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.card .name,
+.search-name,
+.selected-name {
+  unicode-bidi: plaintext;
 }

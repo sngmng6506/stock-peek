@@ -4,18 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Peek ガイド — 無料の Windows・Mac 用株価ウィジェット</title>
-  <meta name="description" content="Stock Peek とは何か、インストール方法、対応市場（日本・米国・韓国・インド）、株価の取得元、評価損益、プライバシー、よくある質問をまとめました。" />
+  <meta name="description" content="Stock Peek とは何か、インストール方法、対応市場（日本・米国・韓国・インド・サウジ）、株価の取得元、評価損益、プライバシー、よくある質問をまとめました。" />
   <meta name="author" content="Sangmyeong Lee" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://stock-peek.com/ja/guide/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/guide/" />
   <link rel="alternate" hreflang="en" href="https://stock-peek.com/en/guide/" />
   <link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/guide/" />
+  <link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/guide/" />
   <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/guide/" />
   <meta property="og:type" content="article" />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:locale:alternate" content="ko_KR" />
   <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="ar_SA" />
   <meta property="og:site_name" content="Stock Peek" />
   <meta property="og:title" content="Stock Peek ガイド" />
   <meta property="og:description" content="画面の端に表示される無料の Windows・Mac 用株価ウィジェットのガイド。" />
@@ -32,7 +34,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="stylesheet" href="/style.css?v=8" />
+  <link rel="stylesheet" href="/style.css?v=9" />
   <style>
     .guide { max-width: 820px; margin: 0 auto; padding: 72px 28px 96px; }
     .guide-breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 30px; }
@@ -138,7 +140,7 @@
             "name": "Stock Peek とは何ですか？",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "画面の端にマウスを寄せると、日本・米国・韓国・インドのウォッチリストの株価、直近3か月のチャート、評価損益を表示する無料の Windows・Mac 用デスクトップウィジェットです。"
+              "text": "画面の端にマウスを寄せると、日本・米国・韓国・インド・サウジのウォッチリストの株価、直近3か月のチャート、評価損益を表示する無料の Windows・Mac 用デスクトップウィジェットです。"
             }
           },
           {
@@ -154,7 +156,7 @@
             "name": "どの市場に対応していますか？",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "東京証券取引所の株式・ETF、NYSE・NASDAQ など米国の主要取引所の株式・ETF、KOSPI・KOSDAQ の韓国株、インド NSE の株式に対応しています。"
+              "text": "東京証券取引所の株式・ETF、NYSE・NASDAQ など米国の主要取引所の株式・ETF、KOSPI・KOSDAQ の韓国株、インド NSE・サウジ Tadawul の株式に対応しています。"
             }
           },
           {
@@ -162,7 +164,7 @@
             "name": "株価はどこから取得していますか？",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "日本株・米国株・インド株は Yahoo Finance、韓国株は NAVER Finance の公開データを使っています。日本株の株価は20分遅れです。"
+              "text": "日本株・米国株・インド株・サウジ株は Yahoo Finance、韓国株は NAVER Finance の公開データを使っています。日本株の株価は20分、サウジ株は15分遅れです。"
             }
           },
           {
@@ -197,6 +199,7 @@
         <a href="/ja/privacy/" class="muted">プライバシー</a>
         <a href="/guide/" class="lang" lang="ko" hreflang="ko">한국어</a>
         <a href="/en/guide/" class="lang" lang="en" hreflang="en">EN</a>
+        <a href="/ar/guide/" class="lang" lang="ar" hreflang="ar">العربية</a>
         <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl" data-dl>ダウンロード</a>
       </div>
     </div>
@@ -209,14 +212,14 @@
 
     <div class="answer-box">
       <strong>ひとことで言うと</strong>
-      <p>画面の左右どちらかの端にマウスを寄せると、日本・米国・韓国・インドのウォッチリストの株価、直近3か月のチャート、評価損益が表示されます。</p>
+      <p>画面の左右どちらかの端にマウスを寄せると、日本・米国・韓国・インド・サウジのウォッチリストの株価、直近3か月のチャート、評価損益が表示されます。</p>
     </div>
 
     <section>
       <h2>主な機能</h2>
       <ul>
         <li>画面の端にマウスを寄せるとパネルが表示され、離すと自動でしまわれます。</li>
-        <li>東京証券取引所の株式・ETF、米国の主要取引所の株式・ETF、KOSPI・KOSDAQ の韓国株、インド NSE の株式を検索できます。かな・カナどちらでも検索できます。</li>
+        <li>東京証券取引所の株式・ETF、米国の主要取引所の株式・ETF、KOSPI・KOSDAQ の韓国株、インド NSE・サウジ Tadawul の株式を検索できます。かな・カナどちらでも検索できます。</li>
         <li>保有数量と平均取得単価を入力すると、現在の評価損益が表示されます。</li>
         <li>直近3か月の日足を小さなチャートで表示します。</li>
         <li>接続しているどのモニターでも、左右の端にパネルを配置できます。</li>
@@ -236,7 +239,7 @@
 
     <section>
       <h2>株価の取得元と更新間隔</h2>
-      <p>日本株・米国株・インド株は Yahoo Finance、韓国株は NAVER Finance の公開データを使っています。日本株の株価は20分遅れです。取引時間中は3秒ごと、取引終了後は60秒ごとに確認します。取引所やデータ提供元の方針により、実際の株価より遅れることがあります。</p>
+      <p>日本株・米国株・インド株・サウジ株は Yahoo Finance、韓国株は NAVER Finance の公開データを使っています。日本株の株価は20分、サウジ株は15分遅れです。取引時間中は3秒ごと、取引終了後は60秒ごとに確認します。取引所やデータ提供元の方針により、実際の株価より遅れることがあります。</p>
       <p>日本株の銘柄名と検索には、日本取引所グループ（JPX）が公開している東証上場銘柄一覧を使い、毎月更新しています。</p>
     </section>
 
@@ -250,7 +253,7 @@
       <h2>よくある質問</h2>
       <dl>
         <div><dt>無料ですか？</dt><dd>はい。広告、課金、アカウント登録はありません。ソースコードはすべて MIT ライセンスで公開しています。</dd></div>
-        <div><dt>どの市場に対応していますか？</dt><dd>東京証券取引所の株式・ETF、NYSE・NASDAQ など米国の主要取引所の株式・ETF、KOSPI・KOSDAQ の韓国株、インド NSE の株式に対応しています。</dd></div>
+        <div><dt>どの市場に対応していますか？</dt><dd>東京証券取引所の株式・ETF、NYSE・NASDAQ など米国の主要取引所の株式・ETF、KOSPI・KOSDAQ の韓国株、インド NSE・サウジ Tadawul の株式に対応しています。</dd></div>
         <div><dt>会社の PC でも使えますか？</dt><dd>システムのプロキシと証明書の設定を使うように作っていますが、会社のセキュリティポリシーやインストール権限によっては使えない場合があります。</dd></div>
         <div><dt>macOS に対応していますか？</dt><dd>はい、macOS 12 以降に対応しています。Windows と違って自動インストールはないため、新しいバージョンが出たら通知をクリックして再度ダウンロードしてください。</dd></div>
         <div><dt>表示される株価で売買を判断してもいいですか？</dt><dd>いいえ。公式の約定データや投資助言ではありません。取引の前に証券会社で最新の株価を確認してください。</dd></div>
@@ -265,8 +268,8 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/ja">ホーム</a><a href="/ja/releases/">リリースノート</a><a href="/ja/privacy/">プライバシー</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/guide/" lang="ko">한국어</a><a href="/en/guide/" lang="en">English</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/ja">ホーム</a><a href="/ja/releases/">リリースノート</a><a href="/ja/privacy/">プライバシー</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/guide/" lang="ko">한국어</a><a href="/en/guide/" lang="en">English</a><a href="/ar/guide/" lang="ar">العربية</a></div></div>
   </footer>
-  <script src="/demo.js?v=8" defer></script>
+  <script src="/demo.js?v=9" defer></script>
 </body>
 </html>

@@ -38,6 +38,7 @@ export default {
   'add.searchPlaceholder.US': '예: Apple, AAPL',
   'add.searchPlaceholder.JP': '예: トヨタ, Toyota, 7203',
   'add.searchPlaceholder.IN': '예: Reliance, RELIANCE',
+  'add.searchPlaceholder.SA': '예: Aramco, 2222',
   'add.alreadyAdded': '이미 추가됨',
   'add.alreadyAddedTitle': '이미 추가된 종목',
   'add.searchFail': '검색 실패',
@@ -75,6 +76,7 @@ export default {
   'market.US': '미국',
   'market.JP': '일본',
   'market.IN': '인도',
+  'market.SA': '사우디',
   // 공통 표기 ({v}, {n}은 값 자리)
   'common.example': '예: {v}',
   'unit.shares': '{n}주',

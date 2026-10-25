@@ -38,6 +38,7 @@ export default {
   'add.searchPlaceholder.US': 'e.g. Apple, AAPL',
   'add.searchPlaceholder.JP': 'e.g. Toyota, トヨタ, 7203',
   'add.searchPlaceholder.IN': 'e.g. Reliance, RELIANCE',
+  'add.searchPlaceholder.SA': 'e.g. Aramco, 2222',
   'add.alreadyAdded': 'Already added',
   'add.alreadyAddedTitle': 'Already in watchlist',
   'add.searchFail': 'Search failed',
@@ -75,6 +76,7 @@ export default {
   'market.US': 'US',
   'market.JP': 'Japan',
   'market.IN': 'India',
+  'market.SA': 'Saudi',
   // Shared formats ({v}, {n} are placeholders)
   'common.example': 'e.g. {v}',
   'unit.shares': '{n} sh',

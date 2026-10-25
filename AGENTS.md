@@ -5,7 +5,7 @@ AI·기여자용 작업 규칙. 사용자 소개는 [README.md](README.md).
 ## 개요
 
 - Windows·Mac 데스크톱 위젯. 화면 가장자리 hover 시 관심 종목 시세 패널 표시
-- 데이터: KR 네이버 금융, US·JP·IN 시세 Yahoo Finance (JP 20분 지연, IN은 NSE만), JP 일본어 종목명·검색은 JPX 상장 종목 목록
+- 데이터: KR 네이버 금융, US·JP·IN·SA 시세 Yahoo Finance (JP 20분·SA 15분 지연, IN은 NSE만), JP 일본어 종목명·검색은 JPX 상장 종목 목록
 - 스택: Electron, electron-vite, React 19, `electron-store`
 - 계정·증권사 연동 없음
 

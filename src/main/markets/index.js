@@ -21,7 +21,8 @@ const PROVIDERS = {
   }),
   JP: jpxProvider,
   // NSE만 (BSE .BO는 같은 종목 중복 + 15분 지연)
-  IN: createYahooProvider({ market: 'IN', suffix: '.NS', label: 'NSE' })
+  IN: createYahooProvider({ market: 'IN', suffix: '.NS', label: 'NSE' }),
+  SA: createYahooProvider({ market: 'SA', suffix: '.SR', label: 'Tadawul' })
 }
 
 export function getProvider(marketId) {

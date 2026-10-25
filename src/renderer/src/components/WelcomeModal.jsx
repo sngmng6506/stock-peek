@@ -11,7 +11,8 @@ function WelcomeModal({ onClose }) {
   return (
     <div className="modal-backdrop welcome-backdrop">
       <div className="modal welcome-modal">
-        <div className="welcome-illust" aria-hidden="true">
+        {/* 화면 오른쪽 가장자리 그림: 언어 방향과 무관하게 물리 위치 */}
+        <div className="welcome-illust" aria-hidden="true" dir="ltr">
           <div className="welcome-screen">
             <div className="welcome-panel-mini">
               <div className="welcome-bar"></div>

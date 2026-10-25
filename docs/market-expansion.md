@@ -2,18 +2,19 @@
 
 대상: 일본(JP) → 인도(IN) → 사우디(SA). 시장 추가와 언어 추가는 별개 작업.
 
-| 국가   | 시장                                                 | 언어                  | 비고         |
-| ------ | ---------------------------------------------------- | --------------------- | ------------ |
-| 일본   | 도쿄증권거래소 `7203.T` (20분 지연) — 시장 추가 완료 | 일본어 UI + 웹 (완료) | 1순위        |
-| 인도   | NSE `.NS` (실시간) — 시장 추가 완료, BSE 제외        | 없음 (영어)           | 시장만       |
-| 사우디 | Tadawul `2222.SAU` (15분 지연)                       | 아랍어는 보류 (RTL)   | 수요 확인 후 |
+| 국가   | 시장                                                 | 언어                  | 비고   |
+| ------ | ---------------------------------------------------- | --------------------- | ------ |
+| 일본   | 도쿄증권거래소 `7203.T` (20분 지연) — 시장 추가 완료 | 일본어 UI + 웹 (완료) | 1순위  |
+| 인도   | NSE `.NS` (실시간) — 시장 추가 완료, BSE 제외        | 없음 (영어)           | 시장만 |
+| 사우디 | Tadawul `2222.SR` (15분 지연) — 시장 추가 완료       | 아랍어 UI + 웹 (완료) |        |
 
 ## 0. 착수 전 검증
 
 - [ ] Yahoo 시세·차트·검색 응답 확인 (시장별 대표 종목 3개)
 - [x] 시세 지연: 일본 20분, 인도 NSE 실시간·BSE 15분, 사우디 15분 (Yahoo 도움말 기준)
 - [x] 일본 종목명: Yahoo는 영어명 → JPX 상장 종목 목록으로 해결 (`data/jp-stocks.json`, 월간 자동 갱신)
-- [x] 인도 현지어 종목명: 불필요 (NSE 종목명이 영어). 사우디는 미정
+- [x] 인도 현지어 종목명: 불필요 (NSE 종목명이 영어)
+- [ ] 사우디 아랍어 종목명: 현재 Yahoo 영어명만 표시·검색. 수요 있으면 Tadawul 목록으로 일본(JPX)처럼 보강
 - [x] 시장별 거래 시간·점심 휴장·휴장 요일 정리 (JP·IN, 아래 국가별 특이사항)
 - [ ] Cloudflare Web Analytics 국가별 방문자 기준선 기록 (출시 후 비교용)
 
@@ -23,23 +24,28 @@
 - [x] `src/main/markets/index.js`: `createYahooProvider({ market, suffix, exchanges })` 등록
 - [x] 번역: `market.<ID>`, `add.searchPlaceholder.<ID>` (모든 언어) → `npm run check:i18n`
 - [x] 시세 지연 표시: `markets.js` `delayMinutes` → 카드에 "N분 지연"
-- [x] 종목 추가 화면: 시장 4개까지 탭, 5개부터 드롭다운 (`AddStockModal.jsx`)
+- [x] 종목 추가 화면: 시장 4개까지 탭, 5개부터 드롭다운 (`AddStockModal.jsx`) — 사우디 추가로 드롭다운
 
 ## 2. 언어 추가
 
 앱
 
-- [ ] `src/shared/languages.js`: code, label(자기 언어로), locale, dir, sitePath
-- [ ] `src/shared/i18n/<code>.js` 전체 번역 → `i18n/index.js` 등록 → `npm run check:i18n`
-- [ ] 언어가 4개 이상이면 설정 화면이 드롭다운으로 자동 전환되는지 확인
-- [ ] RTL(`dir: 'rtl'`): 패널 내부 배치 전면 점검. 화면 좌·우 도킹은 물리 위치라 별개
+- [x] `src/shared/languages.js`: code, label(자기 언어로), locale, dir, sitePath
+- [x] `src/shared/i18n/<code>.js` 전체 번역 → `i18n/index.js` 등록 → `npm run check:i18n`
+- [x] 언어가 4개 이상이면 설정 화면이 드롭다운으로 자동 전환되는지 확인
+- [x] RTL(`dir: 'rtl'`): 패널 내부 배치 전면 점검. 화면 좌·우 도킹은 물리 위치라 별개
+  - CSS는 `inset-inline-end`·`padding-inline-end`·`text-align: start` 같은 논리 속성
+  - 숫자(`.num`, 변동률, 손익)는 `direction: ltr` + `isolate`. 안 하면 `+1.23%`가 `1.23%+`로 보임
+  - 금액과 비율은 각각 감싸기. 아랍 문자 통화기호(ر.س.)가 뒤 괄호를 끌고 감
+  - 종목명은 `unicode-bidi: plaintext` (영문 이름은 왼쪽→오른쪽)
+  - 숫자는 모든 언어 라틴 숫자 (`format.js` `numberingSystem: 'latn'`)
 
 웹
 
-- [ ] `site/strings/<code>.json` (메뉴·푸터·다운로드 버튼)
-- [ ] `site/pages/<code>/home|guide|releases|privacy.html` 번역 (메타 JSON 포함)
-- [ ] 데모 패널 예시 종목을 해당 시장 종목으로
-- [ ] `npm run build:site` → hreflang·`og:locale`·언어 전환·sitemap 자동 반영 확인
+- [x] `site/strings/<code>.json` (메뉴·푸터·다운로드 버튼)
+- [x] `site/pages/<code>/home|guide|releases|privacy.html` 번역 (메타 JSON 포함)
+- [x] 데모 패널 예시 종목을 해당 시장 종목으로
+- [x] `npm run build:site` → hreflang·`og:locale`·언어 전환·sitemap 자동 반영 확인
 
 ## 3. 검색·AI 검색 노출
 
@@ -82,5 +88,7 @@
 사우디
 
 - 거래 일–목, 10:00–15:00 AST (금·토 휴장) — `weekdays: [0, 1, 2, 3, 4]`
-- 라마단 기간 거래 시간 변경
+- 라마단 기간 거래 시간 변경 (미반영: 공휴일처럼 판정 안 함)
+- Yahoo 티커 `.SR`, 심볼 4자리 숫자. 시세 15분 지연
 - 통화 `SAR`, 아랍어 UI는 RTL
+- 아랍어 웹: 데모 그림(.demo, .desk)은 실제 화면 위치라 `direction: ltr`, 패널 안만 앱처럼 반전. 날짜는 `ar-u-ca-gregory-nu-latn` (ar-SA 기본은 회교력)

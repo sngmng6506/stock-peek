@@ -5,7 +5,8 @@
 export const LANGUAGES = [
   { code: 'ko', label: '한국어', locale: 'ko-KR', dir: 'ltr', sitePath: '/' },
   { code: 'en', label: 'English', locale: 'en-US', dir: 'ltr', sitePath: '/en' },
-  { code: 'ja', label: '日本語', locale: 'ja-JP', dir: 'ltr', sitePath: '/ja' }
+  { code: 'ja', label: '日本語', locale: 'ja-JP', dir: 'ltr', sitePath: '/ja' },
+  { code: 'ar', label: 'العربية', locale: 'ar-SA', dir: 'rtl', sitePath: '/ar' }
 ]
 
 export const FALLBACK_LANG = 'en'

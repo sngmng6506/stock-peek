@@ -6,6 +6,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -14,6 +15,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -22,6 +24,16 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
+    <lastmod>2026-10-25</lastmod>
+  </url>
+  <url>
+    <loc>https://stock-peek.com/ar</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -30,6 +42,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/guide/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/guide/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/guide/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/guide/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/guide/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -38,6 +51,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/guide/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/guide/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/guide/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/guide/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/guide/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -46,6 +60,16 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/guide/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/guide/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/guide/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/guide/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/guide/" />
+    <lastmod>2026-10-25</lastmod>
+  </url>
+  <url>
+    <loc>https://stock-peek.com/ar/guide/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/guide/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/guide/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/guide/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/guide/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/guide/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -54,6 +78,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/releases/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/releases/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -62,6 +87,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/releases/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/releases/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -70,6 +96,16 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/releases/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/releases/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
+    <lastmod>2026-10-25</lastmod>
+  </url>
+  <url>
+    <loc>https://stock-peek.com/ar/releases/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/releases/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/releases/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/releases/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -78,6 +114,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/privacy/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/privacy/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/privacy/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/privacy/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -86,6 +123,7 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/privacy/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/privacy/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/privacy/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/privacy/" />
     <lastmod>2026-10-25</lastmod>
   </url>
@@ -94,6 +132,16 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/privacy/" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/privacy/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/privacy/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/privacy/" />
+    <lastmod>2026-10-25</lastmod>
+  </url>
+  <url>
+    <loc>https://stock-peek.com/ar/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://stock-peek.com/en/privacy/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/privacy/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stock-peek.com/ar/privacy/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stock-peek.com/privacy/" />
     <lastmod>2026-10-25</lastmod>
   </url>
