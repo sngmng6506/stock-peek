@@ -36,6 +36,7 @@ export default {
   'add.close': 'Close',
   'add.searchPlaceholder.KR': 'e.g. Samsung, 005930',
   'add.searchPlaceholder.US': 'e.g. Apple, AAPL',
+  'add.searchPlaceholder.JP': 'e.g. Toyota, トヨタ, 7203',
   'add.alreadyAdded': 'Already added',
   'add.alreadyAddedTitle': 'Already in watchlist',
   'add.searchFail': 'Search failed',
@@ -67,6 +68,7 @@ export default {
   // Markets (one per id in src/shared/markets.js)
   'market.KR': 'Korea',
   'market.US': 'US',
+  'market.JP': 'Japan',
   // Shared formats ({v}, {n} are placeholders)
   'common.example': 'e.g. {v}',
   'unit.shares': '{n} sh',
@@ -75,6 +77,9 @@ export default {
   'error.ERR_INVALID_SYMBOL': 'That symbol format is not valid',
   'error.ERR_UNKNOWN_MARKET': 'This market is not supported',
   'error.ERR_NOT_FOUND': 'Stock not found',
+  'error.ERR_SEARCH_FAILED': 'Search failed',
+  // Quote delay label
+  'card.delayed': '{n} min delay',
   // Tray and notifications (main process)
   'tray.autostart': 'Launch at login',
   'tray.quit': 'Quit',

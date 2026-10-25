@@ -5,7 +5,7 @@ AI·기여자용 작업 규칙. 사용자 소개는 [README.md](README.md).
 ## 개요
 
 - Windows·Mac 데스크톱 위젯. 화면 가장자리 hover 시 관심 종목 시세 패널 표시
-- 데이터: KR 네이버 금융, 그 외 시장 Yahoo Finance
+- 데이터: KR 네이버 금융, US·JP 시세 Yahoo Finance (JP 20분 지연), JP 일본어 종목명·검색은 JPX 상장 종목 목록
 - 스택: Electron, electron-vite, React 19, `electron-store`
 - 계정·증권사 연동 없음
 
@@ -29,7 +29,8 @@ npm run check:site             # website/가 최신인지 검사
 src/shared/markets.js     시장 정의 (통화·장 시간·심볼 규칙·순서) — main·renderer 공용
 src/shared/languages.js   지원 언어 (코드·로케일·방향·사이트 경로)
 src/shared/i18n/          언어별 번역 (ko.js가 키 기준) — main·renderer 공용
-src/main/markets/         시장별 데이터 provider (naver.js, yahoo.js 팩토리, index.js 등록)
+src/main/markets/         시장별 데이터 provider (naver.js, yahoo.js 팩토리, jpx.js, index.js 등록)
+data/jp-stocks.json       JPX 東証上場銘柄一覧 변환본 — 직접 수정 금지 (update-jp-stocks.yml이 매월 갱신)
 src/main/index.js         창·트레이·IPC 핸들러·자동 업데이트
 src/main/stockService.js  폴링, lastGood 캐시, 시세·보유 병합
 src/main/watchlist.js     관심종목 CRUD (검증은 markets.js 규칙)
@@ -38,7 +39,7 @@ src/preload/index.js      contextBridge IPC 화이트리스트
 src/renderer/src/         App.jsx, components/, i18n/ (Provider), lib/ (금액 포맷·오류 번역)
 site/                     웹사이트 원본 (site.json, strings/<lang>.json, pages/<lang>/<page>.html)
 website/                  생성 결과 — HTML·sitemap 직접 수정 금지 (demo.js, style.css, llms.txt, 이미지는 직접)
-scripts/                  prepare-release.mjs, build-site.mjs, check-i18n.mjs
+scripts/                  prepare-release.mjs, build-site.mjs, check-i18n.mjs, update_jp_stocks.py
 docs/market-expansion.md  시장·언어 추가 체크리스트
 ```
 
@@ -71,8 +72,9 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 | 앱       | main에 앱 파일 push                   | `release.yml`: 패치 버전 증가 → lint·i18n 검사 → Win 빌드 → Release → Mac 빌드 자산 추가 |
 | 웹사이트 | main에 `website/**` push              | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)                                     |
 | 검사     | `site/`·`website/`·`src/shared/` 변경 | `check.yml`: 번역 키, 생성 결과 최신 여부                                                |
+| JP 목록  | 매월 8일 (수동 실행 가능)             | `update-jp-stocks.yml`: JPX 엑셀 → `data/jp-stocks.json` 커밋 → 앱 릴리즈                |
 
-- 앱 파일: `src/`, `resources/`, `build/`, `package*.json`, `electron-builder.yml` 등. 문서·웹사이트만 바뀌면 릴리즈 안 됨
+- 앱 파일: `src/`, `data/`, `resources/`, `build/`, `package*.json`, `electron-builder.yml` 등. 문서·웹사이트만 바뀌면 릴리즈 안 됨
 - 릴리즈 워크플로우가 main에 버전 커밋을 push하므로 작업 전 `git pull`
 - 빌드 중 main에 웹사이트·문서만 바뀐 커밋이 들어오면 그 위에 버전 커밋을 다시 올림. 앱 파일이 바뀌었으면 다음 실행에 넘김
 - 태그 수동 생성 금지. minor·major는 `package.json` 버전을 최신 태그보다 높여서 push

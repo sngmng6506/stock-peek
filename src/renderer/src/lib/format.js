@@ -22,6 +22,7 @@ export function formatMoney(value, marketId, lang, { signed = false } = {}) {
   const market = getMarket(marketId)
   const currency = market?.currency || 'USD'
   const digits = market?.decimals ?? 2
+  const maxDigits = market?.maxDecimals ?? digits
   const signDisplay = signed ? 'exceptZero' : 'auto'
   if (usesWonSuffix(currency, lang)) {
     return `${nf('ko-KR', { maximumFractionDigits: 0, signDisplay }).format(Math.round(value))}원`
@@ -31,7 +32,7 @@ export function formatMoney(value, marketId, lang, { signed = false } = {}) {
     currency,
     currencyDisplay: 'narrowSymbol',
     minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
+    maximumFractionDigits: maxDigits,
     signDisplay
   }).format(value)
 }
@@ -61,4 +62,10 @@ export function formatRatio(r) {
 export function examplePrice(marketId) {
   const m = getMarket(marketId)
   return m ? m.examplePrice.toFixed(m.decimals) : ''
+}
+
+// 종목명: 화면 언어가 시장 원어와 같으면 원어 이름(예: 일본어 UI의 トヨタ自動車), 아니면 기본 이름
+export function displayName(stock, lang) {
+  if (stock.localName && stock.localLang === lang) return stock.localName
+  return stock.name || stock.localName || stock.symbol
 }

@@ -15,9 +15,10 @@ const HEADERS = { 'User-Agent': USER_AGENT, Accept: 'application/json' }
  * @param {object} cfg
  * @param {string} cfg.market       시장 id ('US', 'JP' …)
  * @param {string} [cfg.suffix]     Yahoo 티커 접미사. 저장 심볼에는 붙이지 않음
- * @param {Record<string,string>} cfg.exchanges  Yahoo 거래소 코드 → 화면 표시 이름
+ * @param {Record<string,string>} [cfg.exchanges]  Yahoo 거래소 코드 → 표시 이름. suffix가 있으면 생략 가능
+ * @param {string} [cfg.label]  exchanges에 없는 거래소의 표시 이름
  */
-export function createYahooProvider({ market, suffix = '', exchanges }) {
+export function createYahooProvider({ market, suffix = '', exchanges = {}, label = '' }) {
   const toTicker = (symbol) => `${symbol}${suffix}`
   const fromTicker = (ticker) =>
     suffix && ticker.endsWith(suffix) ? ticker.slice(0, -suffix.length) : ticker
@@ -27,13 +28,17 @@ export function createYahooProvider({ market, suffix = '', exchanges }) {
     if (!res.ok) throw new Error(`Yahoo search: ${res.status}`)
     const json = await res.json()
     return (json?.quotes || [])
-      .filter((q) => q.exchange in exchanges && (q.quoteType === 'EQUITY' || q.quoteType === 'ETF'))
+      .filter(
+        (q) =>
+          (suffix ? q.symbol?.endsWith(suffix) : q.exchange in exchanges) &&
+          (q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
+      )
       .slice(0, 10)
       .map((q) => ({
         market,
         symbol: fromTicker(q.symbol),
         name: q.shortname || q.longname || q.symbol,
-        type: q.quoteType === 'ETF' ? 'ETF' : exchanges[q.exchange]
+        type: q.quoteType === 'ETF' ? 'ETF' : exchanges[q.exchange] || label
       }))
   }
 

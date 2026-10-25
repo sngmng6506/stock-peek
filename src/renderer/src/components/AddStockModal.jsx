@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from '../i18n'
 import { MARKETS } from '../../../shared/markets.js'
-import { currencySymbol, examplePrice } from '../lib/format'
+import { currencySymbol, displayName, examplePrice } from '../lib/format'
 import { errorText } from '../lib/errors'
 
 function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
@@ -133,7 +133,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
                     disabled={busy || exists}
                     title={exists ? t('add.alreadyAddedTitle') : undefined}
                   >
-                    <span className="search-name">{r.name}</span>
+                    <span className="search-name">{displayName(r, lang)}</span>
                     <span className="search-meta">
                       {exists
                         ? t('add.alreadyAdded')
@@ -157,7 +157,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
             <div className="modal-title">{t('add.holdingInfo')}</div>
 
             <div className="selected-stock">
-              <span className="selected-name">{selected.name}</span>
+              <span className="selected-name">{displayName(selected, lang)}</span>
               <span className="selected-meta">
                 {selected.symbol} · {t(`market.${selected.market}`)}
               </span>

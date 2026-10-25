@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useI18n } from '../i18n'
-import { currencySymbol, examplePrice } from '../lib/format'
+import { currencySymbol, displayName, examplePrice } from '../lib/format'
 import { errorText } from '../lib/errors'
 
 function HoldingEditModal({ stock, onClose, onSave }) {
@@ -44,7 +44,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
         <div className="modal-title">{t('holding.title')}</div>
 
         <div className="selected-stock">
-          <span className="selected-name">{stock.name || stock.symbol}</span>
+          <span className="selected-name">{displayName(stock, lang)}</span>
           <span className="selected-meta">
             {stock.symbol} · {t(`market.${stock.market}`)}
           </span>

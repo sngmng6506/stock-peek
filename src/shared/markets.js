@@ -1,5 +1,6 @@
 // 시장 정의 — main(데이터·장 시간)과 renderer(표기·탭 순서)가 함께 쓰는 순수 데이터.
 // 시장 추가: 여기에 항목 하나 + src/main/markets/index.js에 provider 연결 + 번역 키(market.<ID> 등).
+// 선택 항목: maxDecimals(소수 표시 최대), delayMinutes(시세 지연 표시), localLang(원어 종목명 언어).
 // 배열 순서 = 패널 그룹 순서 = 종목 추가 화면 탭 순서.
 
 export const MARKETS = [
@@ -25,6 +26,28 @@ export const MARKETS = [
     examplePrice: 189.2,
     symbolPattern: /^[A-Z][A-Z0-9.-]{0,9}$/,
     normalizeSymbol: (s) => s.toUpperCase()
+  },
+  {
+    id: 'JP',
+    currency: 'JPY',
+    decimals: 0,
+    maxDecimals: 1, // ETF 등 0.5엔 단위 가격
+    timeZone: 'Asia/Tokyo',
+    weekdays: [1, 2, 3, 4, 5],
+    sessions: [
+      ['09:00', '11:30'],
+      ['12:30', '15:30']
+    ],
+    delayMinutes: 20, // Yahoo 도쿄증권거래소 시세 지연
+    localLang: 'ja', // 종목명 원어 (JPX 목록)
+    examplePrice: 2850,
+    // 4자리: 숫자 또는 영문 포함 신규 코드(130A 등)
+    symbolPattern: /^[0-9][0-9A-Z]{3}$/,
+    normalizeSymbol: (s) =>
+      s
+        .replace(/\.T$/i, '')
+        .replace(/[^0-9A-Za-z]/g, '')
+        .toUpperCase()
   }
 ]
 

@@ -955,3 +955,11 @@ body,
   font-size: 12px;
   padding: 5px 8px;
 }
+
+/* 시세 지연 시장 (일본 등) */
+.price .delay {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(235, 235, 245, 0.4);
+}

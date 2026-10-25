@@ -36,6 +36,7 @@ export default {
   'add.close': '닫기',
   'add.searchPlaceholder.KR': '예: 삼성전자, 005930',
   'add.searchPlaceholder.US': '예: Apple, AAPL',
+  'add.searchPlaceholder.JP': '예: トヨタ, Toyota, 7203',
   'add.alreadyAdded': '이미 추가됨',
   'add.alreadyAddedTitle': '이미 추가된 종목',
   'add.searchFail': '검색 실패',
@@ -67,6 +68,7 @@ export default {
   // 시장 (src/shared/markets.js의 id마다)
   'market.KR': '한국',
   'market.US': '미국',
+  'market.JP': '일본',
   // 공통 표기 ({v}, {n}은 값 자리)
   'common.example': '예: {v}',
   'unit.shares': '{n}주',
@@ -75,6 +77,9 @@ export default {
   'error.ERR_INVALID_SYMBOL': '종목 코드 형식이 맞지 않아요',
   'error.ERR_UNKNOWN_MARKET': '지원하지 않는 시장이에요',
   'error.ERR_NOT_FOUND': '종목을 찾을 수 없어요',
+  'error.ERR_SEARCH_FAILED': '검색에 실패했어요',
+  // 시세 지연 표시
+  'card.delayed': '{n}분 지연',
   // 트레이·알림 (main 프로세스)
   'tray.autostart': '자동 시작',
   'tray.quit': '종료',
