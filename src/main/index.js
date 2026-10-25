@@ -340,7 +340,7 @@ function startHoverPolling() {
 
     if (!isOnDockedDisplay(cursor)) {
       hoverEnterTime = null
-      if (targetState === 'shown') setTarget('hidden')
+      if (targetState === 'shown' && !panelPinned && !panelLocked) setTarget('hidden')
       return
     }
 
