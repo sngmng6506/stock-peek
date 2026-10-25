@@ -1,19 +1,13 @@
-# Security Policy
+# SECURITY.md
 
-## Reporting a vulnerability
+보안 취약점 제보 방법. 공개 이슈로 올리지 말고 메일로 제보.
 
-Please do not disclose suspected security vulnerabilities in a public GitHub issue.
+## 제보
 
-Send a report to **sngmng6506@gmail.com** with:
+- 메일: [sngmng6506@gmail.com](mailto:sngmng6506@gmail.com)
+- 포함: 앱 버전, Windows 버전, 재현 절차, 기대·실제 동작, 민감정보 제거한 스크린샷·로그
+- 수정 배포 전까지 공개 자제
 
-- affected version
-- Windows version
-- reproduction steps
-- expected and actual behavior
-- screenshots or logs with sensitive information removed
+## 범위
 
-Reports will be reviewed as soon as practical. Please allow time to investigate and prepare a fix before public disclosure.
-
-## Scope
-
-Security reports may cover the Electron desktop app, update flow, Cloudflare Worker proxy, and landing page.
+- 데스크톱 앱, 자동 업데이트, Cloudflare Worker 프록시, 랜딩 페이지

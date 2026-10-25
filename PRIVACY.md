@@ -1,24 +1,23 @@
-# Privacy and data handling
+# PRIVACY.md
 
-Stock Peek does not require an account and does not connect to a brokerage account or place orders.
+개인정보·데이터 처리 방침. 계정 불필요, 증권사 연동·주문 기능 없음.
 
-## Stored on your PC
+## 로컬 저장 (`electron-store`)
 
-The following data is stored locally through `electron-store`:
+- 관심 종목과 순서
+- 보유 수량·평균 매입가
+- 패널 위치·모니터
+- 언어·welcome 화면 설정
 
-- watchlist symbols and order
-- holding quantity and average purchase price
-- dock position and selected monitor
-- language and welcome-screen preferences
+## 네트워크 요청
 
-## Network requests
+- 공개 시세 데이터만 네이버 금융·Yahoo Finance에 직접 요청
+- 업데이트 확인용으로 GitHub Releases 조회
 
-The app requests public market data directly from Naver Finance or Yahoo Finance.
+## 분석·광고
 
-## Analytics and advertising
+- 광고 SDK·행동 분석 도구 없음
 
-The desktop app does not include advertising SDKs or general-purpose behavioral analytics.
+## 문의
 
-## Contact
-
-For privacy questions, contact sngmng6506@gmail.com.
+- [sngmng6506@gmail.com](mailto:sngmng6506@gmail.com)
