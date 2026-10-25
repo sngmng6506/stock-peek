@@ -67,7 +67,20 @@ let updateInfo = null
 let updateReady = null
 let updateNotification = null
 
-const UPDATE_CHECK_INTERVAL = 4 * 60 * 60 * 1000
+const UPDATE_CHECK_INTERVAL = 60 * 60 * 1000
+const UPDATE_CHECK_ON_OPEN_GAP = 15 * 60 * 1000
+let lastUpdateCheck = 0
+
+function checkForUpdates() {
+  if (is.dev || updateReady) return
+  lastUpdateCheck = Date.now()
+  autoUpdater.checkForUpdates().catch(() => {})
+}
+
+// 패널을 열 때도 확인하되 15분에 한 번까지만
+function checkForUpdatesOnOpen() {
+  if (Date.now() - lastUpdateCheck >= UPDATE_CHECK_ON_OPEN_GAP) checkForUpdates()
+}
 
 function resolveLanguage() {
   const saved = getLanguage()
@@ -213,6 +226,7 @@ function setTarget(state) {
   const y = getPanelY()
 
   if (state === 'shown') {
+    checkForUpdatesOnOpen()
     hideIndicator()
     if (!mainWindow.isVisible()) {
       safeSetPosition(mainWindow, getHiddenX(), y)
@@ -683,8 +697,8 @@ app.whenReady().then(() => {
     console.error('autoUpdater error:', err?.message || err)
   })
   if (!is.dev) {
-    autoUpdater.checkForUpdates().catch(() => {})
-    setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), UPDATE_CHECK_INTERVAL)
+    checkForUpdates()
+    setInterval(checkForUpdates, UPDATE_CHECK_INTERVAL)
   }
 
   subscribe((data) => {
