@@ -13,6 +13,7 @@ on:
       - 'electron.vite.config.*'
       - 'eslint.config.*'
       - 'scripts/prepare-release.mjs'
+      - '.gitattributes'
       - '.github/workflows/release.yml'
   workflow_dispatch:
 
