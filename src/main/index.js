@@ -1,4 +1,14 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, screen, shell, Tray } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  nativeImage,
+  Notification,
+  screen,
+  shell,
+  Tray
+} from 'electron'
 import { join } from 'path'
 import fs from 'node:fs/promises'
 import { electronApp, is } from '@electron-toolkit/utils'
@@ -55,6 +65,34 @@ let isDragging = false
 let dragDebounce = null
 let updateInfo = null
 let updateReady = null
+let updateNotification = null
+
+const UPDATE_CHECK_INTERVAL = 4 * 60 * 60 * 1000
+
+function resolveLanguage() {
+  const saved = getLanguage()
+  if (saved) return saved
+  // OS 언어 감지: 한국어면 ko, 그 외 en
+  const locale = (app.getLocale() || 'en').toLowerCase()
+  return locale.startsWith('ko') ? 'ko' : 'en'
+}
+
+function installUpdate() {
+  // silent 설치 후 자동 재실행
+  if (updateReady) autoUpdater.quitAndInstall(true, true)
+}
+
+function notifyUpdateReady(version) {
+  if (!Notification.isSupported()) return
+  const ko = resolveLanguage() === 'ko'
+  updateNotification = new Notification({
+    title: ko ? `몰래주식 v${version} 업데이트` : `Stock Peek v${version} update`,
+    body: ko ? '클릭하면 바로 업데이트하고 다시 실행합니다.' : 'Click to update and restart now.',
+    icon
+  })
+  updateNotification.on('click', installUpdate)
+  updateNotification.show()
+}
 
 function getDockedDisplay() {
   const dock = getDock()
@@ -462,7 +500,7 @@ function refreshTrayMenu() {
   if (updateReady) {
     template.push({
       label: `↻ v${updateReady.version} 적용 (재시작)`,
-      click: () => autoUpdater.quitAndInstall()
+      click: installUpdate
     })
     template.push({ type: 'separator' })
   } else if (updateInfo) {
@@ -511,7 +549,7 @@ app.on('second-instance', () => {
 })
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.stockpeek')
+  electronApp.setAppUserModelId('com.stockpeek.app')
 
   ipcMain.handle('stocks:get-cache', () => getCache())
   ipcMain.handle('stocks:refresh', () => refreshAll())
@@ -595,13 +633,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle('dock:get-edge', () => getDock().edge)
 
-  ipcMain.handle('lang:get', () => {
-    const saved = getLanguage()
-    if (saved) return saved
-    // OS 언어 감지: 한국어면 ko, 그 외 en
-    const locale = (app.getLocale() || 'en').toLowerCase()
-    return locale.startsWith('ko') ? 'ko' : 'en'
-  })
+  ipcMain.handle('lang:get', () => resolveLanguage())
   ipcMain.handle('lang:set', (_e, lang) => {
     setLanguage(lang)
     return getLanguage()
@@ -624,9 +656,7 @@ app.whenReady().then(() => {
     available: updateInfo,
     ready: updateReady
   }))
-  ipcMain.on('app:install-update', () => {
-    if (updateReady) autoUpdater.quitAndInstall()
-  })
+  ipcMain.on('app:install-update', installUpdate)
 
   createWindow()
   createIndicatorWindow()
@@ -647,13 +677,14 @@ app.whenReady().then(() => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('app:update-ready', updateReady)
     }
+    notifyUpdateReady(info.version)
   })
   autoUpdater.on('error', (err) => {
     console.error('autoUpdater error:', err?.message || err)
   })
   if (!is.dev) {
     autoUpdater.checkForUpdates().catch(() => {})
-    setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), 24 * 60 * 60 * 1000)
+    setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), UPDATE_CHECK_INTERVAL)
   }
 
   subscribe((data) => {
