@@ -1,0 +1,52 @@
+name: Update JP stock list
+
+# JPX 東証上場銘柄一覧 → data/jp-stocks.json (일본 종목 일본어 이름·검색용).
+# JPX는 매월 셋째 영업일에 전월 말 기준으로 갱신 → 매월 8일 실행.
+# 커밋되면 data/**가 release.yml 경로에 있어 앱 릴리즈에 포함됨.
+on:
+  schedule:
+    - cron: '0 3 8 * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_jp_stocks.py'
+      - '.github/workflows/update-jp-stocks.yml'
+
+concurrency:
+  group: update-jp-stocks
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - run: pip install openpyxl
+
+      - run: python scripts/update_jp_stocks.py data/jp-stocks.json
+
+      - name: Commit if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add data/jp-stocks.json
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "data: update JP stock list ($(python -c "import json;print(json.load(open('data/jp-stocks.json'))['asOf'])"))"
+          git pull --rebase origin main
+          git push origin HEAD:main
