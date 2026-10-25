@@ -82,6 +82,7 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 - `.gitattributes`(eol=lf) 유지. 없으면 Windows 러너에서 CRLF로 lint 실패
 - 웹사이트 버전·갱신일: 릴리즈 때 `sync:version`(= `build-site --touch`)이 `site/site.json`과 `website/`를 갱신해 버전 커밋에 포함
 - 웹사이트 수정: `site/` 고치고 `npm run build:site` 후 둘 다 커밋
+- `website/` 충돌(릴리즈 봇의 버전 갱신과 겹침)은 손으로 풀지 말고 `npm run build:site`로 다시 생성
 - CSS·JS 변경 시 `site/site.json`의 `assetVersion` 올리기 (브라우저 캐시 무효화)
 
 ## 체크리스트
