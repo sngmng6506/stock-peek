@@ -84,6 +84,7 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 - 웹사이트 수정: `site/` 고치고 `npm run build:site` 후 둘 다 커밋
 - `website/` 충돌(릴리즈 봇의 버전 갱신과 겹침)은 손으로 풀지 말고 `npm run build:site`로 다시 생성
 - CSS·JS 변경 시 `site/site.json`의 `assetVersion` 올리기 (브라우저 캐시 무효화)
+- 언어 자동 이동: 기준 언어 홈(`/`)에서만, 브라우저 언어 기준. 크롤러·사이트 안 이동·직접 고른 언어(`localStorage sp-lang`)는 제외. 생성 스크립트 `languageRedirect()`
 
 ## 체크리스트
 

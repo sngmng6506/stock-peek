@@ -11,7 +11,7 @@ import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { LANGUAGES } from '../src/shared/languages.js'
+import { LANGUAGES, FALLBACK_LANG } from '../src/shared/languages.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SITE = join(root, 'site')
@@ -61,6 +61,32 @@ const fileOf = (lang, page) =>
       : `${lang}.html`
     : `${prefix(lang).slice(1)}${prefix(lang) ? '/' : ''}${site.pages[page]}index.html`
 const langsWith = (page) => langs.filter((l) => pages[l.code][page])
+
+// 첫 화면(기준 언어 홈)에 처음 온 방문자를 브라우저 언어의 홈으로 보냄.
+// 국가(IP)가 아니라 브라우저 언어 기준. 크롤러, 사이트 안에서 온 이동, 직접 고른 언어(sp-lang)는 그대로.
+function languageRedirect() {
+  const targets = Object.fromEntries(
+    langsWith('home').map((l) => [l.code, isDefault(l.code) ? '' : pathOf(l.code, 'home')])
+  )
+  const fallback = targets[FALLBACK_LANG] ?? ''
+  return `<script>
+(function () {
+  try {
+    if (/bot|crawl|spider|slurp|preview|facebookexternalhit|embedly|whatsapp|telegram|discord/i.test(navigator.userAgent)) return;
+    if (localStorage.getItem('sp-lang')) return;
+    if (document.referrer && new URL(document.referrer).host === location.host) return;
+    var targets = ${JSON.stringify(targets)};
+    var prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+    var to = ${JSON.stringify(fallback)};
+    for (var i = 0; i < prefs.length; i++) {
+      var code = String(prefs[i]).toLowerCase().split('-')[0];
+      if (code in targets) { to = targets[code]; break; }
+    }
+    if (to) location.replace(to + location.search + location.hash);
+  } catch (e) {}
+})();
+</script>`
+}
 const ogLocale = (l) => l.locale.replace('-', '_')
 const esc = (s) =>
   String(s)
@@ -120,6 +146,7 @@ function render(lang, page) {
     `<link rel="icon" href="/favicon.ico" sizes="any" />`,
     `<link rel="apple-touch-icon" href="/apple-touch-icon.png" />`,
     `<link rel="stylesheet" href="/style.css?v=${site.assetVersion}" />`,
+    isDefault(lang) && page === 'home' && languageRedirect(),
     slots.head
   ].filter(Boolean)
 

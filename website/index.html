@@ -34,7 +34,24 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="stylesheet" href="/style.css?v=7" />
+  <link rel="stylesheet" href="/style.css?v=8" />
+  <script>
+  (function () {
+    try {
+      if (/bot|crawl|spider|slurp|preview|facebookexternalhit|embedly|whatsapp|telegram|discord/i.test(navigator.userAgent)) return;
+      if (localStorage.getItem('sp-lang')) return;
+      if (document.referrer && new URL(document.referrer).host === location.host) return;
+      var targets = {"ko":"","en":"/en","ja":"/ja"};
+      var prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      var to = "/en";
+      for (var i = 0; i < prefs.length; i++) {
+        var code = String(prefs[i]).toLowerCase().split('-')[0];
+        if (code in targets) { to = targets[code]; break; }
+      }
+      if (to) location.replace(to + location.search + location.hash);
+    } catch (e) {}
+  })();
+  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -198,6 +215,6 @@
       .catch(function () {});
   })();
   </script>
-  <script src="/demo.js?v=7" defer></script>
+  <script src="/demo.js?v=8" defer></script>
 </body>
 </html>

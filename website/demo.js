@@ -468,3 +468,17 @@
     win.classList.add('btn-dl-alt')
   })
 })()
+
+// 언어 링크를 직접 누르면 그 선택을 기억 → 첫 화면 자동 언어 이동을 더 하지 않음
+;(function () {
+  'use strict'
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('.nav-right a[lang], .foot-links a[lang]')
+    if (!a) return
+    try {
+      localStorage.setItem('sp-lang', a.getAttribute('lang'))
+    } catch {
+      // 저장소를 못 쓰면 같은 사이트 안 이동(referrer)으로만 판단
+    }
+  })
+})()
