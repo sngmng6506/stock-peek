@@ -16,12 +16,7 @@ import {
   refreshAll,
   reorderCache
 } from './stockService.js'
-import {
-  addItem,
-  removeItem,
-  setItems,
-  updateHolding
-} from './watchlist.js'
+import { addItem, removeItem, setItems, updateHolding } from './watchlist.js'
 import { searchKoreanStocks } from './api/naver.js'
 import { searchUSStocks } from './api/yahoo.js'
 import {
@@ -142,7 +137,9 @@ function safeGetX() {
       const x = mainWindow.getPosition()[0]
       if (Number.isFinite(x)) return x
     }
-  } catch {}
+  } catch {
+    // The native window may have closed between the check and the operation.
+  }
   return getHiddenX()
 }
 
@@ -151,7 +148,9 @@ function safeSetPosition(win, x, y) {
     if (win && !win.isDestroyed()) {
       win.setPosition(Math.round(x) || 0, Math.round(y) || 0)
     }
-  } catch {}
+  } catch {
+    // The native window may have closed between the check and the operation.
+  }
 }
 
 function showIndicator() {
@@ -187,9 +186,15 @@ function setTarget(state) {
       cancelAnim = null
       return
     }
-    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => safeSetPosition(mainWindow, x, y), () => {
-      cancelAnim = null
-    })
+    cancelAnim = animate(
+      fromX,
+      toX,
+      ANIM_DURATION,
+      (x) => safeSetPosition(mainWindow, x, y),
+      () => {
+        cancelAnim = null
+      }
+    )
   } else {
     const fromX = safeGetX()
     const toX = getHiddenX()
@@ -199,11 +204,17 @@ function setTarget(state) {
       cancelAnim = null
       return
     }
-    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => safeSetPosition(mainWindow, x, y), () => {
-      cancelAnim = null
-      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.hide()
-      showIndicator()
-    })
+    cancelAnim = animate(
+      fromX,
+      toX,
+      ANIM_DURATION,
+      (x) => safeSetPosition(mainWindow, x, y),
+      () => {
+        cancelAnim = null
+        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.hide()
+        showIndicator()
+      }
+    )
   }
 }
 
@@ -305,7 +316,10 @@ function snapToEdge() {
 
   const centerX = wx + PANEL_WIDTH / 2
   const edge = centerX < wa.x + wa.width / 2 ? 'left' : 'right'
-  const newY = Math.max(0, Math.min(wy - wa.y, wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN))
+  const newY = Math.max(
+    0,
+    Math.min(wy - wa.y, wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN)
+  )
 
   // displayId까지 저장 → 다음 실행 및 위치 계산에 사용
   setDockPosition({ edge, y: newY, displayId: display.id })
@@ -548,14 +562,11 @@ app.whenReady().then(() => {
     refreshAll()
     return list
   })
-  ipcMain.handle(
-    'watchlist:update-holding',
-    async (_e, { market, symbol, quantity, avgPrice }) => {
-      const list = updateHolding(market, symbol, { quantity, avgPrice })
-      refreshAll()
-      return list
-    }
-  )
+  ipcMain.handle('watchlist:update-holding', async (_e, { market, symbol, quantity, avgPrice }) => {
+    const list = updateHolding(market, symbol, { quantity, avgPrice })
+    refreshAll()
+    return list
+  })
   ipcMain.handle('watchlist:remove', async (_e, { market, symbol }) => {
     const list = removeItem(market, symbol)
     refreshAll()
@@ -642,10 +653,7 @@ app.whenReady().then(() => {
   })
   if (!is.dev) {
     autoUpdater.checkForUpdates().catch(() => {})
-    setInterval(
-      () => autoUpdater.checkForUpdates().catch(() => {}),
-      24 * 60 * 60 * 1000
-    )
+    setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), 24 * 60 * 60 * 1000)
   }
 
   subscribe((data) => {

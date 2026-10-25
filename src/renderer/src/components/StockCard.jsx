@@ -44,7 +44,14 @@ function StockCard({ stock, onRemove, onEditHolding }) {
   if (stock.error) {
     return (
       <div className="card card-err">
-        {onRemove && <CardBtn onClick={() => onRemove(stock)} title={t('card.remove')} label="×" className="card-remove" />}
+        {onRemove && (
+          <CardBtn
+            onClick={() => onRemove(stock)}
+            title={t('card.remove')}
+            label="×"
+            className="card-remove"
+          />
+        )}
         <div className="row">
           <span className="name">{stock.symbol}</span>
           <span className="change down">err</span>
@@ -96,9 +103,7 @@ function StockCard({ stock, onRemove, onEditHolding }) {
       </div>
       {profit && (
         <div className="row holding">
-          <span className="holding-qty">
-            {Number(stock.quantity).toLocaleString('ko-KR')}주
-          </span>
+          <span className="holding-qty">{Number(stock.quantity).toLocaleString('ko-KR')}주</span>
           <span className={`holding-profit ${profit.isUp ? 'up' : 'down'}`}>
             {profit.profitText} ({profit.ratioText})
           </span>

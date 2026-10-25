@@ -39,20 +39,14 @@ function parseNum(raw, formatted) {
 function pickQuote(data) {
   const main = {
     price: parseNum(data.closePriceRaw, data.closePrice),
-    change: parseNum(
-      data.compareToPreviousClosePriceRaw,
-      data.compareToPreviousClosePrice
-    ),
+    change: parseNum(data.compareToPreviousClosePriceRaw, data.compareToPreviousClosePrice),
     changeRatio: parseNum(data.fluctuationsRatioRaw, data.fluctuationsRatio),
     direction: data.compareToPreviousPrice?.code,
     time: data.localTradedAt
   }
   const over = data.overMarketPriceInfo
     ? {
-        price: parseNum(
-          data.overMarketPriceInfo.overPriceRaw,
-          data.overMarketPriceInfo.overPrice
-        ),
+        price: parseNum(data.overMarketPriceInfo.overPriceRaw, data.overMarketPriceInfo.overPrice),
         change: parseNum(
           data.overMarketPriceInfo.compareToPreviousClosePriceRaw,
           data.overMarketPriceInfo.compareToPreviousClosePrice
@@ -78,16 +72,14 @@ function pickQuote(data) {
 }
 
 async function fetchKR(code, { skipChart = false } = {}) {
-  const quoteP = fetch(
-    `https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`,
-    { headers: { Referer: 'https://finance.naver.com', 'User-Agent': UA } }
-  )
+  const quoteP = fetch(`https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`, {
+    headers: { Referer: 'https://finance.naver.com', 'User-Agent': UA }
+  })
   const chartP = skipChart
     ? null
-    : fetch(
-        `https://m.stock.naver.com/api/stock/${code}/price?pageSize=30&page=1`,
-        { headers: { Referer: 'https://m.stock.naver.com', 'User-Agent': UA } }
-      )
+    : fetch(`https://m.stock.naver.com/api/stock/${code}/price?pageSize=30&page=1`, {
+        headers: { Referer: 'https://m.stock.naver.com', 'User-Agent': UA }
+      })
 
   const quoteRes = await quoteP
   if (!quoteRes.ok) throw new Error(`Naver quote ${code}: ${quoteRes.status}`)
@@ -100,8 +92,7 @@ async function fetchKR(code, { skipChart = false } = {}) {
   const change = q.change
   const changeRatio = q.changeRatio
   const direction = q.direction
-  const isUp =
-    direction === '1' || direction === '2' || (!direction && change > 0)
+  const isUp = direction === '1' || direction === '2' || (!direction && change > 0)
 
   let prices = []
   if (chartP) {
@@ -113,7 +104,7 @@ async function fetchKR(code, { skipChart = false } = {}) {
           .map((r) => Number(String(r.closePrice ?? '').replace(/,/g, '')))
           .filter((n) => Number.isFinite(n))
           .reverse()
-      } catch (e) {
+      } catch {
         // ignore chart parse errors
       }
     }
@@ -133,10 +124,9 @@ async function fetchKR(code, { skipChart = false } = {}) {
 }
 
 async function searchKR(q) {
-  const res = await fetch(
-    `https://ac.stock.naver.com/ac?q=${encodeURIComponent(q)}&target=stock`,
-    { headers: { 'User-Agent': UA } }
-  )
+  const res = await fetch(`https://ac.stock.naver.com/ac?q=${encodeURIComponent(q)}&target=stock`, {
+    headers: { 'User-Agent': UA }
+  })
   if (!res.ok) throw new Error(`Naver search: ${res.status}`)
   const json = await res.json()
   return (json?.items || [])
@@ -167,8 +157,7 @@ async function fetchUS(ticker) {
   const price = Number(meta.regularMarketPrice)
   const prev = Number(meta.previousClose ?? meta.chartPreviousClose)
   const change = Number.isFinite(prev) ? price - prev : 0
-  const changeRatio =
-    Number.isFinite(prev) && prev !== 0 ? (change / prev) * 100 : 0
+  const changeRatio = Number.isFinite(prev) && prev !== 0 ? (change / prev) * 100 : 0
   const name = meta.shortName || meta.longName || meta.symbol || ticker
   const closes = result.indicators?.quote?.[0]?.close || []
   const prices = closes.filter((p) => p !== null && Number.isFinite(p))
@@ -199,9 +188,7 @@ async function searchUS(q) {
   const json = await res.json()
   return (json?.quotes || [])
     .filter(
-      (qu) =>
-        US_EXCHANGES.has(qu.exchange) &&
-        (qu.quoteType === 'EQUITY' || qu.quoteType === 'ETF')
+      (qu) => US_EXCHANGES.has(qu.exchange) && (qu.quoteType === 'EQUITY' || qu.quoteType === 'ETF')
     )
     .slice(0, 10)
     .map((qu) => ({

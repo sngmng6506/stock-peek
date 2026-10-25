@@ -22,10 +22,8 @@ const api = {
       symbol,
       ...(holding || {})
     }),
-  searchStocks: (market, keyword) =>
-    ipcRenderer.invoke('search:stocks', { market, keyword }),
-  removeStock: (market, symbol) =>
-    ipcRenderer.invoke('watchlist:remove', { market, symbol }),
+  searchStocks: (market, keyword) => ipcRenderer.invoke('search:stocks', { market, keyword }),
+  removeStock: (market, symbol) => ipcRenderer.invoke('watchlist:remove', { market, symbol }),
   reorderStocks: (items) => ipcRenderer.invoke('watchlist:reorder', items),
   getUpdate: () => ipcRenderer.invoke('app:get-update'),
   installUpdate: () => ipcRenderer.send('app:install-update'),

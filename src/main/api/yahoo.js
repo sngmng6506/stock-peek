@@ -1,4 +1,4 @@
-import { useProxy, proxyStock, proxySearch, eFetch } from './proxy.js'
+import { isQuoteProxyEnabled, proxyStock, proxySearch, eFetch } from './proxy.js'
 
 const CHART_URL = (ticker) =>
   `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
@@ -20,7 +20,7 @@ const SEARCH_URL = (kw) =>
 const US_EXCHANGES = new Set(['NMS', 'NGM', 'NCM', 'NYQ', 'PCX', 'ASE', 'BTS'])
 
 export async function searchUSStocks(keyword) {
-  if (useProxy()) {
+  if (isQuoteProxyEnabled()) {
     try {
       return await proxySearch('US', keyword)
     } catch {
@@ -32,9 +32,7 @@ export async function searchUSStocks(keyword) {
   const json = await res.json()
   return (json?.quotes || [])
     .filter(
-      (q) =>
-        US_EXCHANGES.has(q.exchange) &&
-        (q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
+      (q) => US_EXCHANGES.has(q.exchange) && (q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
     )
     .slice(0, 10)
     .map((q) => ({
@@ -51,7 +49,7 @@ export async function searchUSStocks(keyword) {
 }
 
 export async function fetchUSStock(ticker) {
-  if (useProxy()) {
+  if (isQuoteProxyEnabled()) {
     try {
       return await proxyStock('US', ticker)
     } catch {
@@ -99,5 +97,3 @@ export async function fetchUSStock(ticker) {
     prices
   }
 }
-
-

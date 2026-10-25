@@ -3,12 +3,8 @@ import { useI18n } from '../i18n'
 
 function HoldingEditModal({ stock, onClose, onSave }) {
   const { t } = useI18n()
-  const [quantity, setQuantity] = useState(
-    stock.quantity != null ? String(stock.quantity) : ''
-  )
-  const [avgPrice, setAvgPrice] = useState(
-    stock.avgPrice != null ? String(stock.avgPrice) : ''
-  )
+  const [quantity, setQuantity] = useState(stock.quantity != null ? String(stock.quantity) : '')
+  const [avgPrice, setAvgPrice] = useState(stock.avgPrice != null ? String(stock.avgPrice) : '')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
@@ -91,12 +87,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
           <button type="button" onClick={onClose} disabled={busy}>
             {t('holding.cancel')}
           </button>
-          <button
-            type="button"
-            onClick={save}
-            disabled={busy}
-            className="primary"
-          >
+          <button type="button" onClick={save} disabled={busy} className="primary">
             {busy ? '...' : t('holding.save')}
           </button>
         </div>

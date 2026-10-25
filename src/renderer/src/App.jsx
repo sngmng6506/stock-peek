@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import StockCard from './components/StockCard'
+import Icon from './components/Icon'
 import AddStockModal from './components/AddStockModal'
 import SettingsModal from './components/SettingsModal'
 import WelcomeModal from './components/WelcomeModal'
@@ -25,8 +26,9 @@ import { useI18n } from './i18n'
 const idOf = (s) => `${s.market}-${s.symbol}`
 
 function SortableCard({ stock, onRemove, onEditHolding }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: idOf(stock) })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: idOf(stock)
+  })
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -35,11 +37,7 @@ function SortableCard({ stock, onRemove, onEditHolding }) {
   }
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <StockCard
-        stock={stock}
-        onRemove={onRemove}
-        onEditHolding={onEditHolding}
-      />
+      <StockCard stock={stock} onRemove={onRemove} onEditHolding={onEditHolding} />
     </div>
   )
 }
@@ -65,20 +63,36 @@ function App() {
   )
 
   useEffect(() => {
-    window.api.getStocks().then((data) => {
-      if (Array.isArray(data) && data.length) setStocks(data)
-    }).catch(() => {})
+    window.api
+      .getStocks()
+      .then((data) => {
+        if (Array.isArray(data) && data.length) setStocks(data)
+      })
+      .catch(() => {})
     const unsub = window.api.onStocksUpdate((data) => setStocks(data))
-    window.api.checkWelcome().then((shouldShow) => {
-      if (shouldShow) setShowWelcome(true)
-    }).catch(() => {})
-    window.api.getDockEdge().then((edge) => {
-      if (edge) setDockEdge(edge)
-    }).catch(() => {})
+    window.api
+      .checkWelcome()
+      .then((shouldShow) => {
+        if (shouldShow) setShowWelcome(true)
+      })
+      .catch(() => {})
+    window.api
+      .getDockEdge()
+      .then((edge) => {
+        if (edge) setDockEdge(edge)
+      })
+      .catch(() => {})
     const unsubDock = window.api.onDockEdgeChanged((edge) => setDockEdge(edge))
-    window.api.getPanelPinned().then((p) => setPinned(!!p)).catch(() => {})
+    window.api
+      .getPanelPinned()
+      .then((p) => setPinned(!!p))
+      .catch(() => {})
     const unsubPin = window.api.onPanelPinnedChanged((p) => setPinned(!!p))
-    return () => { unsub(); unsubDock(); unsubPin() }
+    return () => {
+      unsub()
+      unsubDock()
+      unsubPin()
+    }
   }, [])
 
   useEffect(() => {
@@ -130,11 +144,7 @@ function App() {
 
   const handleSaveHolding = async (holding) => {
     if (!editingHolding) return
-    await window.api.updateHolding(
-      editingHolding.market,
-      editingHolding.symbol,
-      holding
-    )
+    await window.api.updateHolding(editingHolding.market, editingHolding.symbol, holding)
   }
 
   const handleRefresh = async () => {
@@ -161,14 +171,9 @@ function App() {
     if (oldIndex < 0 || newIndex < 0) return
     const reordered = arrayMove(same, oldIndex, newIndex)
 
-    const next =
-      marketA === 'KR'
-        ? [...reordered, ...others]
-        : [...others, ...reordered]
+    const next = marketA === 'KR' ? [...reordered, ...others] : [...others, ...reordered]
     setStocks(next)
-    window.api.reorderStocks(
-      next.map((s) => ({ market: s.market, symbol: s.symbol }))
-    )
+    window.api.reorderStocks(next.map((s) => ({ market: s.market, symbol: s.symbol })))
   }
 
   const kr = stocks.filter((s) => s.market === 'KR')
@@ -180,35 +185,40 @@ function App() {
   return (
     <div className={`panel dock-${dockEdge}`} ref={panelRef}>
       <header className="panel-header">
-        <span className="title">Watchlist</span>
+        <span className="drag-handle" aria-hidden="true" />
         <div className="actions">
           <button
             className={`icon-btn ${refreshing ? 'spinning' : ''}`}
             onClick={handleRefresh}
             title={t('app.refresh')}
+            aria-label={t('app.refresh')}
           >
-            ↻
+            <Icon name="refresh" />
           </button>
           <button
             className="icon-btn"
             onClick={() => setShowAdd(true)}
             title={t('app.add')}
+            aria-label={t('app.add')}
           >
-            +
+            <Icon name="plus" />
           </button>
           <button
             className="icon-btn"
             onClick={() => setShowSettings(true)}
             title={t('app.settings')}
+            aria-label={t('app.settings')}
           >
-            ⚙
+            <Icon name="settings" />
           </button>
           <button
             className={`icon-btn help-btn ${showHelp ? 'active' : ''}`}
             onClick={() => setShowHelp((v) => !v)}
             title={t('app.help')}
+            aria-label={t('app.help')}
+            aria-expanded={showHelp}
           >
-            ?
+            <Icon name="help" />
           </button>
           <button
             className={`icon-btn pin-btn ${pinned ? 'pinned' : ''}`}
@@ -222,15 +232,18 @@ function App() {
               }
             }}
             title={pinned ? t('app.unpin') : t('app.pin')}
+            aria-label={pinned ? t('app.unpin') : t('app.pin')}
+            aria-pressed={pinned}
           >
-            📌
+            <Icon name="pin" />
           </button>
           <button
             className="icon-btn quit-btn"
             onClick={() => window.api.quitApp()}
             title={t('app.quit')}
+            aria-label={t('app.quit')}
           >
-            ✕
+            <Icon name="close" />
           </button>
         </div>
       </header>
@@ -238,61 +251,49 @@ function App() {
       {showHelp && (
         <div className="help-popover">
           <div className="help-row">
-            <span className="help-icon">📈</span>
+            <span className="help-icon" aria-hidden="true">
+              <Icon name="chart" />
+            </span>
             <span>{t('help.chart')}</span>
           </div>
         </div>
       )}
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div className="cards" ref={cardsRef}>
           <div className="cards-inner" ref={cardsInnerRef}>
-          {stocks.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-text">{t('app.empty')}</div>
-              <button
-                type="button"
-                className="empty-btn"
-                onClick={() => setShowAdd(true)}
-              >
-                {t('app.emptyAdd')}
-              </button>
-            </div>
-          ) : (
-            <>
-              <SortableContext
-                items={krIds}
-                strategy={verticalListSortingStrategy}
-              >
-                {kr.map((s) => (
-                  <SortableCard
-                    key={idOf(s)}
-                    stock={s}
-                    onRemove={handleRemove}
-                    onEditHolding={handleEditHolding}
-                  />
-                ))}
-              </SortableContext>
-              {kr.length > 0 && us.length > 0 && <div className="divider" />}
-              <SortableContext
-                items={usIds}
-                strategy={verticalListSortingStrategy}
-              >
-                {us.map((s) => (
-                  <SortableCard
-                    key={idOf(s)}
-                    stock={s}
-                    onRemove={handleRemove}
-                    onEditHolding={handleEditHolding}
-                  />
-                ))}
-              </SortableContext>
-            </>
-          )}
+            {stocks.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-text">{t('app.empty')}</div>
+                <button type="button" className="empty-btn" onClick={() => setShowAdd(true)}>
+                  {t('app.emptyAdd')}
+                </button>
+              </div>
+            ) : (
+              <>
+                <SortableContext items={krIds} strategy={verticalListSortingStrategy}>
+                  {kr.map((s) => (
+                    <SortableCard
+                      key={idOf(s)}
+                      stock={s}
+                      onRemove={handleRemove}
+                      onEditHolding={handleEditHolding}
+                    />
+                  ))}
+                </SortableContext>
+                {kr.length > 0 && us.length > 0 && <div className="divider" />}
+                <SortableContext items={usIds} strategy={verticalListSortingStrategy}>
+                  {us.map((s) => (
+                    <SortableCard
+                      key={idOf(s)}
+                      stock={s}
+                      onRemove={handleRemove}
+                      onEditHolding={handleEditHolding}
+                    />
+                  ))}
+                </SortableContext>
+              </>
+            )}
           </div>
         </div>
       </DndContext>
