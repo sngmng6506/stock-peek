@@ -1,4 +1,4 @@
-import { isQuoteProxyEnabled, proxyStock, proxySearch, eFetch } from './proxy.js'
+import { eFetch, USER_AGENT } from './http.js'
 
 const QUOTE_URL = (code) => `https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`
 
@@ -8,14 +8,12 @@ const CHART_URL = (code) => `https://m.stock.naver.com/api/stock/${code}/price?p
 
 const QUOTE_HEADERS = {
   Referer: 'https://finance.naver.com',
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+  'User-Agent': USER_AGENT
 }
 
 const CHART_HEADERS = {
   Referer: 'https://m.stock.naver.com',
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+  'User-Agent': USER_AGENT
 }
 
 function parseNumber(raw, formatted) {
@@ -84,14 +82,7 @@ function extractCloses(rows) {
 
 const SEARCH_URL = (kw) => `https://ac.stock.naver.com/ac?q=${encodeURIComponent(kw)}&target=stock`
 
-export async function searchKoreanStocks(keyword) {
-  if (isQuoteProxyEnabled()) {
-    try {
-      return await proxySearch('KR', keyword)
-    } catch {
-      // 프록시 실패 시 직접 호출로 폴백
-    }
-  }
+async function search(keyword) {
   const res = await eFetch(SEARCH_URL(keyword), { headers: CHART_HEADERS })
   if (!res.ok) throw new Error(`Naver search: ${res.status}`)
   const json = await res.json()
@@ -105,14 +96,8 @@ export async function searchKoreanStocks(keyword) {
     }))
 }
 
-export async function fetchKoreanStock(code, { skipChart = false } = {}) {
-  if (isQuoteProxyEnabled()) {
-    try {
-      return await proxyStock('KR', code, { skipChart })
-    } catch {
-      // 프록시 실패 시 직접 호출로 폴백
-    }
-  }
+// skipChart: 차트는 별도 요청이라 캐시가 살아 있으면 생략 (stockService가 판단)
+async function fetchQuote(code, { skipChart = false } = {}) {
   const quotePromise = eFetch(QUOTE_URL(code), { headers: QUOTE_HEADERS })
   const chartPromise = skipChart ? null : eFetch(CHART_URL(code), { headers: CHART_HEADERS })
 
@@ -144,3 +129,5 @@ export async function fetchKoreanStock(code, { skipChart = false } = {}) {
     prices
   }
 }
+
+export const naverProvider = { search, fetch: fetchQuote }

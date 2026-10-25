@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from '../i18n'
+import { MARKETS } from '../../../shared/markets.js'
+import { currencySymbol, examplePrice } from '../lib/format'
+import { errorText } from '../lib/errors'
 
 function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
-  const { t } = useI18n()
-  const [market, setMarket] = useState('KR')
+  const { t, lang } = useI18n()
+  const [market, setMarket] = useState(MARKETS[0].id)
   const [keyword, setKeyword] = useState('')
   const [searchResult, setSearchResult] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -64,7 +67,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
       await onAdd(selected.market, selected.symbol, holding)
       onClose()
     } catch (err) {
-      setError(err?.message || String(err))
+      setError(errorText(err, t))
       setBusy(false)
     }
   }
@@ -76,29 +79,37 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
           <>
             <div className="modal-title">{t('add.title')}</div>
 
-            <div className="seg">
-              <button
-                type="button"
-                className={market === 'KR' ? 'active' : ''}
-                onClick={() => setMarket('KR')}
+            {MARKETS.length <= 3 ? (
+              <div className="seg">
+                {MARKETS.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    className={market === m.id ? 'active' : ''}
+                    onClick={() => setMarket(m.id)}
+                  >
+                    {t(`market.${m.id}`)}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <select
+                className="modal-input market-select"
+                value={market}
+                onChange={(e) => setMarket(e.target.value)}
               >
-                {t('add.korea')}
-              </button>
-              <button
-                type="button"
-                className={market === 'US' ? 'active' : ''}
-                onClick={() => setMarket('US')}
-              >
-                {t('add.us')}
-              </button>
-            </div>
+                {MARKETS.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {t(`market.${m.id}`)}
+                  </option>
+                ))}
+              </select>
+            )}
 
             <input
               autoFocus
               className="modal-input"
-              placeholder={
-                market === 'KR' ? t('add.searchPlaceholderKR') : t('add.searchPlaceholderUS')
-              }
+              placeholder={t(`add.searchPlaceholder.${market}`)}
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               spellCheck={false}
@@ -148,7 +159,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
             <div className="selected-stock">
               <span className="selected-name">{selected.name}</span>
               <span className="selected-meta">
-                {selected.symbol} · {selected.market === 'KR' ? t('add.korea') : t('add.us')}
+                {selected.symbol} · {t(`market.${selected.market}`)}
               </span>
             </div>
 
@@ -168,16 +179,14 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
               </label>
               <label>
                 <span className="form-label">
-                  {t('add.avgPrice')} ({selected.market === 'KR' ? '₩' : '$'})
+                  {t('add.avgPrice')} ({currencySymbol(selected.market, lang)})
                 </span>
                 <input
                   className="modal-input"
                   type="number"
                   step="any"
                   min="0"
-                  placeholder={
-                    selected.market === 'KR' ? t('holding.pricePlaceholder') : 'e.g. 189.20'
-                  }
+                  placeholder={t('common.example', { v: examplePrice(selected.market) })}
                   value={avgPrice}
                   onChange={(e) => setAvgPrice(e.target.value)}
                 />

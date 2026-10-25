@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -22,8 +22,21 @@ import SettingsModal from './components/SettingsModal'
 import WelcomeModal from './components/WelcomeModal'
 import HoldingEditModal from './components/HoldingEditModal'
 import { useI18n } from './i18n'
+import { marketOrder } from '../../shared/markets.js'
 
 const idOf = (s) => `${s.market}-${s.symbol}`
+
+// 시장별 묶음 (src/shared/markets.js 순서). 같은 시장 안에서는 저장된 순서 유지
+function groupByMarket(stocks) {
+  const byMarket = new Map()
+  for (const s of stocks) {
+    if (!byMarket.has(s.market)) byMarket.set(s.market, [])
+    byMarket.get(s.market).push(s)
+  }
+  return [...byMarket.entries()]
+    .sort(([a], [b]) => marketOrder(a) - marketOrder(b))
+    .map(([market, items]) => ({ market, items }))
+}
 
 function SortableCard({ stock, onRemove, onEditHolding }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -166,26 +179,23 @@ function App() {
     setSorting(false)
     const { active, over } = event
     if (!over || active.id === over.id) return
-    const [marketA] = String(active.id).split('-')
-    const [marketB] = String(over.id).split('-')
-    if (marketA !== marketB) return
+    const marketA = stocks.find((s) => idOf(s) === active.id)?.market
+    const marketB = stocks.find((s) => idOf(s) === over.id)?.market
+    // 순서 변경은 같은 시장 안에서만
+    if (!marketA || marketA !== marketB) return
 
-    const same = stocks.filter((s) => s.market === marketA)
-    const others = stocks.filter((s) => s.market !== marketA)
-    const oldIndex = same.findIndex((s) => idOf(s) === active.id)
-    const newIndex = same.findIndex((s) => idOf(s) === over.id)
+    const groupA = stocks.filter((s) => s.market === marketA)
+    const oldIndex = groupA.findIndex((s) => idOf(s) === active.id)
+    const newIndex = groupA.findIndex((s) => idOf(s) === over.id)
     if (oldIndex < 0 || newIndex < 0) return
-    const reordered = arrayMove(same, oldIndex, newIndex)
+    const reordered = arrayMove(groupA, oldIndex, newIndex)
 
-    const next = marketA === 'KR' ? [...reordered, ...others] : [...others, ...reordered]
+    const next = groupByMarket(stocks).flatMap((g) => (g.market === marketA ? reordered : g.items))
     setStocks(next)
     window.api.reorderStocks(next.map((s) => ({ market: s.market, symbol: s.symbol })))
   }
 
-  const kr = stocks.filter((s) => s.market === 'KR')
-  const us = stocks.filter((s) => s.market === 'US')
-  const krIds = kr.map(idOf)
-  const usIds = us.map(idOf)
+  const groups = groupByMarket(stocks)
   const existingKeys = new Set(stocks.map(idOf))
 
   return (
@@ -283,27 +293,24 @@ function App() {
               </div>
             ) : (
               <>
-                <SortableContext items={krIds} strategy={verticalListSortingStrategy}>
-                  {kr.map((s) => (
-                    <SortableCard
-                      key={idOf(s)}
-                      stock={s}
-                      onRemove={handleRemove}
-                      onEditHolding={handleEditHolding}
-                    />
-                  ))}
-                </SortableContext>
-                {kr.length > 0 && us.length > 0 && <div className="divider" />}
-                <SortableContext items={usIds} strategy={verticalListSortingStrategy}>
-                  {us.map((s) => (
-                    <SortableCard
-                      key={idOf(s)}
-                      stock={s}
-                      onRemove={handleRemove}
-                      onEditHolding={handleEditHolding}
-                    />
-                  ))}
-                </SortableContext>
+                {groups.map((g, i) => (
+                  <Fragment key={g.market}>
+                    {i > 0 && <div className="divider" />}
+                    <SortableContext
+                      items={g.items.map(idOf)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {g.items.map((s) => (
+                        <SortableCard
+                          key={idOf(s)}
+                          stock={s}
+                          onRemove={handleRemove}
+                          onEditHolding={handleEditHolding}
+                        />
+                      ))}
+                    </SortableContext>
+                  </Fragment>
+                ))}
               </>
             )}
           </div>

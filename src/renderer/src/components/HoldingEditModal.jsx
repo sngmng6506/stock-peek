@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useI18n } from '../i18n'
+import { currencySymbol, examplePrice } from '../lib/format'
+import { errorText } from '../lib/errors'
 
 function HoldingEditModal({ stock, onClose, onSave }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [quantity, setQuantity] = useState(stock.quantity != null ? String(stock.quantity) : '')
   const [avgPrice, setAvgPrice] = useState(stock.avgPrice != null ? String(stock.avgPrice) : '')
   const [busy, setBusy] = useState(false)
@@ -19,7 +21,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
       })
       onClose()
     } catch (err) {
-      setError(err?.message || String(err))
+      setError(errorText(err, t))
       setBusy(false)
     }
   }
@@ -31,7 +33,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
       await onSave({ quantity: undefined, avgPrice: undefined })
       onClose()
     } catch (err) {
-      setError(err?.message || String(err))
+      setError(errorText(err, t))
       setBusy(false)
     }
   }
@@ -44,7 +46,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
         <div className="selected-stock">
           <span className="selected-name">{stock.name || stock.symbol}</span>
           <span className="selected-meta">
-            {stock.symbol} · {stock.market === 'KR' ? t('add.korea') : t('add.us')}
+            {stock.symbol} · {t(`market.${stock.market}`)}
           </span>
         </div>
 
@@ -64,14 +66,14 @@ function HoldingEditModal({ stock, onClose, onSave }) {
           </label>
           <label>
             <span className="form-label">
-              {t('holding.avgPrice')} ({stock.market === 'KR' ? '₩' : '$'})
+              {t('holding.avgPrice')} ({currencySymbol(stock.market, lang)})
             </span>
             <input
               className="modal-input"
               type="number"
               step="any"
               min="0"
-              placeholder={stock.market === 'KR' ? t('holding.pricePlaceholder') : 'e.g. 189.20'}
+              placeholder={t('common.example', { v: examplePrice(stock.market) })}
               value={avgPrice}
               onChange={(e) => setAvgPrice(e.target.value)}
             />

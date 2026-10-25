@@ -1,4 +1,5 @@
 import Store from 'electron-store'
+import { getMarket } from '../shared/markets.js'
 
 const DEFAULTS = [
   { market: 'KR', symbol: '005930' },
@@ -12,23 +13,24 @@ const store = new Store({
   defaults: { items: DEFAULTS }
 })
 
+// 에러 메시지는 코드로 던지고 화면에서 번역 (i18n error.<CODE>)
+function fail(code) {
+  throw new Error(code)
+}
+
 function normalize(market, symbol) {
-  const m = String(market || '').toUpperCase()
-  let s = String(symbol || '').trim()
-  // 영문+숫자만 남김 (ETF 코드에 알파벳 포함 가능: 0023A0 등)
-  if (m === 'KR') s = s.replace(/[^0-9A-Za-z]/g, '').toUpperCase()
-  else s = s.toUpperCase()
-  return { market: m, symbol: s }
+  const m = getMarket(market)
+  const raw = String(symbol || '').trim()
+  return {
+    market: m ? m.id : String(market || '').toUpperCase(),
+    symbol: m ? m.normalizeSymbol(raw) : raw
+  }
 }
 
 function validate({ market, symbol }) {
-  if (market === 'KR') {
-    if (!/^[0-9A-Za-z]{6}$/.test(symbol)) throw new Error('한국 종목코드는 6자리 영문/숫자')
-  } else if (market === 'US') {
-    if (!/^[A-Z][A-Z0-9.-]{0,9}$/.test(symbol)) throw new Error('미국 티커는 1~10자 영문/숫자')
-  } else {
-    throw new Error(`unknown market: ${market}`)
-  }
+  const m = getMarket(market)
+  if (!m) fail('ERR_UNKNOWN_MARKET')
+  if (!m.symbolPattern.test(symbol)) fail('ERR_INVALID_SYMBOL')
 }
 
 function applyHolding(item, raw) {
@@ -49,7 +51,7 @@ export function addItem(market, symbol, holding) {
   applyHolding(item, holding)
   const list = getItems()
   if (list.some((i) => i.market === item.market && i.symbol === item.symbol)) {
-    throw new Error('이미 추가된 종목')
+    fail('ERR_DUPLICATE')
   }
   const next = [...list, item]
   store.set('items', next)
@@ -80,7 +82,7 @@ export function updateHolding(market, symbol, holding) {
   const target = normalize(market, symbol)
   const list = getItems()
   const idx = list.findIndex((i) => i.market === target.market && i.symbol === target.symbol)
-  if (idx < 0) throw new Error('종목 없음')
+  if (idx < 0) fail('ERR_NOT_FOUND')
   const next = list.map((it) => ({ ...it }))
   const item = next[idx]
   const q = Number(holding?.quantity)

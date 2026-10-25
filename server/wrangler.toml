@@ -1,6 +1,0 @@
-name = "stockpeek-proxy"
-main = "src/worker.js"
-compatibility_date = "2025-01-01"
-
-# 배포: cd server && npx wrangler deploy
-# 로컬 테스트: cd server && npx wrangler dev

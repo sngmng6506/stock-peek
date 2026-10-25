@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from '../i18n'
+import { LANGUAGES } from '../../../shared/languages.js'
 
 const GITHUB_URL = 'https://github.com/sngmng6506/stock-peek'
 const CONTACT_EMAIL = 'sngmng6506@gmail.com'
@@ -93,22 +94,28 @@ function SettingsModal({ onClose }) {
 
         <div className="setting-row">
           <span>{t('settings.language')}</span>
-          <div className="lang-seg">
-            <button
-              type="button"
-              className={lang === 'ko' ? 'active' : ''}
-              onClick={() => setLang('ko')}
-            >
-              {t('settings.langKo')}
-            </button>
-            <button
-              type="button"
-              className={lang === 'en' ? 'active' : ''}
-              onClick={() => setLang('en')}
-            >
-              {t('settings.langEn')}
-            </button>
-          </div>
+          {LANGUAGES.length <= 3 ? (
+            <div className="lang-seg">
+              {LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  className={lang === l.code ? 'active' : ''}
+                  onClick={() => setLang(l.code)}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <select className="lang-select" value={lang} onChange={(e) => setLang(e.target.value)}>
+              {LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="donate">

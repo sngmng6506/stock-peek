@@ -27,8 +27,7 @@ import {
   reorderCache
 } from './stockService.js'
 import { addItem, removeItem, setItems, updateHolding } from './watchlist.js'
-import { searchKoreanStocks } from './api/naver.js'
-import { searchUSStocks } from './api/yahoo.js'
+import { getProvider } from './markets/index.js'
 import {
   isWelcomeShown,
   markWelcomeShown,
@@ -38,6 +37,8 @@ import {
   setLanguage
 } from './preferences.js'
 import electronUpdater from 'electron-updater'
+import { detectLanguage, getLanguageInfo } from '../shared/languages.js'
+import { translate } from '../shared/i18n/index.js'
 const { autoUpdater } = electronUpdater
 
 const PANEL_WIDTH = 280
@@ -86,16 +87,15 @@ function checkForUpdatesOnOpen() {
   if (Date.now() - lastUpdateCheck >= UPDATE_CHECK_ON_OPEN_GAP) checkForUpdates()
 }
 
+// 저장된 언어 → 없으면 OS 언어 감지. renderer도 이 값을 받아 씀 (lang:get)
 function resolveLanguage() {
-  const saved = getLanguage()
-  if (saved) return saved
-  // OS 언어 감지: 한국어면 ko, 그 외 en
-  const locale = (app.getLocale() || 'en').toLowerCase()
-  return locale.startsWith('ko') ? 'ko' : 'en'
+  return getLanguage() || detectLanguage(app.getLocale())
 }
 
+const t = (key, vars) => translate(resolveLanguage(), key, vars)
+
 function downloadPageUrl() {
-  return resolveLanguage() === 'ko' ? 'https://stock-peek.com/' : 'https://stock-peek.com/en'
+  return `https://stock-peek.com${getLanguageInfo(resolveLanguage()).sitePath}`
 }
 
 function installUpdate() {
@@ -110,14 +110,9 @@ function installUpdate() {
 function notifyUpdate(version) {
   if (!Notification.isSupported() || notifiedVersion === version) return
   notifiedVersion = version
-  const ko = resolveLanguage() === 'ko'
-  let body
-  if (IS_MAC) body = ko ? '클릭하면 다운로드 페이지를 엽니다.' : 'Click to open the download page.'
-  else
-    body = ko ? '클릭하면 바로 업데이트하고 다시 실행합니다.' : 'Click to update and restart now.'
   updateNotification = new Notification({
-    title: ko ? `몰래주식 v${version} 업데이트` : `Stock Peek v${version} update`,
-    body,
+    title: t('notify.updateTitle', { v: version }),
+    body: t(IS_MAC ? 'notify.updateDownload' : 'notify.updateInstall'),
     icon
   })
   updateNotification.on('click', installUpdate)
@@ -530,25 +525,25 @@ function refreshTrayMenu() {
   const template = []
   if (updateReady) {
     template.push({
-      label: `↻ v${updateReady.version} 적용 (재시작)`,
+      label: t('tray.updateApply', { v: updateReady.version }),
       click: installUpdate
     })
     template.push({ type: 'separator' })
   } else if (updateInfo && IS_MAC) {
     template.push({
-      label: `↓ v${updateInfo.version} 다운로드 페이지 열기`,
+      label: t('tray.updateOpenPage', { v: updateInfo.version }),
       click: installUpdate
     })
     template.push({ type: 'separator' })
   } else if (updateInfo) {
     template.push({
-      label: `↓ v${updateInfo.version} 다운로드 중...`,
+      label: t('tray.updateDownloading', { v: updateInfo.version }),
       enabled: false
     })
     template.push({ type: 'separator' })
   }
   template.push({
-    label: '자동 시작',
+    label: t('tray.autostart'),
     type: 'checkbox',
     checked: isAuto,
     click: (item) => {
@@ -557,7 +552,7 @@ function refreshTrayMenu() {
     }
   })
   template.push({ type: 'separator' })
-  template.push({ label: '종료', click: () => app.quit() })
+  template.push({ label: t('tray.quit'), click: () => app.quit() })
   tray.setContextMenu(Menu.buildFromTemplate(template))
 }
 
@@ -571,7 +566,7 @@ function createTray() {
     img = nativeImage.createFromPath(icon).resize({ width: 16, height: 16 })
   }
   tray = new Tray(img)
-  tray.setToolTip('몰래주식')
+  tray.setToolTip(t('app.name'))
   tray.on('click', () => {
     panelPinned = true
     setTarget('shown')
@@ -672,9 +667,8 @@ app.whenReady().then(() => {
   ipcMain.handle('search:stocks', async (_e, { market, keyword }) => {
     const kw = String(keyword || '').trim()
     if (!kw) return []
-    if (market === 'KR') return await searchKoreanStocks(kw)
-    if (market === 'US') return await searchUSStocks(kw)
-    return []
+    const provider = getProvider(market)
+    return provider ? await provider.search(kw) : []
   })
 
   ipcMain.handle('dock:get-edge', () => getDock().edge)
@@ -682,7 +676,9 @@ app.whenReady().then(() => {
   ipcMain.handle('lang:get', () => resolveLanguage())
   ipcMain.handle('lang:set', (_e, lang) => {
     setLanguage(lang)
-    return getLanguage()
+    refreshTrayMenu()
+    if (tray) tray.setToolTip(t('app.name'))
+    return resolveLanguage()
   })
 
   ipcMain.on('app:quit', () => {

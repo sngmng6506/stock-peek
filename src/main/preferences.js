@@ -1,4 +1,5 @@
 import Store from 'electron-store'
+import { isSupportedLanguage } from '../shared/languages.js'
 
 const store = new Store({
   name: 'preferences',
@@ -26,9 +27,10 @@ export function setDockPosition(pos) {
 }
 
 export function getLanguage() {
-  return store.get('language', null)
+  const lang = store.get('language', null)
+  return isSupportedLanguage(lang) ? lang : null
 }
 
 export function setLanguage(lang) {
-  store.set('language', lang === 'en' ? 'en' : 'ko')
+  if (isSupportedLanguage(lang)) store.set('language', lang)
 }

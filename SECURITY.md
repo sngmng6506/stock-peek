@@ -10,4 +10,4 @@
 
 ## 범위
 
-- 데스크톱 앱(Windows·Mac), 업데이트, Cloudflare Worker 프록시, 랜딩 페이지
+- 데스크톱 앱(Windows·Mac), 업데이트, 웹사이트

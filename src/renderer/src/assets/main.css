@@ -79,7 +79,9 @@ body,
 .pin-btn {
   font-size: 12px;
   opacity: 0.75;
-  transition: opacity 150ms, background 150ms;
+  transition:
+    opacity 150ms,
+    background 150ms;
 }
 
 .pin-btn:hover {
@@ -173,8 +175,12 @@ body,
   font-variant-numeric: tabular-nums;
 }
 
-.holding-profit.up { color: #2eb872; }
-.holding-profit.down { color: #e0584a; }
+.holding-profit.up {
+  color: #2eb872;
+}
+.holding-profit.down {
+  color: #e0584a;
+}
 
 .selected-stock {
   background: rgba(255, 255, 255, 0.04);
@@ -309,7 +315,9 @@ body,
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .icon-btn.spinning {
@@ -580,15 +588,34 @@ body,
 }
 
 @keyframes slide-in-demo {
-  0%, 30% { transform: translateX(20px); opacity: 0; }
-  50%, 80% { transform: translateX(0); opacity: 1; }
-  100% { transform: translateX(20px); opacity: 0; }
+  0%,
+  30% {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  50%,
+  80% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(20px);
+    opacity: 0;
+  }
 }
 
 @keyframes cursor-bounce {
-  0%, 30% { transform: translate(8px, -50%); }
-  50%, 80% { transform: translate(0, -50%); }
-  100% { transform: translate(8px, -50%); }
+  0%,
+  30% {
+    transform: translate(8px, -50%);
+  }
+  50%,
+  80% {
+    transform: translate(0, -50%);
+  }
+  100% {
+    transform: translate(8px, -50%);
+  }
 }
 
 .welcome-title {
@@ -757,7 +784,9 @@ body,
   padding: 4px 10px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 120ms, color 120ms;
+  transition:
+    background 120ms,
+    color 120ms;
 }
 
 .lang-seg button.active {
@@ -783,7 +812,9 @@ body,
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  transition: transform 120ms, box-shadow 120ms;
+  transition:
+    transform 120ms,
+    box-shadow 120ms;
 }
 
 .bmc-btn:hover {
@@ -912,4 +943,15 @@ body,
 
 .panel.is-sorting .card:hover > .card-actions + .row {
   padding-right: 0;
+}
+
+/* 언어·시장이 많아지면 세그먼트 대신 드롭다운 */
+.lang-select,
+.market-select {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  color: rgba(235, 235, 245, 0.92);
+  font-size: 12px;
+  padding: 5px 8px;
 }

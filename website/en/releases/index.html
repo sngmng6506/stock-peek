@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Peek Latest Version and Release Notes — Stock Widget for Windows and Mac</title>
   <meta name="description" content="See the latest Stock Peek version, release date, changes, automatic update behavior, and SHA-256 installer verification steps." />
+  <meta name="author" content="Sangmyeong Lee" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://stock-peek.com/en/releases/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
@@ -12,18 +13,24 @@
   <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/releases/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="ko_KR" />
   <meta property="og:site_name" content="Stock Peek" />
   <meta property="og:title" content="Stock Peek Latest Version and Release Notes" />
   <meta property="og:description" content="Check the latest installer, release date, changes, and file verification steps." />
   <meta property="og:url" content="https://stock-peek.com/en/releases/" />
   <meta property="og:image" content="https://stock-peek.com/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Stock Peek Latest Version and Release Notes" />
   <meta name="twitter:description" content="Latest installer, release date, changes, and file verification steps." />
   <meta name="twitter:image" content="https://stock-peek.com/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="stylesheet" href="../../style.css?v=4" />
+  <link rel="stylesheet" href="/style.css?v=5" />
   <style>
     .doc { max-width: 860px; margin: 0 auto; padding: 72px 28px 96px; }
     .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 30px; }
@@ -72,15 +79,15 @@
   }
   </script>
 </head>
-<body>
+<body data-dl-win="Download for Windows" data-dl-mac="Download for Mac">
   <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
       <a href="/en" class="brand"><img class="brand-mark" src="/apple-touch-icon.png" alt="" width="24" height="24" /><span class="brand-name">Stock Peek</span></a>
       <div class="nav-right">
         <a href="/en/guide/" class="muted">Guide</a>
         <a href="/en/privacy/" class="muted">Privacy</a>
-        <a href="/releases/" class="lang" lang="ko">한국어</a>
-        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">Download</a>
+        <a href="/releases/" class="lang" lang="ko" hreflang="ko">한국어</a>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl" data-dl>Download</a>
       </div>
     </div>
   </nav>
@@ -136,9 +143,8 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/en">Home</a><a href="/en/guide/">Product guide</a><a href="/en/privacy/">Privacy</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/en">Home</a><a href="/en/guide/">Product guide</a><a href="/en/privacy/">Privacy</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/releases/" lang="ko">한국어</a></div></div>
   </footer>
-
   <script>
   (function () {
     fetch('https://api.github.com/repos/sngmng6506/stock-peek/releases?per_page=10')
@@ -177,6 +183,6 @@
       .catch(function () {});
   })();
   </script>
-  <script src="/demo.js?v=2" defer></script>
+  <script src="/demo.js?v=5" defer></script>
 </body>
 </html>

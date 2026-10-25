@@ -1,29 +1,12 @@
 import Sparkline from './Sparkline'
 import { useI18n } from '../i18n'
+import { formatMoney, formatNumber, formatRatio } from '../lib/format'
 
-function formatPrice(stock) {
-  if (!Number.isFinite(stock.price)) return '—'
-  if (stock.market === 'KR') return `${Math.round(stock.price).toLocaleString('ko-KR')}원`
-  return `$${stock.price.toFixed(2)}`
-}
-
-function formatRatio(r) {
-  if (!Number.isFinite(r)) return ''
-  const sign = r > 0 ? '+' : ''
-  return `${sign}${r.toFixed(2)}%`
-}
-
-function formatProfit(stock) {
+function profitOf(stock) {
   if (!Number.isFinite(stock.price) || !stock.quantity || !stock.avgPrice) return null
   const profit = (stock.price - stock.avgPrice) * stock.quantity
   const ratio = ((stock.price - stock.avgPrice) / stock.avgPrice) * 100
-  const sign = profit > 0 ? '+' : ''
-  const profitText =
-    stock.market === 'KR'
-      ? `${sign}${Math.round(profit).toLocaleString('ko-KR')}원`
-      : `${sign}$${profit.toFixed(2)}`
-  const ratioText = `${sign}${ratio.toFixed(2)}%`
-  return { profitText, ratioText, isUp: profit >= 0 }
+  return { profit, ratio, isUp: profit >= 0 }
 }
 
 function CardBtn({ onClick, title, label, className }) {
@@ -40,7 +23,7 @@ function CardBtn({ onClick, title, label, className }) {
 }
 
 function StockCard({ stock, onRemove, onEditHolding }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   if (stock.error) {
     return (
       <div className="card card-err">
@@ -66,7 +49,7 @@ function StockCard({ stock, onRemove, onEditHolding }) {
   }
 
   const cls = stock.isUp ? 'up' : 'down'
-  const profit = formatProfit(stock)
+  const profit = profitOf(stock)
 
   return (
     <div className="card">
@@ -97,15 +80,18 @@ function StockCard({ stock, onRemove, onEditHolding }) {
       <div className="row">
         <span className="price">
           {stock.stale && <span className="stale-dot" title="연결 끊김 — 마지막 가격" />}
-          {formatPrice(stock)}
+          {formatMoney(stock.price, stock.market, lang)}
         </span>
         <Sparkline prices={stock.prices} isUp={stock.isUp} />
       </div>
       {profit && (
         <div className="row holding">
-          <span className="holding-qty">{Number(stock.quantity).toLocaleString('ko-KR')}주</span>
+          <span className="holding-qty">
+            {t('unit.shares', { n: formatNumber(stock.quantity, lang) })}
+          </span>
           <span className={`holding-profit ${profit.isUp ? 'up' : 'down'}`}>
-            {profit.profitText} ({profit.ratioText})
+            {formatMoney(profit.profit, stock.market, lang, { signed: true })} (
+            {formatRatio(profit.ratio)})
           </span>
         </div>
       )}
