@@ -1,13 +1,13 @@
 <!--
 {
   "title": "Stock Peek Latest Version and Release Notes — Stock Widget for Windows and Mac",
-  "description": "See the latest Stock Peek version, release date, changes, automatic update behavior, and SHA-256 installer verification steps.",
+  "description": "See the latest Stock Peek version, release date, changes, and how updates work.",
   "robots": "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1",
   "ogType": "website",
   "ogTitle": "Stock Peek Latest Version and Release Notes",
-  "ogDescription": "Check the latest installer, release date, changes, and file verification steps.",
+  "ogDescription": "Check the latest installer, release date, and changes.",
   "twitterTitle": "Stock Peek Latest Version and Release Notes",
-  "twitterDescription": "Latest installer, release date, changes, and file verification steps."
+  "twitterDescription": "Latest installer, release date, and changes."
 }
 -->
 
@@ -42,7 +42,7 @@
       "@id": "https://stock-peek.com/en/releases/#webpage",
       "url": "https://stock-peek.com/en/releases/",
       "name": "Stock Peek Latest Version and Release Notes",
-      "description": "Latest installers, changes, automatic update behavior, and file verification instructions for Stock Peek.",
+      "description": "Latest installers, changes, and update behavior for Stock Peek.",
       "inLanguage": "en",
       "dateModified": "{{dateModified}}",
       "isPartOf": { "@id": "https://stock-peek.com/#website" },
@@ -82,15 +82,6 @@
     </div>
   </article>
 
-  <section>
-    <h2>How to verify the installer</h2>
-    <p>When available, each release includes <code>SHA256SUMS.txt</code>. Compare the SHA-256 hash of the installer with the value in that file to confirm that the download was not modified.</p>
-    <ol>
-      <li>Download the installer and <code>SHA256SUMS.txt</code> from the latest GitHub release.</li>
-      <li>On Windows run <code>Get-FileHash .\stock-peek-setup.exe -Algorithm SHA256</code> in PowerShell; on Mac run <code>shasum -a 256 stock-peek-mac.dmg</code> in Terminal.</li>
-      <li>Confirm that the printed hash matches the value in <code>SHA256SUMS.txt</code> (<code>SHA256SUMS-mac.txt</code> on Mac).</li>
-    </ol>
-  </section>
 
   <section>
     <h2>Automatic updates</h2>
@@ -104,6 +95,7 @@
       <li>An internet connection is required. Corporate security policy or install permissions may restrict use.</li>
       <li>Because the independent app is not code-signed, Windows SmartScreen may display a notice, and on Mac the first launch must be allowed in System Settings.</li>
       <li>Displayed quotes are not official execution data or investment advice.</li>
+      <li>SHA-256 checksums for verifying downloads are attached to each <a href="https://github.com/sngmng6506/stock-peek/releases/latest">GitHub release</a>.</li>
     </ul>
   </section>
 

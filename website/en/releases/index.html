@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Peek Latest Version and Release Notes — Stock Widget for Windows and Mac</title>
-  <meta name="description" content="See the latest Stock Peek version, release date, changes, automatic update behavior, and SHA-256 installer verification steps." />
+  <meta name="description" content="See the latest Stock Peek version, release date, changes, and how updates work." />
   <meta name="author" content="Sangmyeong Lee" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://stock-peek.com/en/releases/" />
@@ -18,14 +18,14 @@
   <meta property="og:locale:alternate" content="ja_JP" />
   <meta property="og:site_name" content="Stock Peek" />
   <meta property="og:title" content="Stock Peek Latest Version and Release Notes" />
-  <meta property="og:description" content="Check the latest installer, release date, changes, and file verification steps." />
+  <meta property="og:description" content="Check the latest installer, release date, and changes." />
   <meta property="og:url" content="https://stock-peek.com/en/releases/" />
   <meta property="og:image" content="https://stock-peek.com/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Stock Peek Latest Version and Release Notes" />
-  <meta name="twitter:description" content="Latest installer, release date, changes, and file verification steps." />
+  <meta name="twitter:description" content="Latest installer, release date, and changes." />
   <meta name="twitter:image" content="https://stock-peek.com/og.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,7 +63,7 @@
         "@id": "https://stock-peek.com/en/releases/#webpage",
         "url": "https://stock-peek.com/en/releases/",
         "name": "Stock Peek Latest Version and Release Notes",
-        "description": "Latest installers, changes, automatic update behavior, and file verification instructions for Stock Peek.",
+        "description": "Latest installers, changes, and update behavior for Stock Peek.",
         "inLanguage": "en",
         "dateModified": "2026-10-25",
         "isPartOf": { "@id": "https://stock-peek.com/#website" },
@@ -112,15 +112,6 @@
       </div>
     </article>
 
-    <section>
-      <h2>How to verify the installer</h2>
-      <p>When available, each release includes <code>SHA256SUMS.txt</code>. Compare the SHA-256 hash of the installer with the value in that file to confirm that the download was not modified.</p>
-      <ol>
-        <li>Download the installer and <code>SHA256SUMS.txt</code> from the latest GitHub release.</li>
-        <li>On Windows run <code>Get-FileHash .\stock-peek-setup.exe -Algorithm SHA256</code> in PowerShell; on Mac run <code>shasum -a 256 stock-peek-mac.dmg</code> in Terminal.</li>
-        <li>Confirm that the printed hash matches the value in <code>SHA256SUMS.txt</code> (<code>SHA256SUMS-mac.txt</code> on Mac).</li>
-      </ol>
-    </section>
 
     <section>
       <h2>Automatic updates</h2>
@@ -134,6 +125,7 @@
         <li>An internet connection is required. Corporate security policy or install permissions may restrict use.</li>
         <li>Because the independent app is not code-signed, Windows SmartScreen may display a notice, and on Mac the first launch must be allowed in System Settings.</li>
         <li>Displayed quotes are not official execution data or investment advice.</li>
+        <li>SHA-256 checksums for verifying downloads are attached to each <a href="https://github.com/sngmng6506/stock-peek/releases/latest">GitHub release</a>.</li>
       </ul>
     </section>
 

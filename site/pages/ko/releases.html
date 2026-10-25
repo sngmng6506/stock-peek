@@ -1,13 +1,13 @@
 <!--
 {
   "title": "몰래주식 최신 버전과 업데이트 내역 — Windows·Mac 주식 위젯",
-  "description": "몰래주식(Stock Peek)의 최신 설치 버전, 출시일, 변경 사항, 자동 업데이트 방식과 SHA-256 설치 파일 확인 방법을 안내합니다.",
+  "description": "몰래주식(Stock Peek)의 최신 설치 버전, 출시일, 변경 사항, 업데이트 방식을 안내합니다.",
   "robots": "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1",
   "ogType": "website",
   "ogTitle": "몰래주식 최신 버전과 업데이트 내역",
-  "ogDescription": "최신 설치 파일, 출시일, 변경 사항과 설치 파일 검증 방법을 확인하세요.",
+  "ogDescription": "최신 설치 파일, 출시일, 변경 사항을 확인하세요.",
   "twitterTitle": "몰래주식 최신 버전과 업데이트 내역",
-  "twitterDescription": "최신 설치 파일, 출시일, 변경 사항과 설치 파일 검증 방법."
+  "twitterDescription": "최신 설치 파일, 출시일, 변경 사항."
 }
 -->
 
@@ -42,7 +42,7 @@
       "@id": "https://stock-peek.com/releases/#webpage",
       "url": "https://stock-peek.com/releases/",
       "name": "몰래주식 최신 버전과 업데이트 내역",
-      "description": "몰래주식의 최신 설치 버전, 변경 사항, 자동 업데이트와 파일 검증 안내.",
+      "description": "몰래주식의 최신 설치 버전, 변경 사항, 업데이트 방식 안내.",
       "inLanguage": "ko",
       "dateModified": "{{dateModified}}",
       "isPartOf": { "@id": "https://stock-peek.com/#website" },
@@ -82,15 +82,6 @@
     </div>
   </article>
 
-  <section>
-    <h2>설치 파일이 맞는지 확인하는 방법</h2>
-    <p>각 릴리스에는 가능한 경우 <code>SHA256SUMS.txt</code>가 함께 제공됩니다. 설치 파일의 SHA-256 해시를 계산해 이 파일에 적힌 값과 일치하는지 비교하면 다운로드 과정에서 파일이 변경되지 않았는지 확인할 수 있습니다.</p>
-    <ol>
-      <li>GitHub의 최신 릴리스 페이지에서 설치 파일과 <code>SHA256SUMS.txt</code>를 내려받습니다.</li>
-      <li>Windows는 PowerShell에서 <code>Get-FileHash .\stock-peek-setup.exe -Algorithm SHA256</code>, Mac은 터미널에서 <code>shasum -a 256 stock-peek-mac.dmg</code>를 실행합니다.</li>
-      <li>출력된 해시가 <code>SHA256SUMS.txt</code>(Mac은 <code>SHA256SUMS-mac.txt</code>)의 값과 같은지 확인합니다.</li>
-    </ol>
-  </section>
 
   <section>
     <h2>자동 업데이트 방식</h2>
@@ -104,6 +95,7 @@
       <li>인터넷 연결이 필요하며 회사 PC에서는 보안 정책이나 설치 권한에 따라 제한될 수 있습니다.</li>
       <li>개인 개발 앱이라 코드 서명 인증서가 없어 Windows SmartScreen 안내가 표시될 수 있고, Mac은 처음 실행할 때 시스템 설정에서 허용해야 합니다.</li>
       <li>표시되는 시세는 공식 주문 체결 데이터나 투자 조언이 아닙니다.</li>
+      <li>파일 확인용 SHA-256 체크섬은 <a href="https://github.com/sngmng6506/stock-peek/releases/latest">GitHub 릴리스</a>에 함께 있습니다.</li>
     </ul>
   </section>
 
