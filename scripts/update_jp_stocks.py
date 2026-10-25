@@ -6,6 +6,7 @@ GitHub Actions(update-jp-stocks.yml)가 매월 실행. 로컬: python scripts/up
 import datetime
 import io
 import json
+import os
 import sys
 import unicodedata
 import urllib.request
@@ -82,6 +83,7 @@ def main(out_path, source=None):
 
     # 한 줄에 한 종목: 월간 변경분이 diff로 보이게
     lines = ',\n'.join('    ' + json.dumps(it, ensure_ascii=False) for it in items)
+    os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
     with open(out_path, 'w', encoding='utf-8') as f:
         f.write('{\n')
         f.write(f'  "source": "JPX 東証上場銘柄一覧",\n  "asOf": "{as_of}",\n  "items": [\n{lines}\n  ]\n}}\n')
@@ -89,4 +91,9 @@ def main(out_path, source=None):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
+    try:
+        main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
+    except BaseException as e:  # noqa: BLE001 — Actions 주석으로 원인을 남김
+        if os.environ.get('GITHUB_ACTIONS'):
+            print(f'::error::{type(e).__name__}: {e}')
+        raise
