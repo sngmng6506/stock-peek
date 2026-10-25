@@ -52,6 +52,7 @@ function App() {
   const [dockEdge, setDockEdge] = useState('right')
   const [pinned, setPinned] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [sorting, setSorting] = useState(false)
   const { t } = useI18n()
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
@@ -95,10 +96,11 @@ function App() {
     }
   }, [])
 
+  // 모달이 열려 있거나 카드를 끄는 중에는 커서가 잠깐 패널 밖으로 나가도 숨기지 않음
   useEffect(() => {
-    if (showAdd || showSettings || editingHolding) window.api.panelLock()
+    if (showAdd || showSettings || editingHolding || sorting) window.api.panelLock()
     else window.api.panelUnlock()
-  }, [showAdd, showSettings, editingHolding])
+  }, [showAdd, showSettings, editingHolding, sorting])
 
   useLayoutEffect(() => {
     const panel = panelRef.current
@@ -157,7 +159,11 @@ function App() {
     }
   }
 
+  const handleDragStart = () => setSorting(true)
+  const handleDragCancel = () => setSorting(false)
+
   const handleDragEnd = (event) => {
+    setSorting(false)
     const { active, over } = event
     if (!over || active.id === over.id) return
     const [marketA] = String(active.id).split('-')
@@ -183,7 +189,7 @@ function App() {
   const existingKeys = new Set(stocks.map(idOf))
 
   return (
-    <div className={`panel dock-${dockEdge}`} ref={panelRef}>
+    <div className={`panel dock-${dockEdge}${sorting ? ' is-sorting' : ''}`} ref={panelRef}>
       <header className="panel-header">
         <span className="drag-handle" aria-hidden="true" />
         <div className="actions">
@@ -259,7 +265,13 @@ function App() {
         </div>
       )}
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
         <div className="cards" ref={cardsRef}>
           <div className="cards-inner" ref={cardsInnerRef}>
             {stocks.length === 0 ? (

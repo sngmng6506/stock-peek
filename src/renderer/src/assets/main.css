@@ -894,3 +894,22 @@ body,
   outline: 1px solid rgba(235, 235, 245, 0.75);
   outline-offset: 2px;
 }
+
+/* 카드 순서 변경 중: 헤더의 창 이동 영역이 마우스 이벤트를 가로채지 않게 하고,
+   커서가 지나가는 카드마다 버튼이 떠서 줄 폭이 바뀌지 않게 고정 */
+.panel.is-sorting,
+.panel.is-sorting * {
+  cursor: grabbing;
+}
+
+.panel.is-sorting .panel-header {
+  -webkit-app-region: no-drag;
+}
+
+.panel.is-sorting .card-actions {
+  opacity: 0;
+}
+
+.panel.is-sorting .card:hover > .card-actions + .row {
+  padding-right: 0;
+}
