@@ -79,32 +79,19 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
           <>
             <div className="modal-title">{t('add.title')}</div>
 
-            {MARKETS.length <= 4 ? (
-              <div className="seg">
-                {MARKETS.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    className={market === m.id ? 'active' : ''}
-                    onClick={() => setMarket(m.id)}
-                  >
-                    {t(`market.${m.id}`)}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <select
-                className="modal-input market-select"
-                value={market}
-                onChange={(e) => setMarket(e.target.value)}
-              >
-                {MARKETS.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {t(`market.${m.id}`)}
-                  </option>
-                ))}
-              </select>
-            )}
+            <div className="seg market-options" role="group" aria-label={t('add.title')}>
+              {MARKETS.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  className={market === m.id ? 'active' : ''}
+                  aria-pressed={market === m.id}
+                  onClick={() => setMarket(m.id)}
+                >
+                  {t(`market.${m.id}`)}
+                </button>
+              ))}
+            </div>
 
             <input
               autoFocus

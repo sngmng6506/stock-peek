@@ -127,6 +127,14 @@ summary:focus-visible { outline: 3px solid var(--down); outline-offset: 4px; }
 .feat-body p { color: var(--ink-2); font-size: 15px; line-height: 1.6; max-width: 46em; }
 .feat-vis { justify-self: end; align-self: center; }
 .feat-vis svg { display: block; }
+.market-preview { width: 198px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper-2); direction: ltr; }
+.market-preview-row { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 8px; min-height: 23px; border-bottom: 1px solid var(--line-soft); font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; }
+.market-preview-row:last-child { border-bottom: 0; }
+.market-preview-code { color: var(--ink-2); font-size: 10px; }
+.market-preview-change { color: var(--up); font-size: 10px; }
+.market-preview-change.down { color: var(--down); }
+.market-preview-holding { display: flex; justify-content: space-between; padding: 6px 0 2px; color: var(--ink-2); font-family: 'IBM Plex Mono', monospace; font-size: 10px; }
+.market-preview-holding strong { color: var(--up); font-weight: 600; }
 
 /* Privacy / trust */
 .privacy { padding: 54px 0; background: var(--paper-2); border-bottom: 1.5px solid var(--line); }

@@ -109,20 +109,14 @@ function App() {
     }
   }, [])
 
-  // 모달이 열려 있거나 카드를 끄는 중에는 커서가 잠깐 패널 밖으로 나가도 숨기지 않음
-  useEffect(() => {
-    if (showAdd || showSettings || editingHolding || sorting) window.api.panelLock()
-    else window.api.panelUnlock()
-  }, [showAdd, showSettings, editingHolding, sorting])
-
   useLayoutEffect(() => {
     const panel = panelRef.current
     const inner = cardsInnerRef.current
     if (!panel || !inner) return
 
-    const cardsPadding = 20
+    const cardsPadding = 28
     const borderCompensation = 2
-    const modalBackdropPadding = 32
+    const modalBackdropPadding = 36
 
     const measure = () => {
       const header = panel.querySelector('.panel-header')
