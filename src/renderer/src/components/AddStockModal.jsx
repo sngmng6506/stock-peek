@@ -79,7 +79,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
           <>
             <div className="modal-title">{t('add.title')}</div>
 
-            {MARKETS.length <= 3 ? (
+            {MARKETS.length <= 4 ? (
               <div className="seg">
                 {MARKETS.map((m) => (
                   <button

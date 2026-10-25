@@ -27,7 +27,10 @@ export function formatMoney(value, marketId, lang, { signed = false } = {}) {
   if (usesWonSuffix(currency, lang)) {
     return `${nf('ko-KR', { maximumFractionDigits: 0, signDisplay }).format(Math.round(value))}원`
   }
-  return nf(getLanguageInfo(lang).locale, {
+  // 시장 고유 자릿수 표기(인도 lakh 등)는 영어 화면에서만: 그 시장 사용자가 쓰는 화면 언어
+  const locale =
+    market?.numberLocale && lang === 'en' ? market.numberLocale : getLanguageInfo(lang).locale
+  return nf(locale, {
     style: 'currency',
     currency,
     currencyDisplay: 'narrowSymbol',

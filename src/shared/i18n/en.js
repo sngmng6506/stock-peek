@@ -37,6 +37,7 @@ export default {
   'add.searchPlaceholder.KR': 'e.g. Samsung, 005930',
   'add.searchPlaceholder.US': 'e.g. Apple, AAPL',
   'add.searchPlaceholder.JP': 'e.g. Toyota, トヨタ, 7203',
+  'add.searchPlaceholder.IN': 'e.g. Reliance, RELIANCE',
   'add.alreadyAdded': 'Already added',
   'add.alreadyAddedTitle': 'Already in watchlist',
   'add.searchFail': 'Search failed',
@@ -73,6 +74,7 @@ export default {
   'market.KR': 'Korea',
   'market.US': 'US',
   'market.JP': 'Japan',
+  'market.IN': 'India',
   // Shared formats ({v}, {n} are placeholders)
   'common.example': 'e.g. {v}',
   'unit.shares': '{n} sh',

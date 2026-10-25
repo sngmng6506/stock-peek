@@ -1,6 +1,7 @@
 // 시장 정의 — main(데이터·장 시간)과 renderer(표기·탭 순서)가 함께 쓰는 순수 데이터.
 // 시장 추가: 여기에 항목 하나 + src/main/markets/index.js에 provider 연결 + 번역 키(market.<ID> 등).
-// 선택 항목: maxDecimals(소수 표시 최대), delayMinutes(시세 지연 표시), localLang(원어 종목명 언어).
+// 선택 항목: maxDecimals(소수 표시 최대), delayMinutes(시세 지연 표시), localLang(원어 종목명 언어),
+// numberLocale(영어 화면에서 쓸 숫자 표기 로케일).
 // 배열 순서 = 패널 그룹 순서 = 종목 추가 화면 탭 순서.
 
 export const MARKETS = [
@@ -47,6 +48,23 @@ export const MARKETS = [
       s
         .replace(/\.T$/i, '')
         .replace(/[^0-9A-Za-z]/g, '')
+        .toUpperCase()
+  },
+  {
+    id: 'IN',
+    currency: 'INR',
+    decimals: 2,
+    numberLocale: 'en-IN', // 영어 화면에서 인도식 자릿수 (12,34,567.00)
+    timeZone: 'Asia/Kolkata',
+    weekdays: [1, 2, 3, 4, 5],
+    sessions: [['09:15', '15:30']],
+    examplePrice: 2450.5,
+    // NSE 심볼: 영문·숫자에 & - 포함 가능 (M&M, BAJAJ-AUTO)
+    symbolPattern: /^[A-Z0-9][A-Z0-9&-]{0,19}$/,
+    normalizeSymbol: (s) =>
+      s
+        .replace(/\.NS$/i, '')
+        .replace(/[^0-9A-Za-z&-]/g, '')
         .toUpperCase()
   }
 ]
