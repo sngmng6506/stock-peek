@@ -35,6 +35,7 @@ src/renderer/src/         App.jsx, components/, i18n/
 server/src/worker.js      Cloudflare Worker 프록시 (현재 미사용)
 website/                  랜딩 페이지 (한/영)
 scripts/                  prepare-release.mjs, sync-version.mjs
+docs/market-expansion.md  시장·언어 추가 체크리스트
 ```
 
 ## 규칙
