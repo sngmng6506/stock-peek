@@ -188,3 +188,13 @@ summary:focus-visible { outline: 3px solid var(--down); outline-offset: 4px; }
   .sp-card, .sp-actions, .sp-indicator { transition: none; }
   .btn-dl, .nav-dl { transition: none; }
 }
+/* 일본어 페이지: 가나·한자도 같은 Plex 계열로 */
+html[lang="ja"] body {
+  /* 띄어쓰기가 없어 keep-all이면 줄바꿈이 안 됨 → 일본어 금칙 규칙으로 */
+  word-break: normal;
+  line-break: strict;
+  font-family: 'IBM Plex Sans JP', 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+}
+
+/* 데모 패널의 시세 지연 표시 (앱과 같은 모양) */
+.sp-delay { margin-left: 6px; font-size: 10px; font-weight: 500; color: rgba(235, 235, 245, 0.4); }

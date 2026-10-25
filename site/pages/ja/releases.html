@@ -1,0 +1,165 @@
+<!--
+{
+  "title": "Stock Peek の最新バージョンとリリースノート — Windows・Mac 用株価ウィジェット",
+  "description": "Stock Peek の最新インストーラー、リリース日、変更内容、アップデートの仕組み、SHA-256 によるファイル確認方法を案内します。",
+  "robots": "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1",
+  "ogType": "website",
+  "ogTitle": "Stock Peek 最新バージョンとリリースノート",
+  "ogDescription": "最新のインストーラー、リリース日、変更内容、ファイルの確認方法。",
+  "twitterTitle": "Stock Peek 最新バージョンとリリースノート",
+  "twitterDescription": "最新のインストーラー、リリース日、変更内容。"
+}
+-->
+
+<!-- @head -->
+<style>
+  .doc { max-width: 860px; margin: 0 auto; padding: 72px 28px 96px; }
+  .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 30px; }
+  .breadcrumb a { text-decoration: underline; text-underline-offset: 3px; }
+  .doc h1 { font-size: clamp(36px, 6vw, 58px); line-height: 1.08; letter-spacing: -0.04em; margin-bottom: 20px; }
+  .lead { font-size: 18px; line-height: 1.75; color: var(--ink-2); margin-bottom: 38px; }
+  .release-card { border: 1.5px solid var(--line); padding: 26px; background: var(--paper-2); margin: 28px 0 46px; }
+  .release-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline; margin-bottom: 14px; }
+  .release-version { font: 700 24px/1.2 'IBM Plex Mono', monospace; }
+  .release-date { color: var(--ink-3); font-size: 14px; }
+  .release-note { color: var(--ink-2); line-height: 1.75; white-space: pre-wrap; }
+  .doc section { padding: 34px 0; border-top: 1px solid var(--line-soft); }
+  .doc h2 { font-size: 27px; letter-spacing: -0.025em; margin-bottom: 16px; }
+  .doc p, .doc li { color: var(--ink-2); font-size: 16px; line-height: 1.75; }
+  .doc ul, .doc ol { padding-left: 22px; display: grid; gap: 9px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .release-list { display: grid; gap: 14px; margin-top: 18px; }
+  .release-item { border-top: 1px solid var(--line-soft); padding-top: 14px; }
+  .release-item a { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+  code { font-family: 'IBM Plex Mono', monospace; background: var(--paper-2); padding: 2px 5px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://stock-peek.com/ja/releases/#webpage",
+      "url": "https://stock-peek.com/ja/releases/",
+      "name": "Stock Peek の最新バージョンとリリースノート",
+      "description": "Stock Peek の最新インストーラー、変更内容、アップデートの仕組み、ファイル確認方法。",
+      "inLanguage": "ja",
+      "dateModified": "{{dateModified}}",
+      "isPartOf": { "@id": "https://stock-peek.com/#website" },
+      "about": { "@id": "https://stock-peek.com/#software" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://stock-peek.com/ja/releases/#breadcrumb",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Stock Peek", "item": "https://stock-peek.com/ja" },
+        { "@type": "ListItem", "position": 2, "name": "リリースノート", "item": "https://stock-peek.com/ja/releases/" }
+      ]
+    }
+  ]
+}
+</script>
+
+<!-- @nav -->
+<a href="/ja/guide/" class="muted">ガイド</a>
+<a href="/ja/privacy/" class="muted">プライバシー</a>
+
+<!-- @main -->
+<main class="doc">
+  <nav class="breadcrumb" aria-label="現在の位置"><a href="/ja">Stock Peek</a> / リリースノート</nav>
+  <h1>最新バージョンとリリースノート</h1>
+  <p class="lead">現在配布中の Windows・Mac 用インストーラーと最近の変更内容です。Stock Peek は GitHub Releases で配布しており、アプリからも新しいバージョンを確認します。</p>
+
+  <article class="release-card" aria-labelledby="latest-heading">
+    <div class="release-meta">
+      <h2 id="latest-heading" class="release-version">最新バージョン <span id="appVer">v{{version}}</span></h2>
+      <span id="releaseDate" class="release-date">GitHub Releases で配布中</span>
+    </div>
+    <p id="latestNote" class="release-note">Windows 10・11 と macOS 12 以降に対応。日本・米国・韓国の株価、直近3か月のチャート、評価損益、マルチモニター配置、アップデート通知に対応しています。</p>
+    <div class="actions">
+      <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl>最新のインストーラー</a>
+      <a id="releaseLink" href="https://github.com/sngmng6506/stock-peek/releases/latest" class="btn-dl" style="background:transparent;color:var(--ink)">GitHub のリリースを見る</a>
+    </div>
+  </article>
+
+  <section>
+    <h2>インストーラーの確認方法</h2>
+    <p>各リリースには <code>SHA256SUMS.txt</code> が含まれます。インストーラーの SHA-256 ハッシュをこのファイルの値と比べると、ダウンロード中にファイルが変更されていないか確認できます。</p>
+    <ol>
+      <li>GitHub の最新リリースからインストーラーと <code>SHA256SUMS.txt</code> をダウンロードします。</li>
+      <li>Windows は PowerShell で <code>Get-FileHash .\stock-peek-setup.exe -Algorithm SHA256</code>、Mac はターミナルで <code>shasum -a 256 stock-peek-mac.dmg</code> を実行します。</li>
+      <li>表示されたハッシュが <code>SHA256SUMS.txt</code>（Mac は <code>SHA256SUMS-mac.txt</code>）の値と一致するか確認します。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>アップデートの仕組み</h2>
+    <p>アプリは起動時、1時間ごと、パネルを開いたとき（15分に1回まで）に GitHub Releases の新しいバージョンを確認します。Windows ではバックグラウンドでダウンロードしたあと通知が表示され、クリックするとすぐに更新して再起動します。Mac はコード署名がないため自動インストールができず、通知をクリックするとダウンロードページが開きます。</p>
+  </section>
+
+  <section>
+    <h2>動作環境と注意事項</h2>
+    <ul>
+      <li>対応 OS: Windows 10・11、macOS 12 以降</li>
+      <li>インターネット接続が必要です。会社のセキュリティポリシーやインストール権限によっては使えない場合があります。</li>
+      <li>個人開発のアプリでコード署名がないため、Windows では SmartScreen の警告が表示されることがあり、Mac では初回起動時にシステム設定での許可が必要です。</li>
+      <li>表示される株価は公式の約定データや投資助言ではありません。日本株の株価は20分遅れです。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>最近のリリース</h2>
+    <div id="releaseList" class="release-list">
+      <p>すべての履歴は <a href="https://github.com/sngmng6506/stock-peek/releases">GitHub Releases</a> で確認できます。</p>
+    </div>
+  </section>
+</main>
+
+<!-- @footer -->
+<a href="/ja">ホーム</a>
+<a href="/ja/guide/">製品ガイド</a>
+<a href="/ja/privacy/">プライバシー</a>
+<a href="https://github.com/sngmng6506/stock-peek">GitHub</a>
+
+<!-- @after-footer -->
+
+
+<!-- @scripts -->
+<script>
+(function () {
+  fetch('https://api.github.com/repos/sngmng6506/stock-peek/releases?per_page=10')
+    .then(function (response) { return response.ok ? response.json() : []; })
+    .then(function (releases) {
+      if (!Array.isArray(releases) || releases.length === 0) return;
+      var latest = releases[0];
+      var version = document.getElementById('appVer');
+      var date = document.getElementById('releaseDate');
+      var note = document.getElementById('latestNote');
+      var link = document.getElementById('releaseLink');
+      if (version && latest.tag_name) version.textContent = latest.tag_name;
+      if (date && latest.published_at) date.textContent = new Date(latest.published_at).toLocaleDateString('ja-JP');
+      if (note && latest.body) note.textContent = latest.body;
+      if (link && latest.html_url) link.href = latest.html_url;
+
+      var list = document.getElementById('releaseList');
+      if (!list) return;
+      list.textContent = '';
+      releases.forEach(function (release) {
+        var item = document.createElement('article');
+        item.className = 'release-item';
+        var anchor = document.createElement('a');
+        anchor.href = release.html_url;
+        anchor.textContent = release.name || release.tag_name;
+        anchor.target = '_blank';
+        anchor.rel = 'noopener';
+        var meta = document.createElement('p');
+        var published = release.published_at ? new Date(release.published_at).toLocaleDateString('ja-JP') : 'リリース日不明';
+        meta.textContent = release.tag_name + ' · ' + published;
+        item.appendChild(anchor);
+        item.appendChild(meta);
+        list.appendChild(item);
+      });
+    })
+    .catch(function () {});
+})();
+</script>

@@ -1,8 +1,9 @@
 import ko from './ko.js'
 import en from './en.js'
+import ja from './ja.js'
 import { FALLBACK_LANG } from '../languages.js'
 
-export const translations = { ko, en }
+export const translations = { ko, en, ja }
 
 // 없는 키는 영어 → 한국어 → 키 순으로 대체. {name} 자리는 vars로 채움.
 export function translate(lang, key, vars) {

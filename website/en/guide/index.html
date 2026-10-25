@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Peek Guide — Free Stock Widget for Windows and Mac</title>
-  <meta name="description" content="Learn what Stock Peek is, how to install it, supported Korean and US markets, quote sources, portfolio P&amp;L, privacy details, and common questions." />
+  <meta name="description" content="Learn what Stock Peek is, how to install it, supported Korean, US and Japanese markets, quote sources, portfolio P&amp;L, privacy details, and common questions." />
   <meta name="author" content="Sangmyeong Lee" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://stock-peek.com/en/guide/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/guide/" />
   <link rel="alternate" hreflang="en" href="https://stock-peek.com/en/guide/" />
+  <link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja/guide/" />
   <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/guide/" />
   <meta property="og:type" content="article" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:locale:alternate" content="ko_KR" />
+  <meta property="og:locale:alternate" content="ja_JP" />
   <meta property="og:site_name" content="Stock Peek" />
   <meta property="og:title" content="Stock Peek Guide" />
   <meta property="og:description" content="A clear guide to the free Windows and Mac stock widget that appears at the screen edge." />
@@ -30,7 +32,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="stylesheet" href="/style.css?v=5" />
+  <link rel="stylesheet" href="/style.css?v=6" />
   <style>
     .guide { max-width: 820px; margin: 0 auto; padding: 72px 28px 96px; }
     .guide-breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 30px; }
@@ -93,10 +95,10 @@
         "@type": "FAQPage",
         "@id": "https://stock-peek.com/en/guide/#faq",
         "mainEntity": [
-          { "@type": "Question", "name": "What is Stock Peek?", "acceptedAnswer": { "@type": "Answer", "text": "Stock Peek is a free Windows and Mac desktop widget that reveals Korean and US watchlist quotes, three-month charts, and portfolio P&L when you move the mouse to a screen edge." } },
+          { "@type": "Question", "name": "What is Stock Peek?", "acceptedAnswer": { "@type": "Answer", "text": "Stock Peek is a free Windows and Mac desktop widget that reveals Korean, US and Japanese watchlist quotes, three-month charts, and portfolio P&L when you move the mouse to a screen edge." } },
           { "@type": "Question", "name": "Is Stock Peek free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. It has no ads, payments, or account registration, and its source code is available under the MIT License." } },
-          { "@type": "Question", "name": "Which markets does Stock Peek support?", "acceptedAnswer": { "@type": "Answer", "text": "It supports Korean stocks from KOSPI and KOSDAQ and stocks and ETFs from major US exchanges including NYSE and NASDAQ." } },
-          { "@type": "Question", "name": "Where do the quotes come from?", "acceptedAnswer": { "@type": "Answer", "text": "Korean quotes come from Naver Finance and US quotes come from Yahoo Finance public data. Quotes may be delayed." } },
+          { "@type": "Question", "name": "Which markets does Stock Peek support?", "acceptedAnswer": { "@type": "Answer", "text": "It supports Korean stocks from KOSPI and KOSDAQ, stocks and ETFs from major US exchanges including NYSE and NASDAQ, and the Tokyo Stock Exchange." } },
+          { "@type": "Question", "name": "Where do the quotes come from?", "acceptedAnswer": { "@type": "Answer", "text": "Korean quotes come from Naver Finance and US and Japanese quotes from Yahoo Finance public data; Japanese quotes are delayed 20 minutes. Quotes may be delayed." } },
           { "@type": "Question", "name": "Where is portfolio data stored?", "acceptedAnswer": { "@type": "Answer", "text": "Watchlist items, shares, average purchase prices, and preferences are stored on the user's PC." } },
           { "@type": "Question", "name": "Does Stock Peek support macOS?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, macOS 12 or later. The app is not notarized by Apple, so the first launch must be allowed under System Settings → Privacy & Security, and updates are downloaded manually after a notification." } }
         ]
@@ -114,6 +116,7 @@
         <a href="/en/releases/" class="muted">Releases</a>
         <a href="/en/privacy/" class="muted">Privacy</a>
         <a href="/guide/" class="lang" lang="ko" hreflang="ko">한국어</a>
+        <a href="/ja/guide/" class="lang" lang="ja" hreflang="ja">日本語</a>
         <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl" data-dl>Download</a>
       </div>
     </div>
@@ -126,14 +129,14 @@
 
     <div class="answer-box">
       <strong>In one sentence</strong>
-      <p>Move the mouse to the left or right screen edge and Stock Peek reveals Korean and US watchlist quotes, three-month price charts, and portfolio profit and loss.</p>
+      <p>Move the mouse to the left or right screen edge and Stock Peek reveals Korean, US and Japanese watchlist quotes, three-month price charts, and portfolio profit and loss.</p>
     </div>
 
     <section>
       <h2>Core features</h2>
       <ul>
         <li>The panel appears at the screen edge and automatically hides when you move the cursor away.</li>
-        <li>Search Korean stocks from KOSPI and KOSDAQ and US stocks and ETFs from major exchanges.</li>
+        <li>Search Korean stocks from KOSPI and KOSDAQ, US stocks and ETFs from major exchanges, and Japanese stocks from the Tokyo Stock Exchange.</li>
         <li>Enter shares and average purchase price to view current portfolio profit and loss.</li>
         <li>View a compact chart based on the last three months of daily prices.</li>
         <li>Place the panel on the left or right edge of any connected monitor.</li>
@@ -153,7 +156,7 @@
 
     <section>
       <h2>Quote sources and refresh timing</h2>
-      <p>Korean quotes come from Naver Finance and US quotes come from Yahoo Finance public data. The app checks every 3 seconds during market hours and every 60 seconds after close. Exchange and provider policies may cause delays.</p>
+      <p>Korean quotes come from Naver Finance and US and Japanese quotes from Yahoo Finance public data; Japanese quotes are delayed 20 minutes. The app checks every 3 seconds during market hours and every 60 seconds after close. Exchange and provider policies may cause delays.</p>
     </section>
 
     <section>
@@ -166,7 +169,7 @@
       <h2>Frequently asked questions</h2>
       <dl>
         <div><dt>Is Stock Peek free?</dt><dd>Yes. There are no ads, payments, or account registration. The full source is available under the MIT License.</dd></div>
-        <div><dt>Which markets are supported?</dt><dd>Korean stocks from KOSPI and KOSDAQ and stocks and ETFs from major US exchanges including NYSE and NASDAQ.</dd></div>
+        <div><dt>Which markets are supported?</dt><dd>Korean stocks from KOSPI and KOSDAQ, stocks and ETFs from major US exchanges including NYSE and NASDAQ, and the Tokyo Stock Exchange.</dd></div>
         <div><dt>Can it work on a corporate PC?</dt><dd>It is designed to use system proxy and certificate settings, but company security policy and install permissions may restrict it.</dd></div>
         <div><dt>Does it support macOS?</dt><dd>Yes, macOS 12 or later. Unlike Windows there is no automatic install; when a new version is out, click the notification and download it again.</dd></div>
         <div><dt>Are the displayed quotes suitable for trading decisions?</dt><dd>No. They are not official execution data or investment advice. Confirm current prices through your brokerage before trading.</dd></div>
@@ -181,8 +184,8 @@
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/en">Home</a><a href="/en/releases/">Release notes</a><a href="/en/privacy/">Privacy</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/guide/" lang="ko">한국어</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/en">Home</a><a href="/en/releases/">Release notes</a><a href="/en/privacy/">Privacy</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/guide/" lang="ko">한국어</a><a href="/ja/guide/" lang="ja">日本語</a></div></div>
   </footer>
-  <script src="/demo.js?v=5" defer></script>
+  <script src="/demo.js?v=6" defer></script>
 </body>
 </html>

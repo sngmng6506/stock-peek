@@ -10,7 +10,7 @@ export default {
   'app.unpin': 'Unpin',
   'app.empty': 'No stocks yet',
   'app.emptyAdd': '+ Add stock',
-  'help.chart': 'Charts show the last 3 months of daily candles (both KR & US).',
+  'help.chart': 'Charts show the last 3 months of daily prices.',
   // StockCard
   'card.remove': 'Remove',
   'card.editHolding': 'Edit holding',

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Peek — デスクトップ株価ウィジェット（日本株・米国株・韓国株、無料）</title>
+  <meta name="description" content="画面の端にマウスを寄せると、日本・米国・韓国のウォッチリストの株価、チャート、評価損益が表示される無料のデスクトップウィジェット。Windows・Mac 対応。" />
+  <meta name="keywords" content="株価 ウィジェット, デスクトップ 株価, 株価 表示 アプリ, 日本株, 米国株, 韓国株, 東証, ミニチャート, Windows, Mac" />
+  <meta name="author" content="Sangmyeong Lee" />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <link rel="canonical" href="https://stock-peek.com/ja" />
+  <link rel="alternate" hreflang="ko" href="https://stock-peek.com/" />
+  <link rel="alternate" hreflang="en" href="https://stock-peek.com/en" />
+  <link rel="alternate" hreflang="ja" href="https://stock-peek.com/ja" />
+  <link rel="alternate" hreflang="x-default" href="https://stock-peek.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:locale:alternate" content="ko_KR" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:site_name" content="Stock Peek" />
+  <meta property="og:title" content="Stock Peek — デスクトップ株価ウィジェット" />
+  <meta property="og:description" content="画面の端にマウスを寄せるだけで、ウォッチリストの株価が表示されます。Windows・Mac 用、無料。" />
+  <meta property="og:url" content="https://stock-peek.com/ja" />
+  <meta property="og:image" content="https://stock-peek.com/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Stock Peek — デスクトップ株価ウィジェット" />
+  <meta name="twitter:description" content="マウスを画面の端へ — 日本・米国・韓国の株価をすばやく確認。" />
+  <meta name="twitter:image" content="https://stock-peek.com/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/style.css?v=6" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://stock-peek.com/#website",
+        "url": "https://stock-peek.com/",
+        "name": "Stock Peek",
+        "alternateName": "몰래주식",
+        "inLanguage": ["ko", "en", "ja"],
+        "publisher": { "@id": "https://stock-peek.com/#author" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://stock-peek.com/#author",
+        "name": "Sangmyeong Lee",
+        "email": "sngmng6506@gmail.com",
+        "url": "https://github.com/sngmng6506",
+        "sameAs": ["https://github.com/sngmng6506"]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://stock-peek.com/#software",
+        "name": "Stock Peek",
+        "alternateName": "몰래주식",
+        "description": "画面の端にマウスを寄せると、日本・米国・韓国のウォッチリストの株価と評価損益を表示する Windows・Mac 用デスクトップウィジェット。",
+        "url": "https://stock-peek.com/ja",
+        "image": "https://stock-peek.com/og.png",
+        "operatingSystem": "Windows 10, Windows 11, macOS 12+",
+        "softwareRequirements": "Windows 10/11 または macOS 12 以降、インターネット接続",
+        "applicationCategory": "FinanceApplication",
+        "softwareVersion": "1.6.9",
+        "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
+        "installUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
+        "releaseNotes": "https://stock-peek.com/ja/releases/",
+        "license": "https://opensource.org/license/mit",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+        "author": { "@id": "https://stock-peek.com/#author" },
+        "sameAs": ["https://github.com/sngmng6506/stock-peek"],
+        "inLanguage": ["ko", "en", "ja"],
+        "featureList": ["日本株","米国株","韓国株","直近3か月の日足ミニチャート","評価損益","ドラッグで並べ替え","マルチモニター・左右の端に配置","トレイ常駐と自動起動","マウスを寄せるだけで表示"],
+        "mainEntityOfPage": { "@id": "https://stock-peek.com/ja#webpage" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://stock-peek.com/ja#webpage",
+        "url": "https://stock-peek.com/ja",
+        "name": "Stock Peek — デスクトップ株価ウィジェット",
+        "description": "画面の端からウォッチリストの株価と評価損益を確認できる、Windows・Mac 用の無料ウィジェット。",
+        "inLanguage": "ja",
+        "dateModified": "2026-10-25",
+        "isPartOf": { "@id": "https://stock-peek.com/#website" },
+        "about": { "@id": "https://stock-peek.com/#software" }
+      }
+    ]
+  }
+  </script>
+</head>
+<body data-dl-win="Windows 版をダウンロード" data-dl-mac="Mac 版をダウンロード">
+  <nav class="nav" aria-label="メインメニュー">
+    <div class="nav-inner">
+      <a href="/ja" class="brand"><img class="brand-mark" src="/apple-touch-icon.png" alt="" width="24" height="24" /><span class="brand-name">Stock Peek</span></a>
+      <div class="nav-right">
+        <a href="#how" class="muted">機能</a>
+        <a href="/ja/guide/" class="muted">ガイド</a>
+        <a href="https://github.com/sngmng6506/stock-peek" class="muted" target="_blank" rel="noopener">GitHub</a>
+        <a href="/" class="lang" lang="ko" hreflang="ko">한국어</a>
+        <a href="/en" class="lang" lang="en" hreflang="en">EN</a>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl" data-dl>ダウンロード</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div class="hero-copy">
+          <h1>株価はこっそり、<br />マウスを寄せるだけ。</h1>
+          <p class="hero-sub">画面の端にマウスを寄せるとウォッチリストの株価が表示され、離すとしまわれます。ウィンドウを開いたり、アプリを切り替えたりする必要はありません。</p>
+          <div class="hero-cta">
+            <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl>Windows 版をダウンロード</a>
+            <span class="hero-meta">無料。Windows 10・11 と macOS 12 以降に対応。現在 <span id="appVer">v1.6.9</span>（<a href="/ja/guide/#install">インストール方法</a>）<br /><a href="#" data-dl-alt hidden></a></span>
+          </div>
+        </div>
+
+        <div class="demo" data-demo="hover" aria-hidden="true">
+          <div class="demo-hint">画面の端にマウスを寄せてみてください</div>
+          <div class="sp-indicator" data-indicator></div>
+          <div class="sp-panel" data-panel><div class="sp-head"><span class="sp-handle"></span><span class="sp-icons"><i></i><i></i><i></i><i></i></span></div><div class="sp-cards"><div class="sp-card"><div class="sp-actions"><i></i><i></i></div><div class="sp-row"><span class="sp-name">トヨタ自動車</span><span class="sp-chg up">+1.80%</span></div><div class="sp-row"><span class="sp-price">¥2,850.5<span class="sp-delay">20分遅延</span></span><svg class="sp-spark" viewBox="0 0 60 18" preserveAspectRatio="none"><polyline points="0,14 7,12 13,13 20,9 27,10 34,6 41,8 48,4 54,5 60,2" /></svg></div><div class="sp-row sp-hold"><span class="sp-qty">100株</span><span class="up">+¥15,050 (+5.57%)</span></div></div><div class="sp-card"><div class="sp-actions"><i></i><i></i></div><div class="sp-row"><span class="sp-name">ソニーグループ</span><span class="sp-chg down">-0.86%</span></div><div class="sp-row"><span class="sp-price">¥3,412<span class="sp-delay">20分遅延</span></span><svg class="sp-spark down" viewBox="0 0 60 18" preserveAspectRatio="none"><polyline points="0,5 8,4 15,7 22,6 29,9 36,8 43,11 50,10 55,13 60,14" /></svg></div></div><div class="sp-card"><div class="sp-actions"><i></i><i></i></div><div class="sp-row"><span class="sp-name">任天堂</span><span class="sp-chg up">+1.09%</span></div><div class="sp-row"><span class="sp-price">¥8,927<span class="sp-delay">20分遅延</span></span><svg class="sp-spark" viewBox="0 0 60 18" preserveAspectRatio="none"><polyline points="0,14 7,12 13,13 20,9 27,10 34,6 41,8 48,4 54,5 60,2" /></svg></div></div><div class="sp-card"><div class="sp-actions"><i></i><i></i></div><div class="sp-row"><span class="sp-name">NVIDIA</span><span class="sp-chg down">-0.42%</span></div><div class="sp-row"><span class="sp-price">$142.30</span><svg class="sp-spark down" viewBox="0 0 60 18" preserveAspectRatio="none"><polyline points="0,5 8,4 15,7 22,6 29,9 36,8 43,11 50,10 55,13 60,14" /></svg></div></div></div></div>
+          <svg class="demo-cursor" data-cursor width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L2 18L6.5 13.8L9.4 20.5L12.3 19.2L9.4 12.7L15 12.5L2 2Z" fill="#fff" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        </div>
+      </section>
+    </div>
+
+    <section class="features" id="how">
+      <div class="wrap">
+        <div class="feat"><div class="feat-body"><h3>寄せると開き、離すと閉じる</h3><p>ショートカットもクリックも不要です。パネルの上部をつかんでドラッグすれば、反対側の端や別のモニターに移動できます。</p></div><div class="feat-vis" aria-hidden="true"><div class="desk" data-demo="drag"><div class="mon"><div class="mon-screen" data-display></div></div><div class="mon"><div class="mon-screen" data-display></div></div><div class="sp-indicator mini" data-indicator></div><div class="sp-panel mini" data-panel><div class="sp-head"><span class="sp-handle"></span></div><div class="sp-cards"><i class="up"></i><i class="down"></i><i class="up"></i></div></div><svg class="demo-cursor" data-cursor width="13" height="16" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L2 18L6.5 13.8L9.4 20.5L12.3 19.2L9.4 12.7L15 12.5L2 2Z" fill="#fff" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/></svg></div></div></div>
+        <div class="feat"><div class="feat-body"><h3>日本株・米国株・韓国株をひとつのリストに</h3><p>銘柄名やコードで検索して追加します。保有数量と平均取得単価を入れると評価損益も表示されます。</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><rect x="4" y="12" width="62" height="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="35" y="28" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold">7203</text><rect x="74" y="12" width="62" height="24" fill="var(--ink)"/><text x="105" y="28" font-family="monospace" font-size="11" fill="var(--paper)" text-anchor="middle" font-weight="bold">AAPL</text></svg></div></div>
+        <div class="feat"><div class="feat-body"><h3>直近3か月の日足チャート</h3><p>銘柄ごとに直近3か月の値動きを小さなチャートで表示します。取引終了後や週末も、最後の株価とチャートはそのまま残ります。</p></div><div class="feat-vis" aria-hidden="true"><svg width="140" height="76" viewBox="0 0 140 76"><polyline points="6,54 20,48 34,52 48,40 62,44 76,30 90,34 104,22 118,26 134,14" fill="none" stroke="var(--up)" stroke-width="2"/><polyline points="6,62 24,64 42,60 60,66 78,63 96,68 114,66 134,70" fill="none" stroke="var(--down)" stroke-width="1.5" opacity="0.7"/></svg></div></div>
+      </div>
+    </section>
+
+    <section class="privacy">
+      <div class="wrap privacy-grid">
+        <h2 class="section-title">アカウントも、<br />広告もありません。</h2>
+        <div class="privacy-list">
+          <div class="privacy-item"><strong>証券口座との連携なし</strong><p>口座へのログインや注文の機能はありません。株価を表示するだけです。</p></div>
+          <div class="privacy-item"><strong>データは自分の PC に</strong><p>ウォッチリスト、保有数量、平均取得単価、設定は PC 内にだけ保存され、収集されません。</p></div>
+          <div class="privacy-item"><strong>オープンソース</strong><p>ソースコードは MIT ライセンスで GitHub に公開しています。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="install">
+      <div class="wrap">
+        <h2>よくある質問</h2>
+        <details><summary>インストール時に Windows の警告が出ます。</summary><div class="faq-a">個人開発のアプリでコード署名がないため、SmartScreen の警告が表示されます。「詳細情報」→「実行」を選ぶとインストールできます。GitHub でソースを確認して自分でビルドすることもできます。</div></details>
+        <details><summary>株価はどこから取得していますか？</summary><div class="faq-a">日本株と米国株は Yahoo Finance、韓国株は NAVER Finance の公開データです。日本株の株価は20分遅れです。取引時間中は3秒ごと、取引終了後は60秒ごとに更新します。</div></details>
+        <details><summary>会社の PC でも使えますか？</summary><div class="faq-a">Windows のプロキシと証明書の設定をそのまま使うので、社内ネットワークでも動くように作っています。会社のポリシーでインストールが制限されている場合は使えません。</div></details>
+        <details><summary>Mac にはどうやってインストールしますか？</summary><div class="faq-a">macOS 12 以降で使えます。ダウンロードしたファイルを開き、アプリを「アプリケーション」フォルダに移動してください。Apple の公証を受けていないため、初回起動時はブロックされます。システム設定 →「プライバシーとセキュリティ」で「このまま開く」をクリックすると起動できます。Mac は自動インストールに対応していないため、新しいバージョンが出たら通知をクリックして再度ダウンロードしてください。</div></details>
+        <p class="faq-more">インストール方法と詳しい使い方は<a href="/ja/guide/">ガイド</a>にまとめています。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/ja/guide/">製品ガイド</a><a href="/ja/releases/">リリースノート</a><a href="/ja/privacy/">プライバシー</a><a href="https://github.com/sngmng6506/stock-peek" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/sngmng6506/stock-peek/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a><a href="https://buymeacoffee.com/sngmng" target="_blank" rel="noopener">コーヒーで応援</a><a href="mailto:sngmng6506@gmail.com">お問い合わせ</a><a href="/" lang="ko">한국어</a><a href="/en" lang="en">English</a></div></div>
+    <p class="disclaimer">Stock Peek に表示される株価は、公式の約定データや投資助言ではありません。市場やデータ提供元によって遅延したり、実際の取引価格と異なる場合があります。</p>
+  </footer>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://stock-peek.com/ja#faq",
+    "isPartOf": { "@id": "https://stock-peek.com/ja#webpage" },
+    "mainEntity": [
+      {"@type":"Question","name":"インストール時に Windows の警告が出ます。","acceptedAnswer":{"@type":"Answer","text":"個人開発のアプリでコード署名がないため、SmartScreen の警告が表示されます。「詳細情報」→「実行」を選ぶとインストールできます。GitHub でソースを確認して自分でビルドすることもできます。"}},
+      {"@type":"Question","name":"株価はどこから取得していますか？","acceptedAnswer":{"@type":"Answer","text":"日本株と米国株は Yahoo Finance、韓国株は NAVER Finance の公開データです。日本株の株価は20分遅れです。取引時間中は3秒ごと、取引終了後は60秒ごとに更新します。"}},
+      {"@type":"Question","name":"会社の PC でも使えますか？","acceptedAnswer":{"@type":"Answer","text":"Windows のプロキシと証明書の設定をそのまま使うので、社内ネットワークでも動くように作っています。会社のポリシーでインストールが制限されている場合は使えません。"}},
+      {"@type":"Question","name":"Mac にはどうやってインストールしますか？","acceptedAnswer":{"@type":"Answer","text":"macOS 12 以降で使えます。ダウンロードしたファイルを開き、アプリを「アプリケーション」フォルダに移動してください。Apple の公証を受けていないため、初回起動時はブロックされます。システム設定 →「プライバシーとセキュリティ」で「このまま開く」をクリックすると起動できます。Mac は自動インストールに対応していないため、新しいバージョンが出たら通知をクリックして再度ダウンロードしてください。"}}
+    ]
+  }
+  </script>
+  <script>
+  (function () {
+    var el = document.getElementById('appVer');
+    if (!el) return;
+    fetch('https://api.github.com/repos/sngmng6506/stock-peek/releases/latest')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.tag_name) el.textContent = j.tag_name; })
+      .catch(function () {});
+  })();
+  </script>
+  <script src="/demo.js?v=6" defer></script>
+</body>
+</html>

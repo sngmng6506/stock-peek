@@ -10,7 +10,7 @@ export default {
   'app.unpin': '고정 해제',
   'app.empty': '종목이 비어있어요',
   'app.emptyAdd': '+ 종목 추가',
-  'help.chart': '차트는 최근 3개월 일봉을 보여줍니다. (한국·미국 모두 일봉 기준)',
+  'help.chart': '차트는 최근 3개월 일봉을 보여줍니다.',
   // StockCard
   'card.remove': '삭제',
   'card.editHolding': '보유 정보 편집',
