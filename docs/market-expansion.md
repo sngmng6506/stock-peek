@@ -43,7 +43,7 @@
 
 ## 3. 검색·AI 검색 노출
 
-- [ ] `website/llms.txt` 지원 시장·언어·새 페이지 URL (수동 관리)
+- [ ] `site/llms.md` 핵심 사실(지원 시장·언어). 페이지 목록·버전은 생성 스크립트가 자동으로 채움
 - [ ] `robots.txt`는 전체 허용이라 수정 불필요. 단 Cloudflare의 AI 봇 차단·관리형 robots.txt 설정이 꺼져 있는지 확인 (GPTBot, ClaudeBot, PerplexityBot)
 - [ ] Google Search Console 사이트맵 재제출
 - [ ] Bing Webmaster Tools 등록·사이트맵 제출 (ChatGPT 검색·Copilot이 Bing 색인 사용)

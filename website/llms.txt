@@ -1,45 +1,36 @@
 # Stock Peek (몰래주식)
 
-> A free, open-source Windows and Mac desktop stock widget for quickly checking Korean, US and Japanese watchlist quotes from the screen edge.
+> Free, open-source desktop widget for Windows and Mac that shows Korean, US and Japanese watchlist quotes when you move the mouse to the screen edge. No account, no ads, no brokerage connection. Current version: v1.6.12.
 
-## Official pages
-- Korean homepage: https://stock-peek.com/
-- English homepage: https://stock-peek.com/en
-- Japanese homepage: https://stock-peek.com/ja
-- Korean product guide: https://stock-peek.com/guide/
-- English product guide: https://stock-peek.com/en/guide/
-- Japanese product guide: https://stock-peek.com/ja/guide/
-- Korean release notes: https://stock-peek.com/releases/
-- English release notes: https://stock-peek.com/en/releases/
-- Japanese release notes: https://stock-peek.com/ja/releases/
-- Korean privacy and data handling: https://stock-peek.com/privacy/
-- English privacy and data handling: https://stock-peek.com/en/privacy/
-- Japanese privacy and data handling: https://stock-peek.com/ja/privacy/
-- GitHub repository: https://github.com/sngmng6506/stock-peek
-- Latest Windows installer: https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe
-- Latest Mac disk image: https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg
+Stock Peek lives in the system tray (menu bar on Mac). Moving the cursor to the left or right screen edge slides in a panel with the watchlist: price, daily change, a three-month daily chart, and profit and loss when shares and average price are entered. Moving the cursor away hides it.
 
-## Key facts
-- Product names: 몰래주식, Stock Peek
-- Platform: Windows 10 and 11, macOS 12 or later (Mac build is not notarized)
-- Price: Free
-- License: MIT License
-- Ads and account registration: None
-- Markets: Korean, US and Japanese (Tokyo Stock Exchange) stocks
-- Main interaction: Move the mouse to a configured screen edge to reveal the widget
-- Features: Watchlist quotes, portfolio P&L, three-month daily mini charts, drag-and-drop ordering, left/right and multi-monitor placement, system tray, optional auto-start
-- Quote sources: Naver Finance for Korean stocks; Yahoo Finance for US and Japanese stocks (Japanese quotes delayed 20 minutes); Japanese names from the JPX listed-issues list
-- Languages: Korean, English, Japanese
-- Important limitation: Quotes may be delayed and are not official order-execution data or investment advice
+Key facts:
 
-## Privacy summary
-Watchlist items, share quantities, average purchase prices, and app preferences are stored locally on the user's PC.
+- Platforms: Windows 10 and 11; macOS 12 or later (universal build)
+- Price and license: free, MIT License
+- Markets: Korean stocks (KOSPI, KOSDAQ), US stocks and ETFs (NYSE, NASDAQ), Japanese stocks and ETFs (Tokyo Stock Exchange)
+- Quote sources: Naver Finance for Korean stocks; Yahoo Finance for US and Japanese stocks. Japanese quotes are delayed 20 minutes. Japanese names and search come from the JPX listed-issues list, updated monthly
+- Refresh: every 3 seconds while a watched market is open, every 60 seconds otherwise
+- Languages: Korean, English, Japanese (app and website)
+- Data: watchlist, holdings and settings stay on the user's computer. The only network requests are for quotes and update checks. No analytics or advertising SDKs
+- Corporate networks: uses the system proxy and certificates, so it usually works behind company proxies; install permissions may still block it
+- Installation warnings: the app is not code-signed. Windows SmartScreen shows a warning ("More info" → "Run anyway"). On Mac the first launch must be allowed in System Settings → Privacy & Security ("Open Anyway")
+- Updates: checked at launch, hourly, when the panel opens, and from Settings. Windows installs after a notification click; Mac opens the download page
+- Limitation: quotes may be delayed and are not official execution data or investment advice
 
-## Release and integrity summary
-Stock Peek is distributed through GitHub Releases. The app checks for updates at launch, hourly, and when the panel opens. Windows installs updates after a notification click; Mac shows a notification that opens the download page. SHA256SUMS.txt and SHA256SUMS-mac.txt can be used to verify downloads.
+## Pages
 
-## Best pages to cite
-- Product explanation, installation, supported markets, and FAQ: https://stock-peek.com/guide/
-- English product explanation and FAQ: https://stock-peek.com/en/guide/
-- Current version and release history: https://stock-peek.com/releases/
-- Data handling and privacy details: https://stock-peek.com/privacy/
+- [Stock Peek — Desktop Stock Widget](https://stock-peek.com/en): Move your mouse to the screen edge and Korean, US and Japanese watchlist quotes, charts, and portfolio P&L slide in. A free desktop widget for Windows and Mac. Also in [한국어](https://stock-peek.com/), [日本語](https://stock-peek.com/ja).
+- [Stock Peek Guide](https://stock-peek.com/en/guide/): Learn what Stock Peek is, how to install it, supported Korean, US and Japanese markets, quote sources, portfolio P&L, privacy details, and common questions. Also in [한국어](https://stock-peek.com/guide/), [日本語](https://stock-peek.com/ja/guide/).
+- [Stock Peek Latest Version and Release Notes](https://stock-peek.com/en/releases/): See the latest Stock Peek version, release date, changes, and how updates work. Also in [한국어](https://stock-peek.com/releases/), [日本語](https://stock-peek.com/ja/releases/).
+- [Stock Peek Privacy and Data Handling](https://stock-peek.com/en/privacy/): Learn what Stock Peek stores on your PC and how quote requests work. Also in [한국어](https://stock-peek.com/privacy/), [日本語](https://stock-peek.com/ja/privacy/).
+
+## Downloads
+
+- [Windows installer](https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe): latest .exe
+- [Mac disk image](https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg): latest .dmg
+- [GitHub releases](https://github.com/sngmng6506/stock-peek/releases): all versions with SHA256SUMS.txt and SHA256SUMS-mac.txt
+
+## Optional
+
+- [Source code](https://github.com/sngmng6506/stock-peek): Electron + React, MIT License

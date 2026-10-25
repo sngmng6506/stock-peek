@@ -37,8 +37,8 @@ src/main/watchlist.js     관심종목 CRUD (검증은 markets.js 규칙)
 src/main/preferences.js   도킹·언어·welcome 설정
 src/preload/index.js      contextBridge IPC 화이트리스트
 src/renderer/src/         App.jsx, components/, i18n/ (Provider), lib/ (금액 포맷·오류 번역)
-site/                     웹사이트 원본 (site.json, strings/<lang>.json, pages/<lang>/<page>.html)
-website/                  생성 결과 — HTML·sitemap 직접 수정 금지 (demo.js, style.css, llms.txt, 이미지는 직접)
+site/                     웹사이트 원본 (site.json, strings/<lang>.json, pages/<lang>/<page>.html, llms.md)
+website/                  생성 결과 — HTML·sitemap 직접 수정 금지 (demo.js, style.css, robots.txt, 이미지는 직접)
 scripts/                  prepare-release.mjs, build-site.mjs, check-i18n.mjs, update_jp_stocks.py
 docs/market-expansion.md  시장·언어 추가 체크리스트
 ```

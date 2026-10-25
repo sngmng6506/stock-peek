@@ -213,12 +213,30 @@ ${entries.join('\n')}
 `
 }
 
+// llms.txt: site/llms.md의 {{pages}}를 페이지 목록(영어 기준 + 다른 언어 링크)으로 채움
+async function llmsTxt() {
+  const src = await readFile(join(SITE, 'llms.md'), 'utf8')
+  const primary = langs.find((l) => l.code === FALLBACK_LANG) || langs[0]
+  const lines = Object.keys(site.pages)
+    .filter((page) => pages[primary.code][page])
+    .map((page) => {
+      const { meta } = pages[primary.code][page]
+      const others = langsWith(page)
+        .filter((x) => x.code !== primary.code)
+        .map((x) => `[${x.label}](${urlOf(x.code, page)})`)
+        .join(', ')
+      return `- [${meta.ogTitle}](${urlOf(primary.code, page)}): ${meta.description}${others ? ` Also in ${others}.` : ''}`
+    })
+  return fill(src.replace('{{pages}}', lines.join('\n')))
+}
+
 const outputs = new Map()
 for (const l of langs) {
   for (const page of Object.keys(pages[l.code]))
     outputs.set(fileOf(l.code, page), render(l.code, page))
 }
 outputs.set('sitemap.xml', sitemap())
+outputs.set('llms.txt', await llmsTxt())
 
 if (args.has('--check')) {
   const stale = []
