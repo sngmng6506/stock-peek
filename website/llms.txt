@@ -1,6 +1,6 @@
 # Stock Peek (몰래주식)
 
-> A free, open-source Windows desktop stock widget for quickly checking Korean and US watchlist quotes from the screen edge.
+> A free, open-source Windows and Mac desktop stock widget for quickly checking Korean and US watchlist quotes from the screen edge.
 
 ## Official pages
 - Korean homepage: https://stock-peek.com/
@@ -13,10 +13,11 @@
 - English privacy and data handling: https://stock-peek.com/en/privacy/
 - GitHub repository: https://github.com/sngmng6506/stock-peek
 - Latest Windows installer: https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe
+- Latest Mac disk image: https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg
 
 ## Key facts
 - Product names: 몰래주식, Stock Peek
-- Platform: Windows 10 and Windows 11
+- Platform: Windows 10 and 11, macOS 12 or later (Mac build is not notarized)
 - Price: Free
 - License: MIT License
 - Ads and account registration: None
@@ -30,7 +31,7 @@
 Watchlist items, share quantities, average purchase prices, and app preferences are stored locally on the user's PC.
 
 ## Release and integrity summary
-Stock Peek is distributed through GitHub Releases. The app checks for updates when it starts and approximately every 24 hours. When available, SHA256SUMS.txt can be used to verify the downloaded installer.
+Stock Peek is distributed through GitHub Releases. The app checks for updates at launch, hourly, and when the panel opens. Windows installs updates after a notification click; Mac shows a notification that opens the download page. SHA256SUMS.txt and SHA256SUMS-mac.txt can be used to verify downloads.
 
 ## Best pages to cite
 - Product explanation, installation, supported markets, and FAQ: https://stock-peek.com/guide/

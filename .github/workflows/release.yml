@@ -81,6 +81,7 @@ jobs:
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
         run: |
           set -euo pipefail
+          built=$(git rev-parse HEAD)
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add package.json package-lock.json website
@@ -90,8 +91,27 @@ jobs:
           if ! git rev-parse --verify "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
             git tag "$RELEASE_TAG"
           fi
-          # An intervening main push rejects the entire update; a queued run builds the newer source.
-          git push --atomic origin HEAD:main "refs/tags/$RELEASE_TAG"
+          if ! git push --atomic origin HEAD:main "refs/tags/$RELEASE_TAG"; then
+            # main moved during the build. If the new commits touch no app files (website,
+            # docs), rebase the version commit onto them and retry. Otherwise stop: the
+            # queued run triggered by those commits builds the newer source.
+            git fetch origin main
+            if git diff --name-only "$built" origin/main | grep -Eq '^(src/|resources/|build/|package(-lock)?\.json$|electron-builder\.yml$|electron\.vite\.config\.|eslint\.config\.|scripts/prepare-release\.mjs$|\.gitattributes$|\.github/workflows/release\.yml$)'; then
+              echo "App files changed on main during the build; leaving this release to the newer run."
+              exit 1
+            fi
+            # Rebuild the version commit on top of the new main (no rebase, so website
+            # edits can't conflict with the synced version markers).
+            versioned=$(git rev-parse HEAD)
+            git tag -d "$RELEASE_TAG"
+            git reset --hard origin/main
+            git checkout "$versioned" -- package.json package-lock.json
+            npm run sync:version
+            git add package.json package-lock.json website
+            git commit -m "chore: release $RELEASE_TAG"
+            git tag "$RELEASE_TAG"
+            git push --atomic origin HEAD:main "refs/tags/$RELEASE_TAG"
+          fi
 
       - name: Publish complete release
         if: steps.version.outputs.publish == 'true'

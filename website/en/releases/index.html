@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stock Peek Latest Version and Release Notes — Windows Stock Widget</title>
-  <meta name="description" content="See the latest Stock Peek Windows version, release date, changes, automatic update behavior, and SHA-256 installer verification steps." />
+  <title>Stock Peek Latest Version and Release Notes — Stock Widget for Windows and Mac</title>
+  <meta name="description" content="See the latest Stock Peek version, release date, changes, automatic update behavior, and SHA-256 installer verification steps." />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://stock-peek.com/en/releases/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/releases/" />
@@ -54,7 +54,7 @@
         "@id": "https://stock-peek.com/en/releases/#webpage",
         "url": "https://stock-peek.com/en/releases/",
         "name": "Stock Peek Latest Version and Release Notes",
-        "description": "Latest Windows installer, changes, automatic update behavior, and file verification instructions for Stock Peek.",
+        "description": "Latest installers, changes, automatic update behavior, and file verification instructions for Stock Peek.",
         "inLanguage": "en",
         "dateModified": "2026-10-25",
         "isPartOf": { "@id": "https://stock-peek.com/#website" },
@@ -88,16 +88,16 @@
   <main class="doc">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/en">Stock Peek</a> / Release notes</nav>
     <h1>Latest version and release notes</h1>
-    <p class="lead">This page lists the current Windows installer and recent changes. Stock Peek is distributed through GitHub Releases and also checks for updates from inside the app.</p>
+    <p class="lead">This page lists the current Windows and Mac installers and recent changes. Stock Peek is distributed through GitHub Releases and also checks for updates from inside the app.</p>
 
     <article class="release-card" aria-labelledby="latest-heading">
       <div class="release-meta">
         <h2 id="latest-heading" class="release-version">Latest version <span id="appVer">v1.6.6</span></h2>
         <span id="releaseDate" class="release-date">Available from GitHub Releases</span>
       </div>
-      <p id="latestNote" class="release-note">This Windows 10/11 release supports Korean and US watchlist quotes, three-month charts, portfolio P&amp;L, multi-monitor placement, and automatic updates.</p>
+      <p id="latestNote" class="release-note">This release for Windows 10/11 and macOS 12+ supports Korean and US watchlist quotes, three-month charts, portfolio P&amp;L, multi-monitor placement, and update notifications.</p>
       <div class="actions">
-        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Latest installer</a>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl>Latest installer</a>
         <a id="releaseLink" href="https://github.com/sngmng6506/stock-peek/releases/latest" class="btn-dl" style="background:transparent;color:var(--ink)">View GitHub release</a>
       </div>
     </article>
@@ -107,22 +107,22 @@
       <p>When available, each release includes <code>SHA256SUMS.txt</code>. Compare the SHA-256 hash of the installer with the value in that file to confirm that the download was not modified.</p>
       <ol>
         <li>Download the installer and <code>SHA256SUMS.txt</code> from the latest GitHub release.</li>
-        <li>Run <code>Get-FileHash .\stock-peek-setup.exe -Algorithm SHA256</code> in Windows PowerShell.</li>
-        <li>Confirm that the printed hash matches the value in <code>SHA256SUMS.txt</code>.</li>
+        <li>On Windows run <code>Get-FileHash .\stock-peek-setup.exe -Algorithm SHA256</code> in PowerShell; on Mac run <code>shasum -a 256 stock-peek-mac.dmg</code> in Terminal.</li>
+        <li>Confirm that the printed hash matches the value in <code>SHA256SUMS.txt</code> (<code>SHA256SUMS-mac.txt</code> on Mac).</li>
       </ol>
     </section>
 
     <section>
       <h2>Automatic updates</h2>
-      <p>The installed app checks GitHub Releases when it starts and approximately once every 24 hours afterward. When an update is available, it is downloaded and can be installed when the user chooses or when the app exits.</p>
+      <p>The installed app checks GitHub Releases at launch, every hour, and when you open the panel (at most every 15 minutes). On Windows the update downloads in the background and a notification appears; clicking it installs the update and restarts the app. On Mac automatic install isn’t possible without code signing, so the notification opens the download page instead.</p>
     </section>
 
     <section>
       <h2>Requirements and notes</h2>
       <ul>
-        <li>Supported operating systems: Windows 10 and Windows 11</li>
+        <li>Supported operating systems: Windows 10 and 11, macOS 12 or later</li>
         <li>An internet connection is required. Corporate security policy or install permissions may restrict use.</li>
-        <li>Because the independent app is not code-signed, Windows SmartScreen may display a notice.</li>
+        <li>Because the independent app is not code-signed, Windows SmartScreen may display a notice, and on Mac the first launch must be allowed in System Settings.</li>
         <li>Displayed quotes are not official execution data or investment advice.</li>
       </ul>
     </section>
@@ -177,5 +177,6 @@
       .catch(function () {});
   })();
   </script>
+  <script src="/demo.js?v=2" defer></script>
 </body>
 </html>
