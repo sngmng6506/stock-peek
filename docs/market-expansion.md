@@ -13,17 +13,17 @@
 - [ ] Yahoo 시세·차트·검색 응답 확인 (시장별 대표 종목 3개)
 - [x] 시세 지연: 일본 20분, 인도 NSE 실시간·BSE 15분, 사우디 15분 (Yahoo 도움말 기준)
 - [x] 일본 종목명: Yahoo는 영어명 → JPX 상장 종목 목록으로 해결 (`data/jp-stocks.json`, 월간 자동 갱신)
-- [ ] 인도·사우디 현지어 종목명 필요 여부
-- [ ] 시장별 거래 시간·점심 휴장·휴장 요일 정리
+- [x] 인도 현지어 종목명: 불필요 (NSE 종목명이 영어). 사우디는 미정
+- [x] 시장별 거래 시간·점심 휴장·휴장 요일 정리 (JP·IN, 아래 국가별 특이사항)
 - [ ] Cloudflare Web Analytics 국가별 방문자 기준선 기록 (출시 후 비교용)
 
 ## 1. 시장 추가
 
-- [ ] `src/shared/markets.js`: id, 통화, 소수 자릿수, 시간대, 거래 요일, 세션(점심 휴장은 세션 2개), 심볼 정규식·정규화, 입력 예시 가격
-- [ ] `src/main/markets/index.js`: `createYahooProvider({ market, suffix, exchanges })` 등록
-- [ ] 번역: `market.<ID>`, `add.searchPlaceholder.<ID>` (모든 언어) → `npm run check:i18n`
+- [x] `src/shared/markets.js`: id, 통화, 소수 자릿수, 시간대, 거래 요일, 세션(점심 휴장은 세션 2개), 심볼 정규식·정규화, 입력 예시 가격
+- [x] `src/main/markets/index.js`: `createYahooProvider({ market, suffix, exchanges })` 등록
+- [x] 번역: `market.<ID>`, `add.searchPlaceholder.<ID>` (모든 언어) → `npm run check:i18n`
 - [x] 시세 지연 표시: `markets.js` `delayMinutes` → 카드에 "N분 지연"
-- [ ] 시장이 4개 이상이면 종목 추가 화면이 탭 → 드롭다운으로 자동 전환되는지 확인
+- [x] 종목 추가 화면: 시장 4개까지 탭, 5개부터 드롭다운 (`AddStockModal.jsx`)
 
 ## 2. 언어 추가
 
@@ -43,7 +43,7 @@
 
 ## 3. 검색·AI 검색 노출
 
-- [ ] `site/llms.md` 핵심 사실(지원 시장·언어). 페이지 목록·버전은 생성 스크립트가 자동으로 채움
+- [x] `site/llms.md` 핵심 사실(지원 시장·언어). 페이지 목록·버전은 생성 스크립트가 자동으로 채움
 - [ ] `robots.txt`는 전체 허용이라 수정 불필요. 단 Cloudflare의 AI 봇 차단·관리형 robots.txt 설정이 꺼져 있는지 확인 (GPTBot, ClaudeBot, PerplexityBot)
 - [ ] Google Search Console 사이트맵 재제출
 - [ ] Bing Webmaster Tools 등록·사이트맵 제출 (ChatGPT 검색·Copilot이 Bing 색인 사용)
@@ -52,9 +52,9 @@
 
 ## 4. 문서·출시
 
-- [ ] `README.md` 기능, `PRIVACY.md`·개인정보 페이지 데이터 출처
-- [ ] 랜딩·가이드 문구 "한국·미국" → 시장 목록
-- [ ] 릴리즈 노트에 신규 시장 명시
+- [x] `README.md` 기능, `PRIVACY.md`·개인정보 페이지 데이터 출처 (Yahoo Finance로 포괄)
+- [x] 랜딩·가이드 문구 "한국·미국" → 시장 목록
+- [x] 릴리즈 노트에 신규 시장 명시
 
 ## 5. 시장별 QA
 
@@ -75,8 +75,9 @@
 인도
 
 - 거래 9:15–15:30 IST
-- 같은 종목이 NSE·BSE 양쪽 상장 → 검색 결과 중복 처리 (기본 NSE)
-- 숫자 표기는 인도식 자릿수(lakh·crore) 고려, 통화 `₹`
+- 같은 종목이 NSE·BSE 양쪽 상장 → NSE(`.NS`)만 검색·시세에 사용, BSE는 제외
+- 통화 `₹`. 영어 화면에서는 인도식 자릿수(`numberLocale: 'en-IN'`, ₹12,34,567.50), 다른 언어는 그 언어 표기
+- 심볼에 `&`·`-` 포함 (M&M, BAJAJ-AUTO). URL은 `encodeURIComponent`로 인코딩
 
 사우디
 
