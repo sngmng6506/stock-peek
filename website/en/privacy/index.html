@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Peek Privacy and Data Handling</title>
-  <meta name="description" content="Learn what Stock Peek stores on your PC, how quote requests work, and what data is sent when you explicitly use the optional portfolio one-line review." />
+  <meta name="description" content="Learn what Stock Peek stores on your PC and how quote requests work." />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
   <link rel="canonical" href="https://stock-peek.com/en/privacy/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
@@ -82,7 +82,7 @@
 
     <div class="summary">
       <strong>Summary</strong>
-      <p>The desktop app contains no advertising SDKs or general-purpose behavioral analytics. Only when the user explicitly requests the optional portfolio one-line review are a random device identifier, calculated portfolio statistics, and the selected language sent to the project's Cloudflare Worker.</p>
+      <p>The desktop app contains no advertising SDKs or general-purpose behavioral analytics.</p>
     </div>
 
     <section>
@@ -93,24 +93,12 @@
         <li>Holding quantity and average purchase price</li>
         <li>Panel position, selected monitor, and left or right placement</li>
         <li>Language and welcome-screen preference</li>
-        <li>A random device identifier used for the daily portfolio review limit</li>
       </ul>
     </section>
 
     <section>
       <h2>Network requests for quotes</h2>
-      <p>The app requests public market data from the Stock Peek Cloudflare Worker and, when needed, directly from Naver Finance or Yahoo Finance. It does not sign in to a brokerage account or submit orders.</p>
-    </section>
-
-    <section>
-      <h2>Portfolio one-line review</h2>
-      <p>When the user explicitly runs this optional feature, the following values are sent to the Stock Peek Worker:</p>
-      <ul>
-        <li>A randomly generated device identifier</li>
-        <li>Calculated portfolio statistics</li>
-        <li>The selected language</li>
-      </ul>
-      <p>The identifier is used to enforce a daily usage limit. The app never requests brokerage credentials or passwords.</p>
+      <p>The app requests public market data directly from Naver Finance or Yahoo Finance. It does not sign in to a brokerage account or submit orders.</p>
     </section>
 
     <section>

@@ -50,20 +50,6 @@ export async function searchUSStocks(keyword) {
     }))
 }
 
-// 통계용 일봉 종가 배열만 반환 (최근 3개월). 실패 시 빈 배열.
-export async function fetchUSDailyCloses(ticker) {
-  try {
-    const res = await eFetch(CHART_URL(ticker), { headers: HEADERS })
-    if (!res.ok) return []
-    const json = await res.json()
-    const result = json?.chart?.result?.[0]
-    const closes = result?.indicators?.quote?.[0]?.close || []
-    return closes.filter((p) => p !== null && Number.isFinite(p))
-  } catch {
-    return []
-  }
-}
-
 export async function fetchUSStock(ticker) {
   if (useProxy()) {
     try {

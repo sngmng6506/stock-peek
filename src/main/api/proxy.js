@@ -6,7 +6,7 @@ export function eFetch(url, options = {}) {
   return net.fetch(url, options)
 }
 
-// Cloudflare Worker URL — /api/review (포트폴리오 한 줄 평)에서 사용.
+// 시세/검색 프록시용 Cloudflare Worker URL.
 export const WORKER_URL = 'https://stockpeek-proxy.sngmng.workers.dev'
 
 // 시세/검색 프록시 경유 여부.

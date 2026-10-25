@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>몰래주식 개인정보 및 데이터 처리 안내</title>
-  <meta name="description" content="몰래주식(Stock Peek)이 사용자 PC에 저장하는 정보, 시세 요청, 선택 기능인 포트폴리오 한 줄 평의 데이터 전송 범위를 설명합니다." />
+  <meta name="description" content="몰래주식(Stock Peek)이 사용자 PC에 저장하는 정보와 시세 요청의 데이터 전송 범위를 설명합니다." />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
   <link rel="canonical" href="https://stock-peek.com/privacy/" />
   <link rel="alternate" hreflang="ko" href="https://stock-peek.com/privacy/" />
@@ -82,7 +82,7 @@
 
     <div class="summary">
       <strong>핵심 요약</strong>
-      <p>광고 SDK나 범용 행동 분석 도구는 포함하지 않습니다. 선택 기능인 “포트폴리오 한 줄 평”을 직접 요청할 때만 무작위 기기 식별자, 계산된 포트폴리오 통계와 선택 언어가 프로젝트의 Cloudflare Worker로 전송됩니다.</p>
+      <p>광고 SDK나 범용 행동 분석 도구는 포함하지 않습니다.</p>
     </div>
 
     <section>
@@ -93,24 +93,12 @@
         <li>보유 수량과 평균 매입가</li>
         <li>패널 위치, 선택한 모니터와 좌·우 배치</li>
         <li>언어와 첫 실행 안내 확인 여부</li>
-        <li>포트폴리오 한 줄 평의 일일 사용 제한을 위한 무작위 기기 식별자</li>
       </ul>
     </section>
 
     <section>
       <h2>시세를 가져오기 위한 네트워크 요청</h2>
-      <p>앱은 공개 시장 데이터를 가져오기 위해 Stock Peek Cloudflare Worker에 요청하며, 필요한 경우 네이버 금융 또는 Yahoo Finance에 직접 요청합니다. 증권사 계정에 로그인하거나 주문을 전송하지 않습니다.</p>
-    </section>
-
-    <section>
-      <h2>포트폴리오 한 줄 평</h2>
-      <p>사용자가 이 선택 기능을 직접 실행하면 다음 값이 Stock Peek Worker로 전송됩니다.</p>
-      <ul>
-        <li>무작위로 생성된 기기 식별자</li>
-        <li>앱에서 계산한 포트폴리오 통계</li>
-        <li>선택한 언어</li>
-      </ul>
-      <p>기기 식별자는 하루 사용 횟수를 제한하기 위해 사용됩니다. 앱은 증권사 계정 정보나 비밀번호를 요청하지 않습니다.</p>
+      <p>앱은 공개 시장 데이터를 가져오기 위해 네이버 금융 또는 Yahoo Finance에 직접 요청합니다. 증권사 계정에 로그인하거나 주문을 전송하지 않습니다.</p>
     </section>
 
     <section>
