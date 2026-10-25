@@ -5,8 +5,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
   const { t } = useI18n()
   const [market, setMarket] = useState('KR')
   const [keyword, setKeyword] = useState('')
-  const [results, setResults] = useState([])
-  const [searching, setSearching] = useState(false)
+  const [searchResult, setSearchResult] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
@@ -15,29 +14,36 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
   const [quantity, setQuantity] = useState('')
   const [avgPrice, setAvgPrice] = useState('')
 
+  const kw = keyword.trim()
+  const currentResult =
+    searchResult?.keyword === kw && searchResult?.market === market ? searchResult : null
+  const results = kw ? currentResult?.items || [] : []
+  const searching = Boolean(kw && !currentResult)
+  const searchError = currentResult?.error
+
   useEffect(() => {
-    if (selected) return // 검색 step 멈춤
-    setError(null)
-    const kw = keyword.trim()
-    if (!kw) {
-      setResults([])
-      setSearching(false)
-      return
-    }
-    setSearching(true)
+    if (selected || !kw) return
+    let cancelled = false
     const timer = setTimeout(async () => {
       try {
         const items = await window.api.searchStocks(market, kw)
-        setResults(items || [])
+        if (!cancelled) setSearchResult({ keyword: kw, market, items: items || [] })
       } catch (e) {
-        setError(e?.message || t('add.searchFail'))
-        setResults([])
-      } finally {
-        setSearching(false)
+        if (!cancelled) {
+          setSearchResult({
+            keyword: kw,
+            market,
+            items: [],
+            error: e?.message || t('add.searchFail')
+          })
+        }
       }
     }, 250)
-    return () => clearTimeout(timer)
-  }, [keyword, market, selected])
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [kw, market, selected, t])
 
   const handlePick = (item) => {
     setSelected(item)
@@ -62,8 +68,6 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
       setBusy(false)
     }
   }
-
-  const kw = keyword.trim()
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
@@ -103,7 +107,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
 
             <div className="search-results">
               {searching && <div className="search-hint">{t('add.searching')}</div>}
-              {!searching && kw && results.length === 0 && !error && (
+              {!searching && kw && results.length === 0 && !searchError && (
                 <div className="search-hint">{t('add.noResult')}</div>
               )}
               {results.map((r) => {
@@ -129,7 +133,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
               })}
             </div>
 
-            {error && <div className="modal-err">{error}</div>}
+            {searchError && <div className="modal-err">{searchError}</div>}
 
             <div className="modal-actions">
               <button type="button" onClick={onClose}>
@@ -171,32 +175,24 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
                   type="number"
                   step="any"
                   min="0"
-                  placeholder={selected.market === 'KR' ? t('holding.pricePlaceholder') : 'e.g. 189.20'}
+                  placeholder={
+                    selected.market === 'KR' ? t('holding.pricePlaceholder') : 'e.g. 189.20'
+                  }
                   value={avgPrice}
                   onChange={(e) => setAvgPrice(e.target.value)}
                 />
               </label>
             </div>
 
-            <div className="form-hint">
-              {t('holding.hint')}
-            </div>
+            <div className="form-hint">{t('holding.hint')}</div>
 
             {error && <div className="modal-err">{error}</div>}
 
             <div className="modal-actions">
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                disabled={busy}
-              >
+              <button type="button" onClick={() => setSelected(null)} disabled={busy}>
                 {t('add.back')}
               </button>
-              <button
-                type="button"
-                onClick={() => submitAdd(false)}
-                disabled={busy}
-              >
+              <button type="button" onClick={() => submitAdd(false)} disabled={busy}>
                 {t('add.skip')}
               </button>
               <button

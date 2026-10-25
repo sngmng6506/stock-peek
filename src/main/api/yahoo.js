@@ -1,4 +1,4 @@
-import { useProxy, proxyStock, proxySearch, eFetch } from './proxy.js'
+import { isQuoteProxyEnabled, proxyStock, proxySearch, eFetch } from './proxy.js'
 
 const CHART_URL = (ticker) =>
   `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
@@ -20,7 +20,7 @@ const SEARCH_URL = (kw) =>
 const US_EXCHANGES = new Set(['NMS', 'NGM', 'NCM', 'NYQ', 'PCX', 'ASE', 'BTS'])
 
 export async function searchUSStocks(keyword) {
-  if (useProxy()) {
+  if (isQuoteProxyEnabled()) {
     try {
       return await proxySearch('US', keyword)
     } catch {
@@ -32,9 +32,7 @@ export async function searchUSStocks(keyword) {
   const json = await res.json()
   return (json?.quotes || [])
     .filter(
-      (q) =>
-        US_EXCHANGES.has(q.exchange) &&
-        (q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
+      (q) => US_EXCHANGES.has(q.exchange) && (q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
     )
     .slice(0, 10)
     .map((q) => ({
@@ -50,22 +48,8 @@ export async function searchUSStocks(keyword) {
     }))
 }
 
-// 통계용 일봉 종가 배열만 반환 (최근 3개월). 실패 시 빈 배열.
-export async function fetchUSDailyCloses(ticker) {
-  try {
-    const res = await eFetch(CHART_URL(ticker), { headers: HEADERS })
-    if (!res.ok) return []
-    const json = await res.json()
-    const result = json?.chart?.result?.[0]
-    const closes = result?.indicators?.quote?.[0]?.close || []
-    return closes.filter((p) => p !== null && Number.isFinite(p))
-  } catch {
-    return []
-  }
-}
-
 export async function fetchUSStock(ticker) {
-  if (useProxy()) {
+  if (isQuoteProxyEnabled()) {
     try {
       return await proxyStock('US', ticker)
     } catch {
@@ -113,5 +97,3 @@ export async function fetchUSStock(ticker) {
     prices
   }
 }
-
-

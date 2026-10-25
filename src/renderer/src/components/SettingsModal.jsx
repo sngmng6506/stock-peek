@@ -14,17 +14,26 @@ function SettingsModal({ onClose }) {
   const [qr, setQr] = useState(null)
 
   useEffect(() => {
-    window.api.getSettings().then((s) => {
-      setAutoStart(!!s.autoStart)
-      setVersion(s.version || '')
-    }).catch(() => {})
-    window.api.getDonateQr().then((d) => {
-      if (d) setQr(d)
-    }).catch(() => {})
-    window.api.getUpdate().then((u) => {
-      if (u?.available) setUpdateAvailable(u.available)
-      if (u?.ready) setUpdateReady(u.ready)
-    }).catch(() => {})
+    window.api
+      .getSettings()
+      .then((s) => {
+        setAutoStart(!!s.autoStart)
+        setVersion(s.version || '')
+      })
+      .catch(() => {})
+    window.api
+      .getDonateQr()
+      .then((d) => {
+        if (d) setQr(d)
+      })
+      .catch(() => {})
+    window.api
+      .getUpdate()
+      .then((u) => {
+        if (u?.available) setUpdateAvailable(u.available)
+        if (u?.ready) setUpdateReady(u.ready)
+      })
+      .catch(() => {})
     const u1 = window.api.onUpdateAvailable(setUpdateAvailable)
     const u2 = window.api.onUpdateReady(setUpdateReady)
     return () => {
@@ -51,13 +60,17 @@ function SettingsModal({ onClose }) {
             className="update-banner ready"
             onClick={() => window.api.installUpdate()}
           >
-            <span>v{updateReady.version} {t('settings.updateReady')}</span>
+            <span>
+              v{updateReady.version} {t('settings.updateReady')}
+            </span>
             <span>↻</span>
           </button>
         )}
         {!updateReady && updateAvailable && (
           <div className="update-banner downloading">
-            <span>v{updateAvailable.version} {t('settings.updateDownloading')}</span>
+            <span>
+              v{updateAvailable.version} {t('settings.updateDownloading')}
+            </span>
           </div>
         )}
 
@@ -89,11 +102,7 @@ function SettingsModal({ onClose }) {
         <div className="donate">
           <div className="donate-title">{t('settings.donate')}</div>
           <div className="donate-desc">{t('settings.donateDesc')}</div>
-          <button
-            type="button"
-            className="bmc-btn"
-            onClick={openExternal(BMC_URL)}
-          >
+          <button type="button" className="bmc-btn" onClick={openExternal(BMC_URL)}>
             ☕ {t('settings.donateBtn')}
           </button>
           {qr && (
@@ -109,11 +118,7 @@ function SettingsModal({ onClose }) {
             <span>{t('settings.version')}</span>
             <span className="mono">{version || '-'}</span>
           </div>
-          <button
-            type="button"
-            className="about-row link"
-            onClick={openExternal(GITHUB_URL)}
-          >
+          <button type="button" className="about-row link" onClick={openExternal(GITHUB_URL)}>
             <span>GitHub</span>
             <span>↗</span>
           </button>

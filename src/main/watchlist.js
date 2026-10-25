@@ -79,9 +79,7 @@ export function setItems(items) {
 export function updateHolding(market, symbol, holding) {
   const target = normalize(market, symbol)
   const list = getItems()
-  const idx = list.findIndex(
-    (i) => i.market === target.market && i.symbol === target.symbol
-  )
+  const idx = list.findIndex((i) => i.market === target.market && i.symbol === target.symbol)
   if (idx < 0) throw new Error('종목 없음')
   const next = list.map((it) => ({ ...it }))
   const item = next[idx]
@@ -97,9 +95,7 @@ export function updateHolding(market, symbol, holding) {
 
 export function removeItem(market, symbol) {
   const item = normalize(market, symbol)
-  const next = getItems().filter(
-    (i) => !(i.market === item.market && i.symbol === item.symbol)
-  )
+  const next = getItems().filter((i) => !(i.market === item.market && i.symbol === item.symbol))
   store.set('items', next)
   return next
 }

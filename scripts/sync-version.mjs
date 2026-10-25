@@ -53,7 +53,10 @@ for (const target of datedTargets) {
     throw new Error(`dateModified marker was not found in ${target.pathname}`)
   }
 
-  const next = current.replace(/"dateModified":\s*"\d{4}-\d{2}-\d{2}"/g, `"dateModified": "${today}"`)
+  const next = current.replace(
+    /"dateModified":\s*"\d{4}-\d{2}-\d{2}"/g,
+    `"dateModified": "${today}"`
+  )
   await writeFile(target, next)
   console.log(`Updated ${target.pathname} dateModified to ${today}`)
 }
@@ -65,6 +68,9 @@ if (!/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/.test(sitemapCurrent)) {
   throw new Error('Sitemap lastmod markers were not found')
 }
 
-const sitemapNext = sitemapCurrent.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`)
+const sitemapNext = sitemapCurrent.replace(
+  /<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g,
+  `<lastmod>${today}</lastmod>`
+)
 await writeFile(sitemapTarget, sitemapNext)
 console.log(`Updated sitemap lastmod values to ${today}`)

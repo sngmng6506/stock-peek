@@ -10,6 +10,8 @@ export default [
   eslintPluginReact.configs.flat.recommended,
   eslintPluginReact.configs.flat['jsx-runtime'],
   {
+    // React 19 no longer checks function component propTypes.
+    rules: { 'react/prop-types': 'off' },
     settings: {
       react: {
         version: 'detect'

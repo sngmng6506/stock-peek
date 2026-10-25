@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, net, screen, shell, Tray } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, nativeImage, screen, shell, Tray } from 'electron'
 import { join } from 'path'
 import fs from 'node:fs/promises'
 import { electronApp, is } from '@electron-toolkit/utils'
@@ -16,24 +16,16 @@ import {
   refreshAll,
   reorderCache
 } from './stockService.js'
-import {
-  addItem,
-  removeItem,
-  setItems,
-  updateHolding
-} from './watchlist.js'
-import { searchKoreanStocks, fetchKoreanDailyCloses } from './api/naver.js'
-import { searchUSStocks, fetchUSDailyCloses } from './api/yahoo.js'
-import { computeStatsWithDailyData } from './portfolioStats.js'
-import { WORKER_URL } from './api/proxy.js'
+import { addItem, removeItem, setItems, updateHolding } from './watchlist.js'
+import { searchKoreanStocks } from './api/naver.js'
+import { searchUSStocks } from './api/yahoo.js'
 import {
   isWelcomeShown,
   markWelcomeShown,
   getDockPosition,
   setDockPosition,
   getLanguage,
-  setLanguage,
-  getDeviceId
+  setLanguage
 } from './preferences.js'
 import electronUpdater from 'electron-updater'
 const { autoUpdater } = electronUpdater
@@ -145,7 +137,9 @@ function safeGetX() {
       const x = mainWindow.getPosition()[0]
       if (Number.isFinite(x)) return x
     }
-  } catch {}
+  } catch {
+    // The native window may have closed between the check and the operation.
+  }
   return getHiddenX()
 }
 
@@ -154,7 +148,9 @@ function safeSetPosition(win, x, y) {
     if (win && !win.isDestroyed()) {
       win.setPosition(Math.round(x) || 0, Math.round(y) || 0)
     }
-  } catch {}
+  } catch {
+    // The native window may have closed between the check and the operation.
+  }
 }
 
 function showIndicator() {
@@ -190,9 +186,15 @@ function setTarget(state) {
       cancelAnim = null
       return
     }
-    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => safeSetPosition(mainWindow, x, y), () => {
-      cancelAnim = null
-    })
+    cancelAnim = animate(
+      fromX,
+      toX,
+      ANIM_DURATION,
+      (x) => safeSetPosition(mainWindow, x, y),
+      () => {
+        cancelAnim = null
+      }
+    )
   } else {
     const fromX = safeGetX()
     const toX = getHiddenX()
@@ -202,11 +204,17 @@ function setTarget(state) {
       cancelAnim = null
       return
     }
-    cancelAnim = animate(fromX, toX, ANIM_DURATION, (x) => safeSetPosition(mainWindow, x, y), () => {
-      cancelAnim = null
-      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.hide()
-      showIndicator()
-    })
+    cancelAnim = animate(
+      fromX,
+      toX,
+      ANIM_DURATION,
+      (x) => safeSetPosition(mainWindow, x, y),
+      () => {
+        cancelAnim = null
+        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.hide()
+        showIndicator()
+      }
+    )
   }
 }
 
@@ -308,7 +316,10 @@ function snapToEdge() {
 
   const centerX = wx + PANEL_WIDTH / 2
   const edge = centerX < wa.x + wa.width / 2 ? 'left' : 'right'
-  const newY = Math.max(0, Math.min(wy - wa.y, wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN))
+  const newY = Math.max(
+    0,
+    Math.min(wy - wa.y, wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN)
+  )
 
   // displayId까지 저장 → 다음 실행 및 위치 계산에 사용
   setDockPosition({ edge, y: newY, displayId: display.id })
@@ -551,14 +562,11 @@ app.whenReady().then(() => {
     refreshAll()
     return list
   })
-  ipcMain.handle(
-    'watchlist:update-holding',
-    async (_e, { market, symbol, quantity, avgPrice }) => {
-      const list = updateHolding(market, symbol, { quantity, avgPrice })
-      refreshAll()
-      return list
-    }
-  )
+  ipcMain.handle('watchlist:update-holding', async (_e, { market, symbol, quantity, avgPrice }) => {
+    const list = updateHolding(market, symbol, { quantity, avgPrice })
+    refreshAll()
+    return list
+  })
   ipcMain.handle('watchlist:remove', async (_e, { market, symbol }) => {
     const list = removeItem(market, symbol)
     refreshAll()
@@ -597,44 +605,6 @@ app.whenReady().then(() => {
   ipcMain.handle('lang:set', (_e, lang) => {
     setLanguage(lang)
     return getLanguage()
-  })
-
-  // 포트폴리오 한 줄 평: 일봉 받아 통계 계산 → Worker(LLM) 호출.
-  ipcMain.handle('review:generate', async (_e, lang) => {
-    try {
-      const cache = getCache()
-      if (!Array.isArray(cache) || cache.length === 0) {
-        return { ok: false, reason: 'empty' }
-      }
-      // 보유 종목 일봉(3개월)으로 통계 계산
-      const stats = await computeStatsWithDailyData(cache, {
-        KR: fetchKoreanDailyCloses,
-        US: fetchUSDailyCloses
-      })
-      if (stats.empty) return { ok: false, reason: 'empty' }
-
-      const deviceId = getDeviceId()
-      const res = await net.fetch(`${WORKER_URL}/api/review`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceId, stats, lang: lang === 'en' ? 'en' : 'ko' })
-      })
-
-      if (res.status === 429) {
-        return { ok: false, reason: 'used_today' }
-      }
-      if (res.status === 503) {
-        return { ok: false, reason: 'unavailable' }
-      }
-      if (!res.ok) {
-        return { ok: false, reason: 'error' }
-      }
-      const json = await res.json()
-      return { ok: true, review: json.review, date: json.date }
-    } catch (e) {
-      console.error('review:generate error:', e?.message || e)
-      return { ok: false, reason: 'error' }
-    }
   })
 
   ipcMain.on('app:quit', () => {
@@ -683,10 +653,7 @@ app.whenReady().then(() => {
   })
   if (!is.dev) {
     autoUpdater.checkForUpdates().catch(() => {})
-    setInterval(
-      () => autoUpdater.checkForUpdates().catch(() => {}),
-      24 * 60 * 60 * 1000
-    )
+    setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), 24 * 60 * 60 * 1000)
   }
 
   subscribe((data) => {

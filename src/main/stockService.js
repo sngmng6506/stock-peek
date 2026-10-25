@@ -163,9 +163,7 @@ export function subscribe(fn) {
 
 export function reorderCache(order) {
   const map = new Map(cache.map((c) => [`${c.market}-${c.symbol}`, c]))
-  cache = order
-    .map((o) => map.get(`${o.market}-${o.symbol}`))
-    .filter(Boolean)
+  cache = order.map((o) => map.get(`${o.market}-${o.symbol}`)).filter(Boolean)
   for (const fn of listeners) {
     try {
       fn(cache)
