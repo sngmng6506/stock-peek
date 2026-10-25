@@ -55,8 +55,15 @@ async function fetchOne(item) {
     if (prev) {
       return { ...prev, ...holding, stale: true }
     }
-    // 한 번도 성공 못 한 경우에만 에러 표시.
-    return { ...item, ...holding, error: e.message || String(e) }
+    // 한 번도 성공 못 한 경우에만 에러 표시. 코드는 화면에서 번역 (error.<CODE>)
+    const message = e.message || String(e)
+    const notListed = /\b404\b|no data|not found|empty payload/i.test(message)
+    return {
+      ...item,
+      ...holding,
+      error: message,
+      errorCode: notListed ? 'ERR_NOT_LISTED' : 'ERR_FETCH'
+    }
   }
 }
 

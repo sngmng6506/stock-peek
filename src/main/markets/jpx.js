@@ -51,8 +51,11 @@ function searchLocal(keyword) {
 
 async function search(keyword) {
   const local = searchLocal(keyword)
-  // 일본어·숫자 입력은 JPX 목록으로 충분. 영문 입력은 Yahoo 영문명 검색도 합침
-  if (!/[A-Za-z]/.test(keyword)) return local
+  // JPX 목록은 월 1회 갱신 → 목록에 없는 코드(신규 상장)는 Yahoo에서 찾음.
+  // 영문 입력도 Yahoo 영문명 검색을 합침. 그 외 일본어 입력은 목록으로 충분
+  const code = market.normalizeSymbol(keyword.trim())
+  const newCode = market.symbolPattern.test(code) && !BY_CODE.has(code)
+  if (!newCode && !/[A-Za-z]/.test(keyword)) return local
   let remote = []
   try {
     remote = await yahoo.search(keyword)

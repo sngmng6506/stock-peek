@@ -59,6 +59,8 @@ summary:focus-visible { outline: 3px solid var(--down); outline-offset: 4px; }
 .hero-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .btn-dl { font-weight: 700; font-size: 15px; background: var(--ink); color: var(--paper); border: 1.5px solid var(--line); padding: 14px 24px; display: inline-flex; align-items: center; min-height: 48px; transition: transform 0.08s ease, box-shadow 0.08s ease; }
 .btn-dl:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--line); }
+.btn-dl-alt { background: transparent; color: var(--ink); }
+.dl-pair { display: inline-flex; flex-wrap: wrap; gap: 10px; }
 .hero-meta { font-size: 13.5px; color: var(--ink-2); }
 .hero-meta a { text-decoration: underline; text-underline-offset: 3px; }
 

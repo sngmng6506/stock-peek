@@ -448,28 +448,23 @@
   }
 })()
 
-// Download buttons follow the visitor's OS; the other build stays one click away.
+// Download buttons: Windows·Mac pair is always shown; the visitor's OS goes first and filled.
 ;(function () {
   'use strict'
-  var base = 'https://github.com/sngmng6506/stock-peek/releases/latest/download/'
   var ua = navigator.userAgentData ? navigator.userAgentData.platform : navigator.platform || ''
   var isMac = /mac/i.test(ua) && navigator.maxTouchPoints < 2
-  // 버튼 문구는 페이지 언어별로 site/strings/<lang>.json → <body data-dl-win/mac>
-  var labels = document.body.dataset
-  var builds = {
-    win: { file: 'stock-peek-setup.exe', label: labels.dlWin || 'Download for Windows' },
-    mac: { file: 'stock-peek-mac.dmg', label: labels.dlMac || 'Download for Mac' }
-  }
-  var main = isMac ? builds.mac : builds.win
-  var other = isMac ? builds.win : builds.mac
+  if (!isMac) return
+  var base = 'https://github.com/sngmng6506/stock-peek/releases/latest/download/'
+  // 상단 메뉴의 단일 다운로드 버튼은 Mac 파일로
   Array.prototype.forEach.call(document.querySelectorAll('[data-dl]'), function (a) {
-    a.href = base + main.file
-    if (a.classList.contains('btn-dl')) a.textContent = main.label
+    a.href = base + 'stock-peek-mac.dmg'
   })
-  var alt = document.querySelector('[data-dl-alt]')
-  if (alt) {
-    alt.href = base + other.file
-    alt.textContent = other.label
-    alt.hidden = false
-  }
+  Array.prototype.forEach.call(document.querySelectorAll('.dl-pair'), function (pair) {
+    var win = pair.querySelector('[data-dl-os="win"]')
+    var mac = pair.querySelector('[data-dl-os="mac"]')
+    if (!win || !mac) return
+    pair.insertBefore(mac, win)
+    mac.classList.remove('btn-dl-alt')
+    win.classList.add('btn-dl-alt')
+  })
 })()

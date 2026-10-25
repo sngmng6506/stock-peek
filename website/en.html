@@ -33,7 +33,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="stylesheet" href="/style.css?v=6" />
+  <link rel="stylesheet" href="/style.css?v=7" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -93,7 +93,7 @@
   }
   </script>
 </head>
-<body data-dl-win="Download for Windows" data-dl-mac="Download for Mac">
+<body>
   <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
       <a href="/en" class="brand"><img class="brand-mark" src="/apple-touch-icon.png" alt="" width="24" height="24" /><span class="brand-name">Stock Peek</span></a>
@@ -115,8 +115,8 @@
           <h1>Peek at prices,<br />just hover.</h1>
           <p class="hero-sub">Move your mouse to the screen edge to see your watchlist. Move it away and the panel hides. No window to open, no app to switch to.</p>
           <div class="hero-cta">
-            <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl>Download for Windows</a>
-            <span class="hero-meta">Free for Windows 10/11 and macOS 12+. Currently <span id="appVer">v1.6.10</span> (<a href="/en/guide/#install">install guide</a>)<br /><a href="#" data-dl-alt hidden></a></span>
+            <span class="dl-pair"><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl-os="win">Download for Windows</a><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg" class="btn-dl btn-dl-alt" data-dl-os="mac">Download for Mac</a></span>
+            <span class="hero-meta">Free for Windows 10/11 and macOS 12+. Currently <span id="appVer">v1.6.10</span> (<a href="/en/guide/#install">install guide</a>)</span>
           </div>
         </div>
 
@@ -188,6 +188,6 @@
       .catch(function () {});
   })();
   </script>
-  <script src="/demo.js?v=6" defer></script>
+  <script src="/demo.js?v=7" defer></script>
 </body>
 </html>

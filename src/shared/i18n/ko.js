@@ -78,6 +78,8 @@ export default {
   'error.ERR_UNKNOWN_MARKET': '지원하지 않는 시장이에요',
   'error.ERR_NOT_FOUND': '종목을 찾을 수 없어요',
   'error.ERR_SEARCH_FAILED': '검색에 실패했어요',
+  'error.ERR_NOT_LISTED': '조회할 수 없는 종목이에요. 상장폐지나 코드 변경일 수 있어요',
+  'error.ERR_FETCH': '시세를 불러오지 못했어요',
   // 시세 지연 표시
   'card.delayed': '{n}분 지연',
   // 트레이·알림 (main 프로세스)

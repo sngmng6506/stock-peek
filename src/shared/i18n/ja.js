@@ -78,6 +78,8 @@ export default {
   'error.ERR_UNKNOWN_MARKET': 'この市場には対応していません',
   'error.ERR_NOT_FOUND': '銘柄が見つかりません',
   'error.ERR_SEARCH_FAILED': '検索に失敗しました',
+  'error.ERR_NOT_LISTED': '取得できない銘柄です。上場廃止やコード変更の可能性があります',
+  'error.ERR_FETCH': '株価を取得できませんでした',
   // 株価の遅延表示
   'card.delayed': '{n}分遅延',
   // トレイ・通知（main プロセス）

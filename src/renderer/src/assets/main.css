@@ -307,8 +307,9 @@ body,
 
 .err-msg {
   font-size: 11px;
+  line-height: 1.4;
   color: rgba(235, 235, 245, 0.45);
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;

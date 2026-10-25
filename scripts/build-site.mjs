@@ -74,6 +74,11 @@ const indent = (text, n) =>
 const fill = (text) =>
   text.replaceAll('{{version}}', version).replaceAll('{{dateModified}}', site.updated)
 
+// Windows·Mac 버튼 한 쌍. 방문자 OS 쪽이 앞·채움 스타일이 되도록 demo.js가 순서를 바꿈
+const downloadButtons = (s) =>
+  `<span class="dl-pair"><a href="${site.downloadUrl}" class="btn-dl" data-dl-os="win">${s.downloadWin}</a>` +
+  `<a href="${site.downloadUrlMac}" class="btn-dl btn-dl-alt" data-dl-os="mac">${s.downloadMac}</a></span>`
+
 function render(lang, page) {
   const l = langs.find((x) => x.code === lang)
   const s = strings[lang]
@@ -135,7 +140,7 @@ function render(lang, page) {
 <head>
 ${indent(head.join('\n'), 2)}
 </head>
-<body data-dl-win="${esc(s.downloadWin)}" data-dl-mac="${esc(s.downloadMac)}">
+<body>
   <nav class="nav" aria-label="${esc(s.navAria)}">
     <div class="nav-inner">
       <a href="${pathOf(lang, 'home')}" class="brand"><img class="brand-mark" src="/apple-touch-icon.png" alt="" width="24" height="24" /><span class="brand-name">${s.brand}</span></a>
@@ -154,7 +159,7 @@ ${slots.scripts ? indent(slots.scripts, 2) + '\n' : ''}  <script src="/demo.js?v
 </body>
 </html>
 `
-  return fill(html)
+  return fill(html.replaceAll('{{downloadButtons}}', downloadButtons(s)))
 }
 
 function sitemap() {

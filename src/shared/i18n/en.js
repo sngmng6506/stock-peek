@@ -78,6 +78,8 @@ export default {
   'error.ERR_UNKNOWN_MARKET': 'This market is not supported',
   'error.ERR_NOT_FOUND': 'Stock not found',
   'error.ERR_SEARCH_FAILED': 'Search failed',
+  'error.ERR_NOT_LISTED': "Can't find this stock. It may be delisted or its code changed",
+  'error.ERR_FETCH': "Couldn't load the price",
   // Quote delay label
   'card.delayed': '{n} min delay',
   // Tray and notifications (main process)
