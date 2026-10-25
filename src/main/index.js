@@ -613,6 +613,21 @@ app.whenReady().then(() => {
     mainWindow.setSize(w, h)
   })
 
+  // 설정 화면의 "업데이트 확인" 버튼. 새 버전이면 평소처럼 이벤트(다운로드·알림)도 이어짐
+  ipcMain.handle('app:check-update', async () => {
+    if (updateReady) return { status: 'ready', version: updateReady.version }
+    if (is.dev) return { status: 'latest', version: app.getVersion() }
+    try {
+      lastUpdateCheck = Date.now()
+      const result = await autoUpdater.checkForUpdates()
+      if (result?.isUpdateAvailable)
+        return { status: 'available', version: result.updateInfo.version }
+      return { status: 'latest', version: app.getVersion() }
+    } catch {
+      return { status: 'error' }
+    }
+  })
+
   ipcMain.handle('settings:get', () => ({
     autoStart: app.getLoginItemSettings().openAtLogin,
     version: app.getVersion()

@@ -26,6 +26,7 @@ const api = {
   removeStock: (market, symbol) => ipcRenderer.invoke('watchlist:remove', { market, symbol }),
   reorderStocks: (items) => ipcRenderer.invoke('watchlist:reorder', items),
   getUpdate: () => ipcRenderer.invoke('app:get-update'),
+  checkUpdate: () => ipcRenderer.invoke('app:check-update'),
   installUpdate: () => ipcRenderer.send('app:install-update'),
   onUpdateAvailable: (cb) => {
     const handler = (_e, data) => cb(data)

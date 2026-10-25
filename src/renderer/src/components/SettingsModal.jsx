@@ -13,6 +13,7 @@ function SettingsModal({ onClose }) {
   const [updateAvailable, setUpdateAvailable] = useState(null)
   const [updateReady, setUpdateReady] = useState(null)
   const [qr, setQr] = useState(null)
+  const [check, setCheck] = useState(null) // null | 'checking' | 'latest' | 'available' | 'ready' | 'error'
 
   useEffect(() => {
     window.api
@@ -47,6 +48,21 @@ function SettingsModal({ onClose }) {
     const next = await window.api.setAutoStart(!autoStart)
     setAutoStart(!!next)
   }
+
+  const checkUpdate = async () => {
+    setCheck('checking')
+    try {
+      const r = await window.api.checkUpdate()
+      setCheck(r?.status || 'error')
+    } catch {
+      setCheck('error')
+    }
+  }
+  const checkLabel = {
+    checking: t('settings.checking'),
+    latest: t('settings.upToDate'),
+    error: t('settings.checkFailed')
+  }[check]
 
   const openExternal = (url) => () => window.api.openExternal(url)
 
@@ -135,7 +151,17 @@ function SettingsModal({ onClose }) {
         <div className="about">
           <div className="about-row">
             <span>{t('settings.version')}</span>
-            <span className="mono">{version || '-'}</span>
+            <span className="version-actions">
+              <span className="mono">{version || '-'}</span>
+              <button
+                type="button"
+                className="check-update"
+                onClick={checkUpdate}
+                disabled={check === 'checking'}
+              >
+                {checkLabel || t('settings.checkUpdate')}
+              </button>
+            </span>
           </div>
           <button type="button" className="about-row link" onClick={openExternal(GITHUB_URL)}>
             <span>GitHub</span>

@@ -964,3 +964,29 @@ body,
   font-weight: 500;
   color: rgba(235, 235, 245, 0.4);
 }
+
+/* 설정 > 버전: 업데이트 확인 버튼 */
+.version-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.check-update {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: rgba(235, 235, 245, 0.75);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.check-update:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.check-update:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
