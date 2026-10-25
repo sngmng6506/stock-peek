@@ -2,51 +2,99 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'resources/**'
+      - 'build/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'electron-builder.yml'
+      - 'electron.vite.config.*'
+      - 'eslint.config.*'
+      - 'scripts/prepare-release.mjs'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: stock-peek-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   build-win:
     runs-on: windows-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
 
-      - run: npm ci
-
-      - name: Verify tag matches package version
-        shell: pwsh
-        run: |
-          $version = (Get-Content package.json | ConvertFrom-Json).version
-          if ("v$version" -ne "${{ github.ref_name }}") {
-            throw "Tag ${{ github.ref_name }} does not match package.json version v$version"
-          }
-
-      - run: npm run build:win
+      - name: Select release version
+        id: version
+        run: node scripts/prepare-release.mjs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate SHA-256 checksums
+      - if: steps.version.outputs.publish == 'true'
+        run: npm ci
+
+      - if: steps.version.outputs.publish == 'true'
+        run: npm run lint -- --max-warnings 0
+
+      - name: Build Windows installer without publishing
+        if: steps.version.outputs.publish == 'true'
+        run: npm run build:win -- --publish never
+
+      - name: Verify assets and generate checksums
+        if: steps.version.outputs.publish == 'true'
         shell: pwsh
         run: |
-          Get-ChildItem dist -File | Where-Object { $_.Name -match '\.(exe|blockmap|yml)$' } | ForEach-Object {
-            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
-            "$hash  $($_.Name)"
-          } | Set-Content dist/SHA256SUMS.txt
+          $assets = @('stock-peek-setup.exe', 'stock-peek-setup.exe.blockmap', 'latest.yml')
+          $lines = foreach ($name in $assets) {
+            $path = Join-Path dist $name
+            if (!(Test-Path $path) -or (Get-Item $path).Length -eq 0) { throw "Missing asset: $name" }
+            $hash = (Get-FileHash $path -Algorithm SHA256).Hash.ToLower()
+            "$hash  $name"
+          }
+          $lines | Set-Content dist/SHA256SUMS.txt -Encoding utf8
 
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            dist/*.exe
-            dist/*.exe.blockmap
-            dist/*.yml
-            dist/SHA256SUMS.txt
-          draft: false
+      - name: Save version and tag after successful build
+        if: steps.version.outputs.publish == 'true'
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: release $RELEASE_TAG"
+          fi
+          if ! git rev-parse --verify "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            git tag "$RELEASE_TAG"
+          fi
+          # An intervening main push rejects the entire update; a queued run builds the newer source.
+          git push --atomic origin HEAD:main "refs/tags/$RELEASE_TAG"
+
+      - name: Publish complete release
+        if: steps.version.outputs.publish == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --verify-tag --draft --title "$RELEASE_TAG" --generate-notes
+          fi
+          gh release upload "$RELEASE_TAG" dist/stock-peek-setup.exe dist/stock-peek-setup.exe.blockmap dist/latest.yml dist/SHA256SUMS.txt --clobber
+          gh release edit "$RELEASE_TAG" --draft=false --latest
