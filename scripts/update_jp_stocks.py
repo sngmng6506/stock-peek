@@ -1,5 +1,7 @@
 """JPX 東証上場銘柄一覧(data_j.xlsx) → data/jp-stocks.json
 
+items: [코드, 종목명(NFKC), 시장 구분, 규모 순위(1 대형 … 9 해당 없음)]
+
 일본 종목의 일본어 이름·검색용. 시세는 Yahoo(.T)에서 받음.
 GitHub Actions(update-jp-stocks.yml)가 매월 실행. 로컬: python scripts/update_jp_stocks.py data/jp-stocks.json [xlsx경로]
 """
@@ -23,6 +25,8 @@ SEGMENTS = [
     ('ETF', 'ETF'),
     ('REIT', 'REIT'),
 ]
+# 規模コード(TOPIX 규모 구분) → 검색 정렬 순위. 1 Core30, 2 Large70, 4 Mid400, 6 Small1, 7 Small2
+SIZE_RANK = {'1': 1, '2': 2, '4': 3, '6': 4, '7': 5}
 MIN_ITEMS = 3000  # 이보다 적으면 파일 형식이 바뀐 것으로 보고 중단
 
 
@@ -63,6 +67,7 @@ def main(out_path, source=None):
         i_date, i_code, i_name, i_seg = (header.index(c) for c in ('日付', 'コード', '銘柄名', '市場・商品区分'))
     except ValueError as e:
         raise SystemExit(f'column not found ({e}); header={header}')
+    i_size = header.index('規模コード') if '規模コード' in header else None
 
     as_of = None
     items = []
@@ -75,7 +80,8 @@ def main(out_path, source=None):
         as_of = as_of or as_date(r[i_date])
         # 전각 영숫자·반각 가나 정리 (ｉＦｒｅｅ → iFree): 표시와 검색을 단순하게
         name = unicodedata.normalize('NFKC', str(r[i_name])).strip()
-        items.append([as_code(r[i_code]), name, seg])
+        size = SIZE_RANK.get(str(r[i_size]).strip(), 9) if i_size is not None else 9
+        items.append([as_code(r[i_code]), name, seg, size])
 
     if len(items) < MIN_ITEMS:
         raise SystemExit(f'only {len(items)} items parsed; refusing to write')
