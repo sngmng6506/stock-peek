@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Peek — Desktop Stock Ticker Widget (KR & US, Free)</title>
-  <meta name="description" content="Move your mouse to the screen edge and Korean and US watchlist quotes, charts, and portfolio P&L slide in. A free Windows desktop widget." />
+  <meta name="description" content="Move your mouse to the screen edge and Korean and US watchlist quotes, charts, and portfolio P&L slide in. A free desktop widget for Windows and Mac." />
   <meta name="keywords" content="desktop stock widget, stock ticker widget, Windows stock app, Korean stocks, US stocks, KOSPI, KOSDAQ, NYSE, NASDAQ, sparkline" />
   <meta name="author" content="Sangmyeong Lee" />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
@@ -51,11 +51,11 @@
         "@id": "https://stock-peek.com/#software",
         "name": "Stock Peek",
         "alternateName": "몰래주식",
-        "description": "A Windows desktop widget that reveals Korean and US watchlist quotes and portfolio P&L when you hover at the screen edge.",
+        "description": "A Windows and Mac desktop widget that reveals Korean and US watchlist quotes and portfolio P&L when you hover at the screen edge.",
         "url": "https://stock-peek.com/en",
         "image": "https://stock-peek.com/og.png",
-        "operatingSystem": "Windows 10, Windows 11",
-        "softwareRequirements": "Windows 10 or Windows 11 with internet access",
+        "operatingSystem": "Windows 10, Windows 11, macOS 12+",
+        "softwareRequirements": "Windows 10/11 or macOS 12+ with internet access",
         "applicationCategory": "FinanceApplication",
         "softwareVersion": "1.6.6",
         "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
@@ -74,7 +74,7 @@
         "@id": "https://stock-peek.com/en#webpage",
         "url": "https://stock-peek.com/en",
         "name": "Stock Peek — Desktop Stock Widget",
-        "description": "A free Windows widget for checking Korean and US watchlist quotes and portfolio P&L from the screen edge.",
+        "description": "A free Windows and Mac widget for checking Korean and US watchlist quotes and portfolio P&L from the screen edge.",
         "inLanguage": "en",
         "dateModified": "2026-10-25",
         "isPartOf": { "@id": "https://stock-peek.com/#website" },
@@ -99,7 +99,7 @@
         <a href="/en/guide/" class="muted">Guide</a>
         <a href="https://github.com/sngmng6506/stock-peek" class="muted" target="_blank" rel="noopener">GitHub</a>
         <a href="/" class="lang" lang="ko">한국어</a>
-        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">Download</a>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl" data-dl>Download</a>
       </div>
     </div>
   </nav>
@@ -111,8 +111,8 @@
           <h1>Peek at prices,<br />just hover.</h1>
           <p class="hero-sub">Move your mouse to the screen edge to see your watchlist. Move it away and the panel hides. No window to open, no app to switch to.</p>
           <div class="hero-cta">
-            <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Download for Windows</a>
-            <span class="hero-meta">Free for Windows 10 and 11. Currently <span id="appVer">v1.6.6</span> (<a href="/en/guide/#install">install guide</a>)</span>
+            <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl>Download for Windows</a>
+            <span class="hero-meta">Free for Windows 10/11 and macOS 12+. Currently <span id="appVer">v1.6.6</span> (<a href="/en/guide/#install">install guide</a>)<br /><a href="#" data-dl-alt hidden></a></span>
           </div>
         </div>
 
@@ -151,7 +151,7 @@
         <details><summary>Windows shows a warning when I install.</summary><div class="faq-a">It’s an independent project without code signing, so SmartScreen warns about it. Click “More info” → “Run anyway”. You can also read the source on GitHub and build it yourself.</div></details>
         <details><summary>Where do the quotes come from?</summary><div class="faq-a">Naver Finance for Korean stocks and Yahoo Finance for US stocks. Quotes may lag the market depending on the provider.</div></details>
         <details><summary>Does it work on a work PC?</summary><div class="faq-a">It uses your Windows proxy and certificate settings, so it’s built to work on corporate networks. If your company blocks installs, you won’t be able to use it.</div></details>
-        <details><summary>Is there a Mac version?</summary><div class="faq-a">Windows 10 and 11 only for now.</div></details>
+        <details><summary>How do I install it on a Mac?</summary><div class="faq-a">It runs on macOS 12 or later. Open the downloaded file and move the app to Applications. As an independent app it isn’t notarized by Apple, so macOS blocks the first launch. Go to System Settings → Privacy &amp; Security and click “Open Anyway”. There’s no automatic install on Mac; when a new version is out, click the notification and download it again.</div></details>
         <p class="faq-more">The <a href="/en/guide/">guide</a> covers installation and every setting.</p>
       </div>
     </section>
@@ -172,7 +172,7 @@
       {"@type":"Question","name":"Windows shows a warning when I install.","acceptedAnswer":{"@type":"Answer","text":"It’s an independent project without code signing, so SmartScreen warns about it. Click “More info” → “Run anyway”. You can also read the source on GitHub and build it yourself."}},
       {"@type":"Question","name":"Where do the quotes come from?","acceptedAnswer":{"@type":"Answer","text":"Naver Finance for Korean stocks and Yahoo Finance for US stocks. Quotes may lag the market depending on the provider."}},
       {"@type":"Question","name":"Does it work on a work PC?","acceptedAnswer":{"@type":"Answer","text":"It uses your Windows proxy and certificate settings, so it’s built to work on corporate networks. If your company blocks installs, you won’t be able to use it."}},
-      {"@type":"Question","name":"Is there a Mac version?","acceptedAnswer":{"@type":"Answer","text":"Windows 10 and 11 only for now."}}
+      {"@type":"Question","name":"How do I install it on a Mac?","acceptedAnswer":{"@type":"Answer","text":"It runs on macOS 12 or later. Open the downloaded file and move the app to Applications. As an independent app it isn’t notarized by Apple, so macOS blocks the first launch. Go to System Settings → Privacy & Security and click “Open Anyway”. There’s no automatic install on Mac; when a new version is out, click the notification and download it again."}}
     ]
   }
   </script>
@@ -186,6 +186,6 @@
       .catch(function () {});
   })();
   </script>
-  <script src="/demo.js?v=1" defer></script>
+  <script src="/demo.js?v=2" defer></script>
 </body>
 </html>

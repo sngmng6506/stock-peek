@@ -17,7 +17,7 @@
   <meta property="og:locale" content="ko_KR" />
   <meta property="og:site_name" content="몰래주식" />
   <meta property="og:title" content="몰래주식 — 데스크톱 주식 시세 위젯" />
-  <meta property="og:description" content="화면 끝으로 마우스를 가져가면 한국·미국 관심 종목의 시세가 나타나는 무료 Windows 위젯." />
+  <meta property="og:description" content="화면 끝으로 마우스를 가져가면 한국·미국 관심 종목의 시세가 나타나는 무료 Windows·Mac 위젯." />
   <meta property="og:url" content="https://stock-peek.com/" />
   <meta property="og:image" content="https://stock-peek.com/og.png" />
   <meta property="og:image:width" content="1200" />
@@ -55,8 +55,8 @@
         "description": "화면 가장자리로 마우스를 가져가면 한국·미국 관심 종목의 시세와 평가손익을 보여주는 Windows 데스크톱 위젯.",
         "url": "https://stock-peek.com/",
         "image": "https://stock-peek.com/og.png",
-        "operatingSystem": "Windows 10, Windows 11",
-        "softwareRequirements": "Windows 10 또는 Windows 11과 인터넷 연결",
+        "operatingSystem": "Windows 10, Windows 11, macOS 12+",
+        "softwareRequirements": "Windows 10·11 또는 macOS 12 이상과 인터넷 연결",
         "applicationCategory": "FinanceApplication",
         "softwareVersion": "1.6.6",
         "downloadUrl": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe",
@@ -84,7 +84,7 @@
         "@id": "https://stock-peek.com/#webpage",
         "url": "https://stock-peek.com/",
         "name": "몰래주식 — 데스크톱 주식 시세 위젯",
-        "description": "화면 끝에서 한국·미국 관심 종목의 시세와 평가손익을 확인하는 무료 Windows 위젯.",
+        "description": "화면 끝에서 한국·미국 관심 종목의 시세와 평가손익을 확인하는 무료 Windows·Mac 위젯.",
         "inLanguage": "ko",
         "dateModified": "2026-10-25",
         "isPartOf": { "@id": "https://stock-peek.com/#website" },
@@ -109,7 +109,7 @@
         <a href="/guide/" class="muted">가이드</a>
         <a href="https://github.com/sngmng6506/stock-peek" class="muted" target="_blank" rel="noopener">GitHub</a>
         <a href="/en" class="lang" lang="en">EN</a>
-        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl">다운로드</a>
+        <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="nav-dl" data-dl>다운로드</a>
       </div>
     </div>
   </nav>
@@ -121,8 +121,8 @@
           <h1>시세는 몰래,<br />마우스만 살짝.</h1>
           <p class="hero-sub">화면 끝에 마우스를 대면 관심 종목 시세가 나오고, 마우스를 치우면 들어갑니다. 창을 띄우거나 다른 앱으로 넘어갈 필요가 없습니다.</p>
           <div class="hero-cta">
-            <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl">Windows용 다운로드</a>
-            <span class="hero-meta">무료, Windows 10·11 지원. 현재 <span id="appVer">v1.6.6</span> (<a href="/guide/#install">설치 안내</a>)</span>
+            <a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl>Windows용 다운로드</a>
+            <span class="hero-meta">무료. Windows 10·11과 macOS 12 이상 지원. 현재 <span id="appVer">v1.6.6</span> (<a href="/guide/#install">설치 안내</a>)<br /><a href="#" data-dl-alt hidden></a></span>
           </div>
         </div>
 
@@ -161,7 +161,7 @@
         <details><summary>설치할 때 Windows 경고가 떠요.</summary><div class="faq-a">개인이 만든 앱이라 코드 서명이 없어서 SmartScreen 경고가 뜹니다. “추가 정보” → “실행”을 누르면 설치됩니다. GitHub에서 소스를 보고 직접 빌드해도 됩니다.</div></details>
         <details><summary>시세는 어디서 가져오나요?</summary><div class="faq-a">한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터입니다. 제공처 사정에 따라 실제 시세보다 늦을 수 있습니다.</div></details>
         <details><summary>회사 PC에서도 되나요?</summary><div class="faq-a">Windows의 프록시·인증서 설정을 그대로 쓰기 때문에 사내망에서도 동작하도록 만들었습니다. 회사 정책으로 설치가 막혀 있다면 쓸 수 없습니다.</div></details>
-        <details><summary>Mac은 지원하나요?</summary><div class="faq-a">아직 Windows 10·11만 지원합니다.</div></details>
+        <details><summary>Mac에서는 어떻게 설치하나요?</summary><div class="faq-a">macOS 12 이상에서 쓸 수 있습니다. 내려받은 파일을 열어 앱을 응용 프로그램 폴더로 옮기세요. 개인이 만든 앱이라 Apple 공증이 없어서 처음 열 때 차단됩니다. 시스템 설정 → 개인정보 보호 및 보안에서 “그래도 열기”를 누르면 실행됩니다. Mac은 자동 설치가 안 되고, 새 버전이 나오면 알림을 눌러 다시 내려받으면 됩니다.</div></details>
         <p class="faq-more">설치 방법과 자세한 사용법은 <a href="/guide/">가이드</a>에 있습니다.</p>
       </div>
     </section>
@@ -182,7 +182,7 @@
       {"@type":"Question","name":"설치할 때 Windows 경고가 떠요.","acceptedAnswer":{"@type":"Answer","text":"개인이 만든 앱이라 코드 서명이 없어서 SmartScreen 경고가 뜹니다. “추가 정보” → “실행”을 누르면 설치됩니다. GitHub에서 소스를 보고 직접 빌드해도 됩니다."}},
       {"@type":"Question","name":"시세는 어디서 가져오나요?","acceptedAnswer":{"@type":"Answer","text":"한국 종목은 네이버 금융, 미국 종목은 Yahoo Finance의 공개 데이터입니다. 제공처 사정에 따라 실제 시세보다 늦을 수 있습니다."}},
       {"@type":"Question","name":"회사 PC에서도 되나요?","acceptedAnswer":{"@type":"Answer","text":"Windows의 프록시·인증서 설정을 그대로 쓰기 때문에 사내망에서도 동작하도록 만들었습니다. 회사 정책으로 설치가 막혀 있다면 쓸 수 없습니다."}},
-      {"@type":"Question","name":"Mac은 지원하나요?","acceptedAnswer":{"@type":"Answer","text":"아직 Windows 10·11만 지원합니다."}}
+      {"@type":"Question","name":"Mac에서는 어떻게 설치하나요?","acceptedAnswer":{"@type":"Answer","text":"macOS 12 이상에서 쓸 수 있습니다. 내려받은 파일을 열어 앱을 응용 프로그램 폴더로 옮기세요. 개인이 만든 앱이라 Apple 공증이 없어서 처음 열 때 차단됩니다. 시스템 설정 → 개인정보 보호 및 보안에서 “그래도 열기”를 누르면 실행됩니다. Mac은 자동 설치가 안 되고, 새 버전이 나오면 알림을 눌러 다시 내려받으면 됩니다."}}
     ]
   }
   </script>
@@ -196,6 +196,6 @@
       .catch(function () {});
   })();
   </script>
-  <script src="/demo.js?v=1" defer></script>
+  <script src="/demo.js?v=2" defer></script>
 </body>
 </html>

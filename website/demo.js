@@ -447,3 +447,31 @@
     }
   }
 })()
+
+// Download buttons follow the visitor's OS; the other build stays one click away.
+;(function () {
+  'use strict'
+  var base = 'https://github.com/sngmng6506/stock-peek/releases/latest/download/'
+  var ua = navigator.userAgentData ? navigator.userAgentData.platform : navigator.platform || ''
+  var isMac = /mac/i.test(ua) && navigator.maxTouchPoints < 2
+  var ko = document.documentElement.lang === 'ko'
+  var builds = {
+    win: {
+      file: 'stock-peek-setup.exe',
+      label: ko ? 'Windows용 다운로드' : 'Download for Windows'
+    },
+    mac: { file: 'stock-peek-mac.dmg', label: ko ? 'Mac용 다운로드' : 'Download for Mac' }
+  }
+  var main = isMac ? builds.mac : builds.win
+  var other = isMac ? builds.win : builds.mac
+  Array.prototype.forEach.call(document.querySelectorAll('[data-dl]'), function (a) {
+    a.href = base + main.file
+    if (a.classList.contains('btn-dl')) a.textContent = main.label
+  })
+  var alt = document.querySelector('[data-dl-alt]')
+  if (alt) {
+    alt.href = base + other.file
+    alt.textContent = other.label
+    alt.hidden = false
+  }
+})()
