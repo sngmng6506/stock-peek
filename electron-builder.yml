@@ -18,15 +18,22 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  category: public.app-category.finance
+  target:
+    - target: dmg
+      arch: universal
+    - target: zip
+      arch: universal
+  artifactName: ${name}-mac.${ext}
+  # Apple 개발자 인증서 없음: ad-hoc 서명 (Apple Silicon 실행에 필요), 공증 없음
+  identity: '-'
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+    # 메뉴 막대 상주 앱: Dock 아이콘 없음
+    LSUIElement: true
   notarize: false
 dmg:
-  artifactName: ${name}-${version}.${ext}
+  artifactName: ${name}-mac.${ext}
 linux:
   target:
     - AppImage

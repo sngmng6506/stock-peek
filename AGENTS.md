@@ -4,7 +4,7 @@ AI·기여자용 작업 규칙. 사용자 소개는 [README.md](README.md).
 
 ## 개요
 
-- Windows 데스크톱 위젯. 화면 가장자리 hover 시 관심 종목 시세 패널 표시
+- Windows·Mac 데스크톱 위젯. 화면 가장자리 hover 시 관심 종목 시세 패널 표시
 - 데이터: KR 네이버 금융, US Yahoo Finance
 - 스택: Electron, electron-vite, React 19, `electron-store`
 - 계정·증권사 연동 없음
@@ -16,7 +16,8 @@ npm install
 npm run dev                    # 개발 실행
 npm run lint                   # CI는 --max-warnings 0
 npm run build                  # 번들
-npm run build:win              # 설치파일 → dist/
+npm run build:win              # Windows 설치파일 → dist/
+npm run build:mac              # Mac dmg·zip → dist/ (macOS에서만)
 npm run sync:version           # package.json 버전 → website/
 cd server && npx wrangler dev  # Worker 로컬 (localhost:8787)
 ```
@@ -46,15 +47,16 @@ scripts/                  prepare-release.mjs, sync-version.mjs
 - IPC 추가: `main/index.js` 핸들러와 `preload/index.js` 화이트리스트 둘 다 수정
 - UI 문구: `i18n/translations.js`에 ko·en 둘 다 추가
 - 미니멀: 기능 추가보다 제거·단순화 우선
+- Mac: Apple 서명·공증 없음(ad-hoc). 자동 설치 불가 → `IS_MAC`이면 새 버전 알림 + 다운로드 페이지만. Dock 숨김(`LSUIElement`), 메뉴 막대는 `resources/trayTemplate*.png`
 - 비밀값: 토큰·계정 ID·인증서 커밋 금지
 
 ## 배포
 
-| 대상     | 트리거                   | 방식                                                  |
-| -------- | ------------------------ | ----------------------------------------------------- |
-| 앱       | main에 앱 파일 push      | `release.yml`: 패치 버전 증가 → lint → 빌드 → Release |
-| 웹사이트 | main에 `website/**` push | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)  |
-| Worker   | 수동                     | `cd server && npx wrangler deploy`                    |
+| 대상     | 트리거                   | 방식                                                                           |
+| -------- | ------------------------ | ------------------------------------------------------------------------------ |
+| 앱       | main에 앱 파일 push      | `release.yml`: 패치 버전 증가 → lint → Win 빌드 → Release → Mac 빌드 자산 추가 |
+| 웹사이트 | main에 `website/**` push | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)                           |
+| Worker   | 수동                     | `cd server && npx wrangler deploy`                                             |
 
 - 앱 파일: `src/`, `resources/`, `build/`, `package*.json`, `electron-builder.yml` 등. 문서만 바뀌면 릴리즈 안 됨
 - 릴리즈 워크플로우가 main에 버전 커밋을 push하므로 작업 전 `git pull`

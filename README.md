@@ -3,13 +3,14 @@
 [![Download](https://img.shields.io/github/v/release/sngmng6506/stock-peek?label=download&style=flat-square)](https://github.com/sngmng6506/stock-peek/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
-화면 가장자리에 마우스를 대면 관심 종목 시세가 나타나는 Windows 위젯.
+화면 가장자리에 마우스를 대면 관심 종목 시세가 나타나는 Windows·Mac 위젯.
 [stock-peek.com](https://stock-peek.com/) · [English](https://stock-peek.com/en)
 
 ## 설치
 
-- [Releases](https://github.com/sngmng6506/stock-peek/releases/latest)에서 `stock-peek-setup.exe` 실행
-- 이후 업데이트는 앱에서 자동 안내
+- [Releases](https://github.com/sngmng6506/stock-peek/releases/latest)에서 Windows는 `stock-peek-setup.exe`, Mac은 `stock-peek-mac.dmg`
+- Windows는 앱 안에서 자동 업데이트, Mac은 새 버전 알림 후 직접 내려받기
+- Mac 첫 실행: 시스템 설정 → 개인정보 보호 및 보안 → "그래도 열기" (Apple 공증 없음)
 
 ## 기능
 

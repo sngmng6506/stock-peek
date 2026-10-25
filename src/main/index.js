@@ -66,6 +66,10 @@ let dragDebounce = null
 let updateInfo = null
 let updateReady = null
 let updateNotification = null
+let notifiedVersion = null
+
+// Mac 빌드는 코드 서명이 없어 Squirrel.Mac 자동 설치가 불가 → 새 버전 알림 + 다운로드 페이지만
+const IS_MAC = process.platform === 'darwin'
 
 const UPDATE_CHECK_INTERVAL = 60 * 60 * 1000
 const UPDATE_CHECK_ON_OPEN_GAP = 15 * 60 * 1000
@@ -90,17 +94,30 @@ function resolveLanguage() {
   return locale.startsWith('ko') ? 'ko' : 'en'
 }
 
+function downloadPageUrl() {
+  return resolveLanguage() === 'ko' ? 'https://stock-peek.com/' : 'https://stock-peek.com/en'
+}
+
 function installUpdate() {
+  if (IS_MAC) {
+    if (updateInfo) shell.openExternal(downloadPageUrl())
+    return
+  }
   // silent 설치 후 자동 재실행
   if (updateReady) autoUpdater.quitAndInstall(true, true)
 }
 
-function notifyUpdateReady(version) {
-  if (!Notification.isSupported()) return
+function notifyUpdate(version) {
+  if (!Notification.isSupported() || notifiedVersion === version) return
+  notifiedVersion = version
   const ko = resolveLanguage() === 'ko'
+  let body
+  if (IS_MAC) body = ko ? '클릭하면 다운로드 페이지를 엽니다.' : 'Click to open the download page.'
+  else
+    body = ko ? '클릭하면 바로 업데이트하고 다시 실행합니다.' : 'Click to update and restart now.'
   updateNotification = new Notification({
     title: ko ? `몰래주식 v${version} 업데이트` : `Stock Peek v${version} update`,
-    body: ko ? '클릭하면 바로 업데이트하고 다시 실행합니다.' : 'Click to update and restart now.',
+    body,
     icon
   })
   updateNotification.on('click', installUpdate)
@@ -517,6 +534,12 @@ function refreshTrayMenu() {
       click: installUpdate
     })
     template.push({ type: 'separator' })
+  } else if (updateInfo && IS_MAC) {
+    template.push({
+      label: `↓ v${updateInfo.version} 다운로드 페이지 열기`,
+      click: installUpdate
+    })
+    template.push({ type: 'separator' })
   } else if (updateInfo) {
     template.push({
       label: `↓ v${updateInfo.version} 다운로드 중...`,
@@ -539,7 +562,14 @@ function refreshTrayMenu() {
 }
 
 function createTray() {
-  const img = nativeImage.createFromPath(icon).resize({ width: 16, height: 16 })
+  let img
+  if (IS_MAC) {
+    // 메뉴 막대용 흑백 템플릿 (@2x는 같은 폴더에서 자동 로드)
+    img = nativeImage.createFromPath(resourcePath('trayTemplate.png'))
+    img.setTemplateImage(true)
+  } else {
+    img = nativeImage.createFromPath(icon).resize({ width: 16, height: 16 })
+  }
   tray = new Tray(img)
   tray.setToolTip('몰래주식')
   tray.on('click', () => {
@@ -564,6 +594,8 @@ app.on('second-instance', () => {
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.stockpeek.app')
+  // 트레이 상주 앱: Mac Dock에 아이콘을 띄우지 않음
+  if (IS_MAC) app.dock?.hide()
 
   ipcMain.handle('stocks:get-cache', () => getCache())
   ipcMain.handle('stocks:refresh', () => refreshAll())
@@ -676,11 +708,12 @@ app.whenReady().then(() => {
   createIndicatorWindow()
   createTray()
 
-  autoUpdater.autoDownload = true
-  autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.autoDownload = !IS_MAC
+  autoUpdater.autoInstallOnAppQuit = !IS_MAC
   autoUpdater.on('update-available', (info) => {
-    updateInfo = { version: info.version, releaseDate: info.releaseDate }
+    updateInfo = { version: info.version, releaseDate: info.releaseDate, manual: IS_MAC }
     refreshTrayMenu()
+    if (IS_MAC) notifyUpdate(info.version)
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('app:update-available', updateInfo)
     }
@@ -691,7 +724,7 @@ app.whenReady().then(() => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('app:update-ready', updateReady)
     }
-    notifyUpdateReady(info.version)
+    notifyUpdate(info.version)
   })
   autoUpdater.on('error', (err) => {
     console.error('autoUpdater error:', err?.message || err)

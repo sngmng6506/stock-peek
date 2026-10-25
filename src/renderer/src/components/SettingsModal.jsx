@@ -66,7 +66,19 @@ function SettingsModal({ onClose }) {
             <span>↻</span>
           </button>
         )}
-        {!updateReady && updateAvailable && (
+        {!updateReady && updateAvailable?.manual && (
+          <button
+            type="button"
+            className="update-banner ready"
+            onClick={() => window.api.installUpdate()}
+          >
+            <span>
+              v{updateAvailable.version} {t('settings.updateManual')}
+            </span>
+            <span>↓</span>
+          </button>
+        )}
+        {!updateReady && updateAvailable && !updateAvailable.manual && (
           <div className="update-banner downloading">
             <span>
               v{updateAvailable.version} {t('settings.updateDownloading')}

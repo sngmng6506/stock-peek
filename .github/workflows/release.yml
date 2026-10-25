@@ -27,6 +27,9 @@ permissions:
 jobs:
   build-win:
     runs-on: windows-latest
+    outputs:
+      publish: ${{ steps.version.outputs.publish }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -103,3 +106,39 @@ jobs:
           fi
           gh release upload "$RELEASE_TAG" dist/stock-peek-setup.exe dist/stock-peek-setup.exe.blockmap dist/latest.yml dist/SHA256SUMS.txt --clobber
           gh release edit "$RELEASE_TAG" --draft=false --latest
+
+  # Mac: ad-hoc 서명(공증 없음). Windows 릴리즈가 게시된 뒤 같은 릴리즈에 자산 추가.
+  # latest-mac.yml은 앱의 새 버전 알림용 (Mac은 자동 설치 없이 다운로드 페이지 안내)
+  build-mac:
+    needs: build-win
+    if: needs.build-win.outputs.publish == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.build-win.outputs.tag }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build macOS app without publishing
+        run: npm run build:mac -- --publish never
+
+      - name: Verify assets and upload to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.build-win.outputs.tag }}
+        run: |
+          set -euo pipefail
+          assets=(dist/stock-peek-mac.dmg dist/stock-peek-mac.zip dist/latest-mac.yml)
+          for f in "${assets[@]}"; do
+            [ -s "$f" ] || { echo "Missing asset: $f"; ls dist; exit 1; }
+          done
+          [ -f dist/stock-peek-mac.zip.blockmap ] && assets+=(dist/stock-peek-mac.zip.blockmap)
+          (cd dist && shasum -a 256 stock-peek-mac.dmg stock-peek-mac.zip latest-mac.yml > SHA256SUMS-mac.txt)
+          gh release upload "$RELEASE_TAG" "${assets[@]}" dist/SHA256SUMS-mac.txt --clobber
