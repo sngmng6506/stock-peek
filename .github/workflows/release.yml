@@ -67,6 +67,10 @@ jobs:
           }
           $lines | Set-Content dist/SHA256SUMS.txt -Encoding utf8
 
+      - name: Sync website version markers
+        if: steps.version.outputs.publish == 'true'
+        run: npm run sync:version
+
       - name: Save version and tag after successful build
         if: steps.version.outputs.publish == 'true'
         shell: bash
@@ -76,7 +80,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add package.json package-lock.json
+          git add package.json package-lock.json website
           if ! git diff --cached --quiet; then
             git commit -m "chore: release $RELEASE_TAG"
           fi

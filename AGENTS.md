@@ -50,18 +50,18 @@ scripts/                  prepare-release.mjs, sync-version.mjs
 
 ## 배포
 
-| 대상     | 트리거                   | 방식                                                    |
-| -------- | ------------------------ | ------------------------------------------------------- |
-| 앱       | main에 앱 파일 push      | `release.yml`: 패치 버전 증가 → lint → 빌드 → Release   |
-| 웹사이트 | main에 `website/**` push | `deploy-website.yml`: `sync:version` → Cloudflare Pages |
-| Worker   | 수동                     | `cd server && npx wrangler deploy`                      |
+| 대상     | 트리거                   | 방식                                                  |
+| -------- | ------------------------ | ----------------------------------------------------- |
+| 앱       | main에 앱 파일 push      | `release.yml`: 패치 버전 증가 → lint → 빌드 → Release |
+| 웹사이트 | main에 `website/**` push | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)  |
+| Worker   | 수동                     | `cd server && npx wrangler deploy`                    |
 
 - 앱 파일: `src/`, `resources/`, `build/`, `package*.json`, `electron-builder.yml` 등. 문서만 바뀌면 릴리즈 안 됨
 - 릴리즈 워크플로우가 main에 버전 커밋을 push하므로 작업 전 `git pull`
 - 태그 수동 생성 금지. minor·major는 `package.json` 버전을 최신 태그보다 높여서 push
 - 실패 시 재시도: Actions → Release → Run workflow
 - `.gitattributes`(eol=lf) 유지. 없으면 Windows 러너에서 CRLF로 lint 실패
-- 웹사이트 시크릿: `CLOUDFLARE_API_TOKEN`(Pages Edit), `CLOUDFLARE_ACCOUNT_ID`
+- 웹사이트 버전 표기: 릴리즈 워크플로우가 `sync:version` 결과를 버전 커밋에 포함
 - Worker 프록시: `proxy.js`의 `USE_QUOTE_PROXY = false`. 네이버·야후가 CF IP를 차단해 직접 호출만 사용
 
 ## 체크리스트
