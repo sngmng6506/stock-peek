@@ -11,6 +11,9 @@ body,
 }
 
 .panel {
+  /* 모달 배경막이 패널 기준으로 깔리고 둥근 모서리로 잘리도록 */
+  position: relative;
+  overflow: hidden;
   height: 100%;
   width: 100%;
   display: flex;
@@ -316,6 +319,7 @@ body,
 .modal-backdrop {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: rgba(14, 16, 22, 0.92);
   display: flex;
   align-items: center;
