@@ -72,5 +72,11 @@ jobs:
           ls -d "$MNT"/*.app && [ -L "$MNT/Applications" ]
           hdiutil detach "$MNT"
 
+      # 실패 시 출력 끝부분을 오류 주석으로 남김 (로그 없이도 원인 확인)
       - name: Run packaged app
-        run: SMOKE_APP="$BIN" node scripts/native-smoke.cjs
+        run: |
+          set -o pipefail
+          if ! SMOKE_APP="$BIN" node scripts/native-smoke.cjs 2>&1 | tee smoke.log; then
+            tail -c 3500 smoke.log | node -e "const s=require('fs').readFileSync(0,'utf8');console.log('::error title=Packaged app smoke ($(uname -m))::'+s.replace(/%/g,'%25').replace(/\\r/g,'%0D').replace(/\\n/g,'%0A'))"
+            exit 1
+          fi
