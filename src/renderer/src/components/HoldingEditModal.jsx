@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useI18n } from '../i18n'
 import { currencySymbol, displayName, examplePrice } from '../lib/format'
 import { errorText } from '../lib/errors'
 
 function HoldingEditModal({ stock, onClose, onSave }) {
   const { t, lang } = useI18n()
+  const holdingForm = useRef(null)
   const [quantity, setQuantity] = useState(stock.quantity != null ? String(stock.quantity) : '')
   const [avgPrice, setAvgPrice] = useState(stock.avgPrice != null ? String(stock.avgPrice) : '')
   const [busy, setBusy] = useState(false)
@@ -12,12 +13,16 @@ function HoldingEditModal({ stock, onClose, onSave }) {
 
   const save = async () => {
     if (busy) return
+    if (holdingForm.current?.querySelector('input:invalid')) {
+      setError(t('error.ERR_INVALID_HOLDING'))
+      return
+    }
     setBusy(true)
     setError(null)
     try {
       await onSave({
-        quantity: Number(quantity) || undefined,
-        avgPrice: Number(avgPrice) || undefined
+        quantity: quantity,
+        avgPrice: avgPrice
       })
       onClose()
     } catch (err) {
@@ -50,7 +55,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
           </span>
         </div>
 
-        <div className="holding-form">
+        <div className="holding-form" ref={holdingForm}>
           <label>
             <span className="form-label">{t('holding.quantity')}</span>
             <input

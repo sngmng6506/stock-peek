@@ -1,4 +1,5 @@
 import Store from 'electron-store'
+import { holdingFields, reorderItems } from './watchlistModel.js'
 import { getMarket } from '../shared/markets.js'
 
 const DEFAULTS = [
@@ -34,11 +35,7 @@ function validate({ market, symbol }) {
 }
 
 function applyHolding(item, raw) {
-  const q = Number(raw?.quantity)
-  const p = Number(raw?.avgPrice)
-  if (Number.isFinite(q) && q > 0) item.quantity = q
-  if (Number.isFinite(p) && p > 0) item.avgPrice = p
-  return item
+  return Object.assign(item, holdingFields(raw))
 }
 
 export function getItems() {
@@ -85,12 +82,10 @@ export function updateHolding(market, symbol, holding) {
   if (idx < 0) fail('ERR_NOT_FOUND')
   const next = list.map((it) => ({ ...it }))
   const item = next[idx]
-  const q = Number(holding?.quantity)
-  const p = Number(holding?.avgPrice)
-  if (Number.isFinite(q) && q > 0) item.quantity = q
-  else delete item.quantity
-  if (Number.isFinite(p) && p > 0) item.avgPrice = p
-  else delete item.avgPrice
+  const fields = holdingFields(holding)
+  delete item.quantity
+  delete item.avgPrice
+  Object.assign(item, fields)
   store.set('items', next)
   return next
 }
@@ -98,6 +93,12 @@ export function updateHolding(market, symbol, holding) {
 export function removeItem(market, symbol) {
   const item = normalize(market, symbol)
   const next = getItems().filter((i) => !(i.market === item.market && i.symbol === item.symbol))
+  store.set('items', next)
+  return next
+}
+
+export function reorderWatchlist(order) {
+  const next = reorderItems(getItems(), order)
   store.set('items', next)
   return next
 }

@@ -1,4 +1,5 @@
 import { fetchJson, USER_AGENT } from './http.js'
+import { positivePrice } from './numbers.js'
 import { previousClose } from './previousClose.js'
 
 // Yahoo Finance 기반 시장 공용 provider.
@@ -61,11 +62,11 @@ export function createYahooProvider({ market, suffix = '', exchanges = {}, label
     const times = result.timestamp || []
     const bars = closes
       .map((p, i) => [times[i], p])
-      .filter(([t, p]) => Number.isFinite(t) && p !== null && Number.isFinite(p))
+      .filter(([t, p]) => Number.isFinite(t) && p !== null && Number.isFinite(positivePrice(p)))
     const prices = bars.map(([, p]) => p)
 
     // 장 마감 후에는 regularMarketPrice가 비거나 stale할 수 있음 → 마지막 유효 종가로 폴백
-    let price = Number(meta.regularMarketPrice)
+    let price = positivePrice(meta.regularMarketPrice)
     if (!Number.isFinite(price) && prices.length) price = prices[prices.length - 1]
 
     const prev = previousClose(meta, bars)

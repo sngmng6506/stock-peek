@@ -1,5 +1,6 @@
 // العربية
 export default {
+  'error.ERR_INVALID_HOLDING': 'أدخل رقماً موجباً للكمية ومتوسط السعر، أو اترك الحقل فارغاً لمسحه.',
   // App
   'app.refresh': 'تحديث',
   'app.add': 'إضافة',

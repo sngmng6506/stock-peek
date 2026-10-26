@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../i18n'
 import { marketsFor } from '../../../shared/markets.js'
 import { currencySymbol, displayName, examplePrice } from '../lib/format'
@@ -6,6 +6,7 @@ import { errorText } from '../lib/errors'
 
 function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
   const { t, lang } = useI18n()
+  const holdingForm = useRef(null)
   const markets = marketsFor(lang)
   const [market, setMarket] = useState(markets[0].id)
   const [keyword, setKeyword] = useState('')
@@ -56,13 +57,17 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
 
   const submitAdd = async (withHolding) => {
     if (!selected || busy) return
+    if (withHolding && holdingForm.current?.querySelector('input:invalid')) {
+      setError(t('error.ERR_INVALID_HOLDING'))
+      return
+    }
     setBusy(true)
     setError(null)
     try {
       const holding = withHolding
         ? {
-            quantity: Number(quantity) || undefined,
-            avgPrice: Number(avgPrice) || undefined
+            quantity: quantity,
+            avgPrice: avgPrice
           }
         : undefined
       await onAdd(selected.market, selected.symbol, holding)
@@ -151,7 +156,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
               </span>
             </div>
 
-            <div className="holding-form">
+            <div className="holding-form" ref={holdingForm}>
               <label>
                 <span className="form-label">{t('add.quantity')}</span>
                 <input

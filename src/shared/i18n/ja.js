@@ -1,5 +1,7 @@
 // 日本語
 export default {
+  'error.ERR_INVALID_HOLDING':
+    '数量と平均取得価格には正の数を入力してください。空欄にすると削除されます。',
   // App
   'app.refresh': '更新',
   'app.add': '追加',

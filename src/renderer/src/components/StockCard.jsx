@@ -25,6 +25,14 @@ function CardBtn({ onClick, title, label, className }) {
 
 function StockCard({ stock, onRemove, onEditHolding }) {
   const { t, lang } = useI18n()
+  if (stock.loading) {
+    return (
+      <div className="card" aria-busy="true">
+        <span className="name">{stock.symbol}</span>
+        <span className="price">…</span>
+      </div>
+    )
+  }
   if (stock.error) {
     return (
       <div className="card card-err">
