@@ -2,7 +2,8 @@ name: Download badge
 
 # 매일: README 다운로드 배지 + 사용 추이(usage.csv)를 badges 브랜치에 기록.
 # 배지는 설치 파일(.exe·.dmg)만 합산 — latest.yml 등은 앱이 업데이트 확인 때 받아가서 부풀려짐.
-# usage.csv는 그 업데이트 확인 수의 하루 증가분으로 활성 사용자를 대략 추정 (scripts/download_stats.py).
+# usage.csv는 관측 간 ping 다운로드 증가분과 실제 관측 시각을 기록 (scripts/download_stats.py).
+# date는 관측 종료일(UTC)이며, 정확한 집계 구간은 period_start_utc~period_end_utc.
 # badges 브랜치만 바뀌므로 main 기록·릴리즈·웹사이트 배포에 영향 없음.
 on:
   schedule:
