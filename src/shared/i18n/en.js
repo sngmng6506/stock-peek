@@ -1,5 +1,12 @@
 // English
 export default {
+  'settings.general': 'General',
+  'settings.about': 'About',
+  'settings.support': 'Support',
+  'settings.supportKofi': 'Support on Ko-fi',
+  'settings.sizeReset': 'Panel size reset',
+  'settings.actionFailed': 'Could not apply the change. Please try again.',
+
   'settings.resetSize': 'Reset panel size',
   'settings.resizeHint': 'Drag the edge to resize',
   'error.ERR_INVALID_HOLDING':

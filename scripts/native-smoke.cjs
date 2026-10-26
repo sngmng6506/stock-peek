@@ -125,6 +125,13 @@ const probe = `(async () => {
     await new Promise(resolve => setTimeout(resolve, 100));
     if (document.documentElement.lang !== lang || document.documentElement.dir !== (lang === 'ar' ? 'rtl' : 'ltr'))
       throw new Error('Language/RTL switch failed: ' + lang);
+    const body = document.querySelector('.settings-body');
+    const toggle = document.querySelector('.settings-switch');
+    if (body.scrollWidth > body.clientWidth || toggle.offsetWidth !== 34)
+      throw new Error('Settings layout overflow or invalid switch size: ' + lang);
+    if (document.activeElement === document.body)
+      throw new Error('Settings focus was lost: ' + lang);
+
   }
   await new Promise(resolve => setTimeout(resolve, 300));
   return {
@@ -156,10 +163,7 @@ async function checkResize(mainUrl, rendererUrl) {
     return {width:innerWidth,height:innerHeight, text:rect('.card .name'), graph:rect('.card svg'), button:rect('.icon-btn'),handle:rect('.resize-both')};
   })()`
     )
-  await evaluate(
-    rendererUrl,
-    `document.querySelector('.settings-modal .modal-actions button')?.click()`
-  )
+  await evaluate(rendererUrl, `document.querySelector('.settings-close')?.click()`)
   await wait()
   const results = []
   for (const edge of ['right', 'left']) {
@@ -282,7 +286,7 @@ async function screenshots(mainUrl, dir) {
       select.value = ${JSON.stringify(lang)};
       select.dispatchEvent(new Event('change', {bubbles:true}));
       await new Promise(r => setTimeout(r, 200));
-      document.querySelector('.modal-actions button.primary')?.click();
+      document.querySelector('.settings-close')?.click();
       await new Promise(r => setTimeout(r, 400));
     })()`
     )

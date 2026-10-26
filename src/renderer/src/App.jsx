@@ -138,11 +138,13 @@ function App() {
 
       const modal = panel.querySelector('.modal')
       if (modal) {
-        const modalRequired =
-          Math.min(
-            modal.scrollHeight + 2,
-            modal.classList.contains('settings-modal') ? 460 : Infinity
-          ) + modalBackdropPadding
+        const settingsBody = modal.querySelector('.settings-body')
+        const modalRequired = settingsBody
+          ? Math.min(
+              settingsBody.scrollHeight + modal.querySelector('.settings-header').offsetHeight,
+              520
+            )
+          : modal.scrollHeight + 2 + modalBackdropPadding
         if (modalRequired > total) total = modalRequired
       }
 
@@ -153,7 +155,10 @@ function App() {
     const ro = new ResizeObserver(measure)
     ro.observe(inner)
     const modal = panel.querySelector('.modal')
-    if (modal) ro.observe(modal)
+    if (modal) {
+      ro.observe(modal)
+      modal.querySelectorAll('.settings-section').forEach((section) => ro.observe(section))
+    }
     return () => ro.disconnect()
   }, [showAdd, showSettings, showWelcome, editingHolding])
 

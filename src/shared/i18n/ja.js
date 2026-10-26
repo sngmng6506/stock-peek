@@ -1,5 +1,12 @@
 // 日本語
 export default {
+  'settings.general': '一般設定',
+  'settings.about': 'アプリ情報',
+  'settings.support': 'サポート',
+  'settings.supportKofi': 'Ko-fiで応援する',
+  'settings.sizeReset': '標準サイズに戻しました',
+  'settings.actionFailed': '変更できませんでした。もう一度お試しください。',
+
   'settings.resetSize': '標準サイズに戻す',
   'settings.resizeHint': '端をドラッグしてサイズ変更',
   'error.ERR_INVALID_HOLDING':
