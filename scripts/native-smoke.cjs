@@ -189,6 +189,14 @@ async function checkResize(mainUrl, rendererUrl) {
       screen.getCursorScreenPoint=()=>globalThis.__resizeStart;
     })()`
     )
+    await evaluate(
+      rendererUrl,
+      `(() => {
+      globalThis.__resizeEvents=[];
+      for (const type of ['pointerdown','pointerup','pointercancel','lostpointercapture'])
+        document.addEventListener(type,e=>globalThis.__resizeEvents.push({type,target:e.target.className}),{once:true});
+    })()`
+    )
     await mouse('mousePressed', before.handle.x + 5, before.handle.y + 5)
     await wait(100)
     await evaluate(rendererUrl, `window.api.unpinPanel()`)
@@ -205,7 +213,15 @@ async function checkResize(mainUrl, rendererUrl) {
     const visible = await evaluate(mainUrl, 'globalThis.__resizeWin.isVisible()')
     if (!visible || Math.abs(after.width - before.width - 100) > 2)
       throw new Error(
-        'Drag resize/visibility failed: ' + JSON.stringify({ edge, before, after, visible })
+        'Drag resize/visibility failed: ' +
+          JSON.stringify({
+            edge,
+            before,
+            after,
+            visible,
+            events: await evaluate(rendererUrl, 'globalThis.__resizeEvents'),
+            active: await evaluate(rendererUrl, `!!document.querySelector('.resize-handle.active')`)
+          })
       )
     const ratio = after.width / before.width
     for (const key of ['text', 'graph', 'button']) {
