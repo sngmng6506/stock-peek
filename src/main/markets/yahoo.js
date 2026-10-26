@@ -81,10 +81,6 @@ export function createYahooProvider({ market, suffix = '', exchanges = {}, label
       change,
       changeRatio,
       isUp: change >= 0,
-      quoteTime:
-        Number.isFinite(Number(meta.regularMarketTime)) && Number(meta.regularMarketTime) > 0
-          ? Number(meta.regularMarketTime) * 1000
-          : null,
       prices
     }
   }

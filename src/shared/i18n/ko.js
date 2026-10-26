@@ -15,8 +15,6 @@ export default {
   'card.remove': '삭제',
   'card.editHolding': '보유 정보 편집',
   'card.stale': '갱신 실패 · 마지막 가격',
-  'card.quoteTime': '시세 {v}',
-  'card.checkedTime': '조회 {v}',
   // HoldingEditModal
   'holding.title': '보유 정보 편집',
   'holding.quantity': '수량',

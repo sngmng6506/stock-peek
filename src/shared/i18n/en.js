@@ -15,8 +15,6 @@ export default {
   'card.remove': 'Remove',
   'card.editHolding': 'Edit holding',
   'card.stale': 'Update failed · last price',
-  'card.quoteTime': 'Quote {v}',
-  'card.checkedTime': 'Checked {v}',
   // HoldingEditModal
   'holding.title': 'Edit Holding',
   'holding.quantity': 'Quantity',

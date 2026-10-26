@@ -95,8 +95,7 @@ const probe = `(async () => {
       const item = quotes.find(q => q.market === market);
       const card = document.querySelector('.card .name[title="' + item?.symbol + '"]')?.closest('.card');
       return { market, symbol: item?.symbol, price: item?.price,
-        quoteTime: item?.quoteTime, fetchedAt: item?.fetchedAt,
-        error: item?.error, cardVisible: Boolean(card), timeVisible: Boolean(card?.querySelector('.quote-status')) };
+        error: item?.error, cardVisible: Boolean(card) };
     })
   };
 })()`
@@ -105,12 +104,7 @@ const probe = `(async () => {
   try {
     const result = await evaluate(await rendererTarget(), probe)
     for (const market of result.markets) {
-      if (
-        !Number.isFinite(market.price) ||
-        !market.quoteTime ||
-        !market.cardVisible ||
-        !market.timeVisible
-      ) {
+      if (!Number.isFinite(market.price) || !market.cardVisible) {
         throw new Error(`Native quote check failed: ${JSON.stringify(result)}\n${log}`)
       }
     }

@@ -15,8 +15,6 @@ export default {
   'card.remove': 'حذف',
   'card.editHolding': 'تعديل المركز',
   'card.stale': 'تعذّر تحديث السعر · آخر سعر',
-  'card.quoteTime': 'وقت السعر {v}',
-  'card.checkedTime': 'آخر تحقق {v}',
   // HoldingEditModal
   'holding.title': 'تعديل المركز',
   'holding.quantity': 'الكمية',

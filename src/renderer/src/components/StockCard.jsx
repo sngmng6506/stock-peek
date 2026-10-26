@@ -1,6 +1,6 @@
 import Sparkline from './Sparkline'
 import { useI18n } from '../i18n'
-import { displayName, formatMoney, formatNumber, formatQuoteTime, formatRatio } from '../lib/format'
+import { displayName, formatMoney, formatNumber, formatRatio } from '../lib/format'
 import { getMarket } from '../../../shared/markets.js'
 
 function profitOf(stock) {
@@ -52,19 +52,6 @@ function StockCard({ stock, onRemove, onEditHolding }) {
   const cls = stock.isUp ? 'up' : 'down'
   const delay = getMarket(stock.market)?.delayMinutes
   const profit = profitOf(stock)
-  const quoteTime = formatQuoteTime(stock.quoteTime, lang)
-  const checkedTime = formatQuoteTime(stock.fetchedAt, lang)
-  const status = [
-    stock.stale ? t('card.stale') : null,
-    quoteTime
-      ? t('card.quoteTime', { v: quoteTime })
-      : checkedTime
-        ? t('card.checkedTime', { v: checkedTime })
-        : null
-  ]
-    .filter(Boolean)
-    .join(' · ')
-
   return (
     <div className="card">
       <div className="card-actions">
@@ -93,17 +80,12 @@ function StockCard({ stock, onRemove, onEditHolding }) {
       </div>
       <div className="row">
         <span className="price">
-          {stock.stale && <span className="stale-dot" aria-hidden="true" />}
+          {stock.stale && <span className="stale-dot" title={t('card.stale')} />}
           <span className="num">{formatMoney(stock.price, stock.market, lang)}</span>
           {delay ? <span className="delay">{t('card.delayed', { n: delay })}</span> : null}
         </span>
         <Sparkline prices={stock.prices} isUp={stock.isUp} />
       </div>
-      {status && (
-        <div className={`quote-status${stock.stale ? ' stale' : ''}`} title={status}>
-          {status}
-        </div>
-      )}
       {profit && (
         <div className="row holding">
           <span className="holding-qty">

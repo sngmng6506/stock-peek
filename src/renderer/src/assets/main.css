@@ -861,21 +861,6 @@ body,
   vertical-align: middle;
 }
 
-.quote-status {
-  color: rgba(235, 235, 245, 0.52);
-  font-size: 10px;
-  line-height: 1.35;
-  margin-top: 3px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.quote-status.stale {
-  color: rgba(235, 180, 80, 0.85);
-  white-space: normal;
-}
-
 /* 카카오페이 QR (BMC와 함께 표시) */
 .donate-qr {
   margin-top: 12px;

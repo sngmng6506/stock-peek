@@ -67,17 +67,8 @@ function extractQuote(json) {
     price: chosen.price,
     change: chosen.change,
     changeRatio: chosen.changeRatio,
-    isUp,
-    quoteTime: parseKoreanTime(chosen.time)
+    isUp
   }
-}
-
-function parseKoreanTime(raw) {
-  if (typeof raw !== 'string' || !raw.trim()) return null
-  const value = raw.trim().replace(' ', 'T')
-  const localTime = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(value) ? value : `${value}+09:00`
-  const ts = Date.parse(localTime)
-  return Number.isFinite(ts) ? ts : null
 }
 
 function extractCloses(rows) {

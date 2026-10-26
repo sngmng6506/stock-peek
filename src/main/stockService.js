@@ -71,7 +71,7 @@ async function fetchOne(item, { force = false } = {}) {
       result.prices = cached.prices
     }
     // 성공 → 마지막 정상값으로 저장.
-    const quote = { ...result, fetchedAt: Date.now() }
+    const quote = result
     lastGood.set(key, quote)
     failures.delete(key)
     return withCurrentHolding(quote, item)
