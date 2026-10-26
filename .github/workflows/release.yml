@@ -117,7 +117,7 @@ jobs:
             git push --atomic origin HEAD:main "refs/tags/$RELEASE_TAG"
           fi
 
-      - name: Publish complete release
+      - name: Stage Windows assets in draft release
         if: steps.version.outputs.publish == 'true'
         shell: bash
         env:
@@ -132,9 +132,8 @@ jobs:
           printf '1' > dist/ping-win
           printf '1' > dist/ping-mac
           gh release upload "$RELEASE_TAG" dist/stock-peek-setup.exe dist/stock-peek-setup.exe.blockmap dist/latest.yml dist/SHA256SUMS.txt dist/ping-win dist/ping-mac --clobber
-          gh release edit "$RELEASE_TAG" --draft=false --latest
 
-  # Mac: ad-hoc 서명(공증 없음). Windows 릴리즈가 게시된 뒤 같은 릴리즈에 자산 추가.
+  # Mac: ad-hoc 서명(공증 없음). Windows 자산이 담긴 비공개 초안에 Mac 자산 추가.
   # latest-mac.yml은 앱의 새 버전 알림용 (Mac은 자동 설치 없이 다운로드 페이지 안내)
   build-mac:
     needs: build-win
@@ -169,3 +168,22 @@ jobs:
           [ -f dist/stock-peek-mac.zip.blockmap ] && assets+=(dist/stock-peek-mac.zip.blockmap)
           (cd dist && shasum -a 256 stock-peek-mac.dmg stock-peek-mac.zip latest-mac.yml > SHA256SUMS-mac.txt)
           gh release upload "$RELEASE_TAG" "${assets[@]}" dist/SHA256SUMS-mac.txt --clobber
+
+  publish:
+    needs: [build-win, build-mac]
+    if: needs.build-win.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish only after both platforms are ready
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.build-win.outputs.tag }}
+        run: |
+          set -euo pipefail
+          names=$(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name')
+          for required in stock-peek-setup.exe latest.yml ping-win ping-mac stock-peek-mac.dmg stock-peek-mac.zip latest-mac.yml; do
+            grep -Fxq "$required" <<< "$names" || { echo "Missing asset: $required"; exit 1; }
+          done
+          gh release edit "$RELEASE_TAG" --draft=false --latest
