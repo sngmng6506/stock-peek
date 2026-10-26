@@ -1,0 +1,76 @@
+name: Mac release check
+
+# 실제로 배포된 Mac 파일(zip·dmg)을 내려받아 Apple Silicon·Intel 맥에서 확인:
+# 체크섬, universal(arm64+x86_64), ad-hoc 서명, Dock 숨김(LSUIElement), dmg 구성,
+# 그리고 패키지된 앱을 실행해 native-smoke와 같은 동작 검사.
+on:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '확인할 릴리즈 태그 (비우면 최신)'
+        required: false
+
+jobs:
+  mac:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Download release
+        run: |
+          TAG="${{ inputs.tag }}"
+          [ -z "$TAG" ] && TAG=$(gh release view --json tagName -q .tagName)
+          echo "Checking $TAG on $(uname -m)"
+          mkdir rel && cd rel
+          gh release download "$TAG" -p 'stock-peek-mac.zip' -p 'stock-peek-mac.dmg' -p 'SHA256SUMS-mac.txt' -p 'latest-mac.yml'
+
+      - name: Checksums
+        working-directory: rel
+        run: shasum -a 256 -c SHA256SUMS-mac.txt
+
+      # 이후 앱이 github.com에 접속하지 못하게 막음: 업데이트 확인·하루 사용자 신호가 통계에 잡히지 않게
+      - name: Block github.com for the app
+        run: echo '127.0.0.1 github.com' | sudo tee -a /etc/hosts
+
+      - name: Inspect app
+        working-directory: rel
+        run: |
+          ditto -x -k stock-peek-mac.zip app
+          APP=$(ls -d app/*.app)
+          BIN="$APP/Contents/MacOS/$(defaults read "$PWD/$APP/Contents/Info" CFBundleExecutable)"
+          echo "APP=$PWD/$APP" >> "$GITHUB_ENV"
+          echo "BIN=$PWD/$BIN" >> "$GITHUB_ENV"
+          ARCHS=$(lipo -archs "$BIN"); echo "archs: $ARCHS"
+          [[ "$ARCHS" == *arm64* && "$ARCHS" == *x86_64* ]] || { echo 'not universal'; exit 1; }
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dv "$APP" 2>&1 | grep -E 'Signature=adhoc|Identifier'
+          [ "$(defaults read "$PWD/$APP/Contents/Info" LSUIElement)" = 1 ] || { echo 'LSUIElement missing'; exit 1; }
+          ls "$APP"/Contents/Resources/app.asar.unpacked/resources/trayTemplate*.png || { echo 'tray icon missing'; exit 1; }
+          grep -q "$(defaults read "$PWD/$APP/Contents/Info" CFBundleShortVersionString)" latest-mac.yml || { echo 'version mismatch with latest-mac.yml'; exit 1; }
+          # 공증이 없으므로 Gatekeeper 거부가 정상. 참고용 출력
+          spctl -a -vv "$APP" || true
+
+      - name: Inspect dmg
+        working-directory: rel
+        run: |
+          MNT=$(hdiutil attach -nobrowse -readonly stock-peek-mac.dmg | awk -F'\t' '/\/Volumes\//{print $NF}')
+          ls -la "$MNT"
+          ls -d "$MNT"/*.app && [ -L "$MNT/Applications" ]
+          hdiutil detach "$MNT"
+
+      - name: Run packaged app
+        run: SMOKE_APP="$BIN" node scripts/native-smoke.cjs
