@@ -1,8 +1,10 @@
+import { getLanguageInfo } from './languages.js'
+
 // 시장 정의 — main(데이터·장 시간)과 renderer(표기·탭 순서)가 함께 쓰는 순수 데이터.
 // 시장 추가: 여기에 항목 하나 + src/main/markets/index.js에 provider 연결 + 번역 키(market.<ID> 등).
 // 선택 항목: maxDecimals(소수 표시 최대), delayMinutes(시세 지연 표시), localLang(원어 종목명 언어),
 // numberLocale(영어 화면에서 쓸 숫자 표기 로케일).
-// 배열 순서 = 패널 그룹 순서 = 종목 추가 화면 탭 순서.
+// 배열 순서 = 기본 표시 순서. 화면 언어별 순서(자국 시장 먼저)는 languages.js marketOrder.
 
 export const MARKETS = [
   {
@@ -88,9 +90,17 @@ export function getMarket(id) {
   return BY_ID.get(String(id || '').toUpperCase()) || null
 }
 
-export function marketOrder(id) {
+// 정렬 순위: 화면 언어의 marketOrder 순, 거기 없는 시장은 그 뒤에 등록 순서
+export function marketOrder(id, lang) {
+  const order = (lang && getLanguageInfo(lang).marketOrder) || []
+  const j = order.indexOf(id)
+  if (j >= 0) return j
   const i = MARKETS.findIndex((m) => m.id === id)
-  return i < 0 ? MARKETS.length : i
+  return order.length + (i < 0 ? MARKETS.length : i)
+}
+
+export function marketsFor(lang) {
+  return [...MARKETS].sort((a, b) => marketOrder(a.id, lang) - marketOrder(b.id, lang))
 }
 
 const WEEKDAY = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }

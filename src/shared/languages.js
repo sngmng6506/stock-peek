@@ -1,12 +1,42 @@
 // 지원 언어 — main(트레이·알림·OS 언어 감지)과 renderer(설정 화면)가 함께 사용.
 // 언어 추가: 여기에 항목 + src/shared/i18n/<code>.js + src/shared/i18n/index.js 등록.
 // dir: 'rtl' 언어(아랍어 등)는 화면 방향 전환 대상. sitePath: 웹사이트 해당 언어 홈 경로.
+// marketOrder: 이 언어에서 시장을 보여줄 순서 (자국 시장 먼저). 종목 추가 탭·패널 묶음·웹사이트 문구 순서와 맞춤.
+// 빠진 시장은 markets.js 등록 순서로 뒤에 붙음.
 
 export const LANGUAGES = [
-  { code: 'ko', label: '한국어', locale: 'ko-KR', dir: 'ltr', sitePath: '/' },
-  { code: 'en', label: 'English', locale: 'en-US', dir: 'ltr', sitePath: '/en' },
-  { code: 'ja', label: '日本語', locale: 'ja-JP', dir: 'ltr', sitePath: '/ja' },
-  { code: 'ar', label: 'العربية', locale: 'ar-SA', dir: 'rtl', sitePath: '/ar' }
+  {
+    code: 'ko',
+    label: '한국어',
+    locale: 'ko-KR',
+    dir: 'ltr',
+    sitePath: '/',
+    marketOrder: ['KR', 'US', 'JP', 'IN', 'SA']
+  },
+  {
+    code: 'en',
+    label: 'English',
+    locale: 'en-US',
+    dir: 'ltr',
+    sitePath: '/en',
+    marketOrder: ['US', 'KR', 'JP', 'IN', 'SA']
+  },
+  {
+    code: 'ja',
+    label: '日本語',
+    locale: 'ja-JP',
+    dir: 'ltr',
+    sitePath: '/ja',
+    marketOrder: ['JP', 'US', 'KR', 'IN', 'SA']
+  },
+  {
+    code: 'ar',
+    label: 'العربية',
+    locale: 'ar-SA',
+    dir: 'rtl',
+    sitePath: '/ar',
+    marketOrder: ['SA', 'US', 'JP', 'IN', 'KR']
+  }
 ]
 
 export const FALLBACK_LANG = 'en'

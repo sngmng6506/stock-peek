@@ -26,15 +26,15 @@ import { marketOrder } from '../../shared/markets.js'
 
 const idOf = (s) => `${s.market}-${s.symbol}`
 
-// 시장별 묶음 (src/shared/markets.js 순서). 같은 시장 안에서는 저장된 순서 유지
-function groupByMarket(stocks) {
+// 시장별 묶음 (화면 언어의 기본 시장 먼저, 나머지는 markets.js 순서). 같은 시장 안은 저장 순서
+function groupByMarket(stocks, lang) {
   const byMarket = new Map()
   for (const s of stocks) {
     if (!byMarket.has(s.market)) byMarket.set(s.market, [])
     byMarket.get(s.market).push(s)
   }
   return [...byMarket.entries()]
-    .sort(([a], [b]) => marketOrder(a) - marketOrder(b))
+    .sort(([a], [b]) => marketOrder(a, lang) - marketOrder(b, lang))
     .map(([market, items]) => ({ market, items }))
 }
 
@@ -66,7 +66,7 @@ function App() {
   const [pinned, setPinned] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [sorting, setSorting] = useState(false)
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const panelRef = useRef(null)
   const cardsRef = useRef(null)
   const cardsInnerRef = useRef(null)
@@ -184,12 +184,14 @@ function App() {
     if (oldIndex < 0 || newIndex < 0) return
     const reordered = arrayMove(groupA, oldIndex, newIndex)
 
-    const next = groupByMarket(stocks).flatMap((g) => (g.market === marketA ? reordered : g.items))
+    const next = groupByMarket(stocks, lang).flatMap((g) =>
+      g.market === marketA ? reordered : g.items
+    )
     setStocks(next)
     window.api.reorderStocks(next.map((s) => ({ market: s.market, symbol: s.symbol })))
   }
 
-  const groups = groupByMarket(stocks)
+  const groups = groupByMarket(stocks, lang)
   const existingKeys = new Set(stocks.map(idOf))
 
   return (

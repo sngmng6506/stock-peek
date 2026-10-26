@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from '../i18n'
-import { MARKETS } from '../../../shared/markets.js'
+import { marketsFor } from '../../../shared/markets.js'
 import { currencySymbol, displayName, examplePrice } from '../lib/format'
 import { errorText } from '../lib/errors'
 
 function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
   const { t, lang } = useI18n()
-  const [market, setMarket] = useState(MARKETS[0].id)
+  const markets = marketsFor(lang)
+  const [market, setMarket] = useState(markets[0].id)
   const [keyword, setKeyword] = useState('')
   const [searchResult, setSearchResult] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -80,7 +81,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
             <div className="modal-title">{t('add.title')}</div>
 
             <div className="seg market-options" role="group" aria-label={t('add.title')}>
-              {MARKETS.map((m) => (
+              {markets.map((m) => (
                 <button
                   key={m.id}
                   type="button"

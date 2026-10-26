@@ -34,6 +34,16 @@ for (const { id } of MARKETS) {
   }
 }
 
+// 언어별 시장 순서에 없는 시장 id가 있으면 오타
+const marketIds = new Set(MARKETS.map((m) => m.id))
+for (const l of LANGUAGES) {
+  for (const id of l.marketOrder || []) {
+    if (!marketIds.has(id)) problems.push(`${l.code}: marketOrder에 없는 시장 ${id}`)
+  }
+  const missing = MARKETS.filter((m) => !(l.marketOrder || []).includes(m.id)).map((m) => m.id)
+  if (missing.length) problems.push(`${l.code}: marketOrder에 시장 누락 ${missing.join(', ')}`)
+}
+
 if (problems.length) {
   console.error(problems.join('\n'))
   process.exit(1)

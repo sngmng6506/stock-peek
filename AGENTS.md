@@ -60,7 +60,7 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 
 ## 시장·언어 추가
 
-- 시장: `src/shared/markets.js` 항목 → `src/main/markets/index.js` provider 연결 → `market.<ID>`, `add.searchPlaceholder.<ID>` 번역
+- 시장: `src/shared/markets.js` 항목 → `src/main/markets/index.js` provider 연결 → `market.<ID>`, `add.searchPlaceholder.<ID>` 번역 → `languages.js` 각 언어 `marketOrder`에 추가 (웹 문구의 나라 순서도 이 순서로)
 - 앱 언어: `src/shared/languages.js` 항목 → `src/shared/i18n/<code>.js` → `i18n/index.js` 등록 → `npm run check:i18n`
 - 웹 언어: `site/strings/<code>.json` + `site/pages/<code>/*.html` → `npm run build:site`. hreflang·언어 전환·sitemap은 자동
 - 세부 항목: `docs/market-expansion.md`
