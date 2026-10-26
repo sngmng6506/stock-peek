@@ -77,6 +77,6 @@ jobs:
         run: |
           set -o pipefail
           if ! SMOKE_APP="$BIN" node scripts/native-smoke.cjs 2>&1 | tee smoke.log; then
-            tail -c 3500 smoke.log | node -e "const s=require('fs').readFileSync(0,'utf8');console.log('::error title=Packaged app smoke ($(uname -m))::'+s.replace(/%/g,'%25').replace(/\\r/g,'%0D').replace(/\\n/g,'%0A'))"
+            tail -c 12000 smoke.log | node -e "const s=require('fs').readFileSync(0,'utf8');console.log('::error title=Packaged app smoke ($(uname -m))::'+s.replace(/%/g,'%25').replace(/\\r/g,'%0D').replace(/\\n/g,'%0A'))"
             exit 1
           fi

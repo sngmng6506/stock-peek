@@ -141,9 +141,11 @@ const probe = `(async () => {
 
 ;(async () => {
   try {
+    console.error('[smoke] renderer probe')
     const result = await evaluate(await rendererTarget(), probe)
     const targets = await (await fetch(`http://127.0.0.1:${MAIN_PORT}/json/list`)).json()
     const mainUrl = targets[0].webSocketDebuggerUrl
+    console.error('[smoke] main: auto-hide')
     const native = await evaluate(
       mainUrl,
       `(async () => {
@@ -159,7 +161,9 @@ const probe = `(async () => {
       return {settingsAutoHide:true};
     })()`
     )
+    console.error('[smoke] renderer: pin')
     await evaluate(await rendererTarget(), `window.api.pinPanel()`)
+    console.error('[smoke] main: pinned + display removal')
     const pinned = await evaluate(
       mainUrl,
       `(async () => {
