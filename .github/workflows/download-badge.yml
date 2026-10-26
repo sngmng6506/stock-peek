@@ -1,0 +1,44 @@
+name: Download badge
+
+# README 다운로드 배지용 숫자. 설치 파일(.exe·.dmg)만 모든 릴리즈에서 합산.
+# latest.yml 등 업데이트 확인용 파일은 앱이 매시간 받아가서 전체 합계를 부풀리므로 제외.
+# 결과는 badges 브랜치의 downloads.json(shields.io endpoint 형식) — main 기록·배포에 영향 없음.
+on:
+  schedule:
+    - cron: '17 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: download-badge
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count installer downloads
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          total=$(gh api --paginate "repos/${{ github.repository }}/releases?per_page=100" \
+            --jq '.[].assets[] | select(.name | test("setup\\.exe$|\\.dmg$")) | .download_count' \
+            | awk '{s+=$1} END {print s+0}')
+          echo "installer downloads: $total"
+          mkdir out
+          python3 -c 'import json,sys; print(json.dumps({"schemaVersion": 1, "label": "downloads", "message": f"{int(sys.argv[1]):,}", "color": "blue"}))' "$total" > out/downloads.json
+          cat out/downloads.json
+
+      - name: Publish to badges branch
+        run: |
+          set -euo pipefail
+          cd out
+          git init -q -b badges
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add downloads.json
+          git commit -qm "badge: installer downloads"
+          git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" badges

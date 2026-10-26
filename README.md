@@ -1,6 +1,7 @@
 # 몰래주식 (Stock Peek)
 
 [![Download](https://img.shields.io/github/v/release/sngmng6506/stock-peek?label=download&style=flat-square)](https://github.com/sngmng6506/stock-peek/releases/latest)
+[![Downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsngmng6506%2Fstock-peek%2Fbadges%2Fdownloads.json&style=flat-square)](https://github.com/sngmng6506/stock-peek/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
 화면 가장자리에 마우스를 대면 관심 종목 시세가 나타나는 Windows·Mac 위젯.
