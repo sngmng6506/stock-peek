@@ -3,10 +3,12 @@
 입력: GitHub 릴리즈 목록 JSON(stdin), badges 브랜치 폴더 경로
 출력(그 폴더에):
   downloads.json  README 배지 (shields.io endpoint) — 설치 파일(.exe·.dmg) 다운로드 합계
-  usage.csv       날짜별 누적값과 하루 증가분, 하루 사용자 수
+  usage.csv       관측 시점별 누적값과 직전 관측 이후 증가분, 활성 기기 수
 
 하루 사용자 수: 앱(v1.6.17~)은 하루 한 번 최신 릴리즈의 ping-win/ping-mac(1바이트)을 받음.
-그 다운로드 수의 하루 증가분이 그날 앱을 켠 기기 수 (식별자 없음).
+그 다운로드 수의 관측 간 증가분이 해당 구간에 앱을 켠 기기 수의 근사값 (식별자 없음).
+date는 관측 종료일(UTC)이고, period_start_utc~period_end_utc가 실제 집계 구간이다.
+GitHub Actions 실행 시각은 유동적이므로 이 구간은 달력상 하루와 정확히 일치하지 않는다.
 
 추정치(ping 이전 버전 포함 참고용): 앱은 실행 중 업데이트를 확인하며 latest.yml(Windows)·latest-mac.yml(Mac)을 받음.
 시작 시 1번 + 1시간마다 + 패널 열 때(15분에 1번까지). 하루 몇 시간 켜두는 사용자가
@@ -44,7 +46,8 @@ def main(out_dir):
         f.write('\n')
 
     path = os.path.join(out_dir, 'usage.csv')
-    header = ['date', 'daily_users', 'daily_users_win', 'daily_users_mac',
+    header = ['date', 'period_start_utc', 'period_end_utc',
+              'daily_users', 'daily_users_win', 'daily_users_mac',
               'ping_win_total', 'ping_mac_total',
               'update_checks_total', 'installer_downloads_total',
               'update_checks_day', 'installer_downloads_day', 'active_users_estimate']
@@ -53,7 +56,9 @@ def main(out_dir):
         with open(path, newline='') as f:
             rows = [r for r in csv.DictReader(f)]
 
-    today = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
+    sampled_at = (datetime.datetime.now(datetime.timezone.utc)
+                  .isoformat(timespec='seconds').replace('+00:00', 'Z'))
+    today = sampled_at[:10]
     rows = [r for r in rows if r['date'] != today]  # 같은 날 재실행은 덮어씀
     prev = rows[-1] if rows else None
     def prev_int(key):
@@ -71,7 +76,10 @@ def main(out_dir):
         users = d_win + d_mac
     else:
         d_checks = d_inst = est = d_win = d_mac = users = ''
-    rows.append({'date': today, 'daily_users': users, 'daily_users_win': d_win, 'daily_users_mac': d_mac,
+    rows.append({'date': today,
+                 'period_start_utc': prev.get('period_end_utc', '') if prev else '',
+                 'period_end_utc': sampled_at,
+                 'daily_users': users, 'daily_users_win': d_win, 'daily_users_mac': d_mac,
                  'ping_win_total': ping_win, 'ping_mac_total': ping_mac,
                  'update_checks_total': checks, 'installer_downloads_total': installers,
                  'update_checks_day': d_checks, 'installer_downloads_day': d_inst, 'active_users_estimate': est})
