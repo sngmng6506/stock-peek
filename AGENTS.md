@@ -75,13 +75,13 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 | 웹사이트      | main에 `website/**` push              | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)                                                                                       |
 | 검사          | `site/`·`website/`·`src/shared/` 변경 | `check.yml`: 번역 키, 생성 결과 최신 여부                                                                                                  |
 | JP 목록       | 매월 8일 (수동 실행 가능)             | `update-jp-stocks.yml`: JPX 엑셀 → `data/jp-stocks.json` 커밋 → 앱 릴리즈                                                                  |
-| 다운로드 배지 | 매일 (수동 실행 가능)                 | `download-badge.yml`: 설치 파일 다운로드 합계(배지) + `ping-*` 관측 간 증가분 → `badges` 브랜치 `downloads.json`·`usage.csv` (실제 구간은 `period_start_utc`~`period_end_utc`) |
+| 다운로드 배지 | 매일 (수동 실행 가능)                 | `download-badge.yml`: 설치 파일 다운로드 합계(배지) + `ping-*` 관측 간 증가분 → `badges` 브랜치 `downloads.json`·`usage.csv`·`stats-state.json` (실제 구간은 `period_start_utc`~`period_end_utc`) |
 
 - 앱 파일: `src/`, `data/`, `resources/`, `build/`, `package*.json`, `electron-builder.yml` 등. 문서·웹사이트만 바뀌면 릴리즈 안 됨
 - 릴리즈 워크플로우가 main에 버전 커밋을 push하므로 작업 전 `git pull`
 - 빌드 중 main에 웹사이트·문서만 바뀐 커밋이 들어오면 그 위에 버전 커밋을 다시 올림. 앱 파일이 바뀌었으면 다음 실행에 넘김
 - 태그 수동 생성 금지. minor·major는 `package.json` 버전을 최신 태그보다 높여서 push
-- 실패 시 재시도: Actions → Release → Run workflow
+- 실패 시 재시도: Actions → Release → Run workflow. Windows·Mac 자산을 초안에 올리고 모두 준비된 뒤 공개
 - `.gitattributes`(eol=lf) 유지. 없으면 Windows 러너에서 CRLF로 lint 실패
 - 웹사이트 버전·갱신일: 릴리즈 때 `sync:version`(= `build-site --touch`)이 `site/site.json`과 `website/`를 갱신해 버전 커밋에 포함
 - 웹사이트 수정: `site/` 고치고 `npm run build:site` 후 둘 다 커밋
