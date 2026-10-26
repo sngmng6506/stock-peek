@@ -75,6 +75,7 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 | 앱            | main에 앱 파일 push                   | `release.yml`: 패치 버전 증가 → lint·i18n·테스트 → Win 빌드 → Release → Mac 빌드 자산 추가                                                   |
 | 웹사이트      | main에 `website/**` push              | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)                                                                                       |
 | 검사          | `src/`·`tests/`·`site/`·`website/` 변경, PR | `check.yml`: 단위 테스트, 번역 키, 생성 결과 최신 여부                                                                                                  |
+| Mac 확인      | Release 성공 후 (수동 실행 가능)     | `mac-release-check.yml`: 배포된 zip·dmg를 Apple Silicon·Intel 맥에서 체크섬·universal·ad-hoc 서명·LSUIElement 확인 후 실행 검사 (`SMOKE_APP`). 실행 중 github.com 차단(통계 오염 방지) |
 | JP 목록       | 매월 8일 (수동 실행 가능)             | `update-jp-stocks.yml`: JPX 엑셀 → `data/jp-stocks.json` 커밋 → 앱 릴리즈                                                                  |
 | 다운로드 배지 | 매일 (수동 실행 가능)                 | `download-badge.yml`: 설치 파일 다운로드 합계(배지) + `ping-*` 관측 간 증가분 → `badges` 브랜치 `downloads.json`·`usage.csv`·`stats-state.json` (실제 구간은 `period_start_utc`~`period_end_utc`) |
 
