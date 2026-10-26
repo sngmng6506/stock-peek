@@ -56,6 +56,7 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 - main 오류: 문구 대신 코드(`ERR_*`)로 던지고 화면에서 `error.<CODE>`로 번역
 - 미니멀: 기능 추가보다 제거·단순화 우선
 - Mac: Apple 서명·공증 없음(ad-hoc). 자동 설치 불가 → `IS_MAC`이면 새 버전 알림 + 다운로드 페이지만. Dock 숨김(`LSUIElement`), 메뉴 막대는 `resources/trayTemplate*.png`
+- 사용자 수 집계: 하루 한 번 최신 릴리즈의 `ping-win`/`ping-mac`(1바이트)만 받음 (`dailyPing`). 식별자·사용 정보 전송 금지. 바꾸면 개인정보 페이지 4개 언어·`PRIVACY.md`·`site/llms.md` 같이 수정
 - 비밀값: 토큰·계정 ID·인증서 커밋 금지
 
 ## 시장·언어 추가
@@ -67,13 +68,13 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 
 ## 배포
 
-| 대상          | 트리거                                | 방식                                                                                                                                     |
-| ------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| 앱            | main에 앱 파일 push                   | `release.yml`: 패치 버전 증가 → lint·i18n 검사 → Win 빌드 → Release → Mac 빌드 자산 추가                                                 |
-| 웹사이트      | main에 `website/**` push              | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)                                                                                     |
-| 검사          | `site/`·`website/`·`src/shared/` 변경 | `check.yml`: 번역 키, 생성 결과 최신 여부                                                                                                |
-| JP 목록       | 매월 8일 (수동 실행 가능)             | `update-jp-stocks.yml`: JPX 엑셀 → `data/jp-stocks.json` 커밋 → 앱 릴리즈                                                                |
-| 다운로드 배지 | 매일 (수동 실행 가능)                 | `download-badge.yml`: 설치 파일 다운로드 합계(배지) + 업데이트 확인 수로 활성 사용자 추정 → `badges` 브랜치 `downloads.json`·`usage.csv` |
+| 대상          | 트리거                                | 방식                                                                                                                                       |
+| ------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 앱            | main에 앱 파일 push                   | `release.yml`: 패치 버전 증가 → lint·i18n 검사 → Win 빌드 → Release → Mac 빌드 자산 추가                                                   |
+| 웹사이트      | main에 `website/**` push              | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)                                                                                       |
+| 검사          | `site/`·`website/`·`src/shared/` 변경 | `check.yml`: 번역 키, 생성 결과 최신 여부                                                                                                  |
+| JP 목록       | 매월 8일 (수동 실행 가능)             | `update-jp-stocks.yml`: JPX 엑셀 → `data/jp-stocks.json` 커밋 → 앱 릴리즈                                                                  |
+| 다운로드 배지 | 매일 (수동 실행 가능)                 | `download-badge.yml`: 설치 파일 다운로드 합계(배지) + `ping-*` 하루 증가분 = 하루 사용자 수 → `badges` 브랜치 `downloads.json`·`usage.csv` |
 
 - 앱 파일: `src/`, `data/`, `resources/`, `build/`, `package*.json`, `electron-builder.yml` 등. 문서·웹사이트만 바뀌면 릴리즈 안 됨
 - 릴리즈 워크플로우가 main에 버전 커밋을 push하므로 작업 전 `git pull`

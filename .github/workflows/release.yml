@@ -128,7 +128,10 @@ jobs:
           if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release create "$RELEASE_TAG" --verify-tag --draft --title "$RELEASE_TAG" --generate-notes
           fi
-          gh release upload "$RELEASE_TAG" dist/stock-peek-setup.exe dist/stock-peek-setup.exe.blockmap dist/latest.yml dist/SHA256SUMS.txt --clobber
+          # 하루 사용자 수 집계용 1바이트 파일 (앱이 하루 한 번 받음, download-badge.yml이 집계)
+          printf '1' > dist/ping-win
+          printf '1' > dist/ping-mac
+          gh release upload "$RELEASE_TAG" dist/stock-peek-setup.exe dist/stock-peek-setup.exe.blockmap dist/latest.yml dist/SHA256SUMS.txt dist/ping-win dist/ping-mac --clobber
           gh release edit "$RELEASE_TAG" --draft=false --latest
 
   # Mac: ad-hoc 서명(공증 없음). Windows 릴리즈가 게시된 뒤 같은 릴리즈에 자산 추가.

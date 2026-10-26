@@ -6,7 +6,8 @@ const store = new Store({
   defaults: {
     welcomeShown: false,
     dockPosition: { edge: 'right', y: 100, displayId: null },
-    language: null // null이면 OS 언어 자동 감지
+    language: null, // null이면 OS 언어 자동 감지
+    lastPingDate: null // 하루 사용자 수 집계 신호를 마지막으로 보낸 날 (UTC YYYY-MM-DD)
   }
 })
 
@@ -33,4 +34,12 @@ export function getLanguage() {
 
 export function setLanguage(lang) {
   if (isSupportedLanguage(lang)) store.set('language', lang)
+}
+
+export function getLastPingDate() {
+  return store.get('lastPingDate', null)
+}
+
+export function setLastPingDate(date) {
+  store.set('lastPingDate', date)
 }

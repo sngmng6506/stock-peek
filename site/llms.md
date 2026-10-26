@@ -12,7 +12,7 @@ Key facts:
 - Quote sources: Naver Finance for Korean stocks; Yahoo Finance for US, Japanese, Indian and Saudi stocks. Japanese quotes are delayed 20 minutes and Saudi quotes 15 minutes; NSE quotes are real-time. Japanese names and search come from the JPX listed-issues list, updated monthly
 - Refresh: every 3 seconds while a watched market is open, every 60 seconds otherwise
 - Languages: Korean, English, Japanese, Arabic (app and website)
-- Data: watchlist, holdings and settings stay on the user's computer. The only network requests are for quotes and update checks. No analytics or advertising SDKs
+- Data: watchlist, holdings and settings stay on the user's computer. Network requests are only for quotes, update checks, and a once-a-day 1-byte download from GitHub used to count daily users (no data or identifier is sent). No analytics or advertising SDKs
 - Corporate networks: uses the system proxy and certificates, so it usually works behind company proxies; install permissions may still block it
 - Installation warnings: the app is not code-signed. Windows SmartScreen shows a warning ("More info" → "Run anyway"). On Mac the first launch must be allowed in System Settings → Privacy & Security ("Open Anyway")
 - Updates: checked at launch, hourly, when the panel opens, and from Settings. Windows installs after a notification click; Mac opens the download page

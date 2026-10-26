@@ -28,13 +28,16 @@ import {
 } from './stockService.js'
 import { addItem, removeItem, setItems, updateHolding } from './watchlist.js'
 import { getProvider } from './markets/index.js'
+import { eFetch } from './markets/http.js'
 import {
   isWelcomeShown,
   markWelcomeShown,
   getDockPosition,
   setDockPosition,
   getLanguage,
-  setLanguage
+  setLanguage,
+  getLastPingDate,
+  setLastPingDate
 } from './preferences.js'
 import electronUpdater from 'electron-updater'
 import { detectLanguage, getLanguageInfo } from '../shared/languages.js'
@@ -76,7 +79,24 @@ const UPDATE_CHECK_INTERVAL = 60 * 60 * 1000
 const UPDATE_CHECK_ON_OPEN_GAP = 15 * 60 * 1000
 let lastUpdateCheck = 0
 
+// 하루 사용자 수 집계: 하루 한 번 최신 릴리즈의 1바이트 파일(ping-win/ping-mac)을 받음.
+// 식별자·사용 정보는 보내지 않음. GitHub 다운로드 수의 하루 증가분 = 그날 사용자 수 (download-badge.yml)
+const PING_URL = `https://github.com/sngmng6506/stock-peek/releases/latest/download/ping-${IS_MAC ? 'mac' : 'win'}`
+
+async function dailyPing() {
+  if (is.dev) return
+  const today = new Date().toISOString().slice(0, 10)
+  if (getLastPingDate() === today) return
+  try {
+    const res = await eFetch(PING_URL, { cache: 'no-store' })
+    if (res.ok) setLastPingDate(today)
+  } catch {
+    // 오프라인·사내망 차단 등은 조용히 넘어가고 다음 확인 때 다시 시도
+  }
+}
+
 function checkForUpdates() {
+  dailyPing()
   if (is.dev || updateReady) return
   lastUpdateCheck = Date.now()
   autoUpdater.checkForUpdates().catch(() => {})
