@@ -16,6 +16,7 @@ npm install
 npm run dev                    # 개발 실행
 npm run lint                   # CI는 --max-warnings 0
 npm run check:i18n             # 번역 키·자리표시자 누락 검사
+npm test                       # 단위 테스트 (tests/*.test.mjs, Electron 없이 도는 순수 모듈만)
 npm run build                  # 번들
 npm run build:win              # Windows 설치파일 → dist/
 npm run build:mac              # Mac dmg·zip → dist/ (macOS에서만)
@@ -71,9 +72,9 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 
 | 대상          | 트리거                                | 방식                                                                                                                                       |
 | ------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 앱            | main에 앱 파일 push                   | `release.yml`: 패치 버전 증가 → lint·i18n 검사 → Win 빌드 → Release → Mac 빌드 자산 추가                                                   |
+| 앱            | main에 앱 파일 push                   | `release.yml`: 패치 버전 증가 → lint·i18n·테스트 → Win 빌드 → Release → Mac 빌드 자산 추가                                                   |
 | 웹사이트      | main에 `website/**` push              | Cloudflare Pages Git 연동이 자동 배포 (Actions 아님)                                                                                       |
-| 검사          | `site/`·`website/`·`src/shared/` 변경 | `check.yml`: 번역 키, 생성 결과 최신 여부                                                                                                  |
+| 검사          | `src/`·`tests/`·`site/`·`website/` 변경, PR | `check.yml`: 단위 테스트, 번역 키, 생성 결과 최신 여부                                                                                                  |
 | JP 목록       | 매월 8일 (수동 실행 가능)             | `update-jp-stocks.yml`: JPX 엑셀 → `data/jp-stocks.json` 커밋 → 앱 릴리즈                                                                  |
 | 다운로드 배지 | 매일 (수동 실행 가능)                 | `download-badge.yml`: 설치 파일 다운로드 합계(배지) + `ping-*` 관측 간 증가분 → `badges` 브랜치 `downloads.json`·`usage.csv`·`stats-state.json` (실제 구간은 `period_start_utc`~`period_end_utc`) |
 
@@ -91,7 +92,7 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 
 ## 체크리스트
 
-- `npm run lint`, `npm run check:i18n`, `npm run build` 통과
+- `npm run lint`, `npm run check:i18n`, `npm test`, `npm run build` 통과
 - 웹사이트 변경 시 `npm run build:site` 후 `npm run check:site`
 - 모든 지원 언어 UI 확인
 - 좌·우 도킹 hover 동작 확인

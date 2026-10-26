@@ -62,10 +62,12 @@ export function formatRatio(r) {
   return `${r > 0 ? '+' : ''}${r.toFixed(2)}%`
 }
 
-export function formatQuoteTime(timestamp, lang) {
+// 오늘이면 시각만, 아니면 날짜+시각 (카드 한 줄을 짧게)
+export function formatQuoteTime(timestamp, lang, now = Date.now()) {
   if (!Number.isFinite(timestamp)) return null
+  const sameDay = new Date(timestamp).toDateString() === new Date(now).toDateString()
   return new Intl.DateTimeFormat(getLanguageInfo(lang).locale, {
-    dateStyle: 'short',
+    ...(sameDay ? {} : { dateStyle: 'short' }),
     timeStyle: 'short',
     calendar: 'gregory',
     numberingSystem: 'latn'

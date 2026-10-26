@@ -19,6 +19,7 @@
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "test": "node --test \"tests/**/*.test.mjs\"",
     "build:site": "node scripts/build-site.mjs",
     "check:site": "node scripts/build-site.mjs --check"
   },

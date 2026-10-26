@@ -1,7 +1,7 @@
 name: Check
 
 # 웹사이트 원본(site/)과 생성 결과(website/)가 맞는지, 번역 키가 빠진 곳이 없는지.
-# 앱 코드 lint·빌드는 release.yml이 담당.
+# 단위 테스트(tests/)도 여기서. 앱 코드 lint·빌드는 release.yml이 담당.
 on:
   push:
     branches: [main]
@@ -10,7 +10,9 @@ on:
       - 'website/**'
       - 'scripts/build-site.mjs'
       - 'scripts/check-i18n.mjs'
-      - 'src/shared/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'package.json'
       - '.github/workflows/check.yml'
   pull_request:
 
@@ -22,5 +24,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+      - run: npm test
       - run: node scripts/check-i18n.mjs
       - run: node scripts/build-site.mjs --check

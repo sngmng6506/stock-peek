@@ -1,4 +1,5 @@
 import { fetchJson, USER_AGENT } from './http.js'
+import { previousClose } from './previousClose.js'
 
 // Yahoo Finance 기반 시장 공용 provider.
 // 시장마다 다른 건 티커 접미사(일본 '.T' 등)와 검색 결과에서 받을 거래소 코드뿐.
@@ -10,21 +11,6 @@ const SEARCH_URL = (kw) =>
   `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(kw)}&quotesCount=10&newsCount=0`
 
 const HEADERS = { 'User-Agent': USER_AGENT, Accept: 'application/json' }
-
-// 전일 종가. range=3mo 응답에는 previousClose가 없고 chartPreviousClose는 3개월 전 종가라
-// 그대로 쓰면 등락률이 3개월 변동이 됨 → 일봉에서 현재 거래일보다 앞선 마지막 종가를 씀
-function previousClose(meta, bars) {
-  const tz = meta.exchangeTimezoneName || 'UTC'
-  const day = (t) => new Date(t * 1000).toLocaleDateString('en-CA', { timeZone: tz })
-  const now = Number(meta.regularMarketTime) || bars[bars.length - 1]?.[0]
-  if (Number.isFinite(now)) {
-    const today = day(now)
-    for (let i = bars.length - 1; i >= 0; i--) {
-      if (day(bars[i][0]) < today) return bars[i][1]
-    }
-  }
-  return Number(meta.previousClose ?? meta.chartPreviousClose)
-}
 
 /**
  * @param {object} cfg

@@ -57,6 +57,9 @@ jobs:
       - if: steps.version.outputs.publish == 'true'
         run: npm run check:i18n
 
+      - if: steps.version.outputs.publish == 'true'
+        run: npm test
+
       - name: Build Windows installer without publishing
         if: steps.version.outputs.publish == 'true'
         run: npm run build:win -- --publish never
