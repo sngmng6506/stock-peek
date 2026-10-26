@@ -13,6 +13,9 @@ on:
         description: '확인할 릴리즈 태그 (비우면 최신)'
         required: false
 
+permissions:
+  contents: write # 스크린샷을 ci-screens 브랜치에 올림
+
 jobs:
   mac:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
@@ -36,6 +39,7 @@ jobs:
           [ -z "$TAG" ] && TAG=$(gh release view --json tagName -q .tagName)
           echo "Checking $TAG on $(uname -m)"
           mkdir rel && cd rel
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
           gh release download "$TAG" -p 'stock-peek-mac.zip' -p 'stock-peek-mac.dmg' -p 'SHA256SUMS-mac.txt' -p 'latest-mac.yml'
 
       - name: Checksums
@@ -76,7 +80,24 @@ jobs:
       - name: Run packaged app
         run: |
           set -o pipefail
-          if ! SMOKE_APP="$BIN" node scripts/native-smoke.cjs 2>&1 | tee smoke.log; then
+          if ! SMOKE_APP="$BIN" SMOKE_SHOTS="$PWD/shots" node scripts/native-smoke.cjs 2>&1 | tee smoke.log; then
             tail -c 12000 smoke.log | node -e "const s=require('fs').readFileSync(0,'utf8');console.log('::error title=Packaged app smoke ($(uname -m))::'+s.replace(/%/g,'%25').replace(/\\r/g,'%0D').replace(/\\n/g,'%0A'))"
             exit 1
           fi
+
+      # 앱이 직접 그린 패널(언어별)과 전체 화면을 ci-screens 브랜치 <태그>/<arm64|x86_64>/에 올림
+      - name: Publish screenshots
+        if: always() && hashFiles('shots/*.png') != ''
+        run: |
+          sudo sed -i '' '/github.com/d' /etc/hosts
+          DEST="$TAG/$(uname -m)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            rm -rf screens
+            if git fetch -q origin ci-screens; then git worktree add -q screens FETCH_HEAD; else git worktree add -q --orphan -b ci-screens screens; fi
+            mkdir -p "screens/$DEST" && cp shots/*.png "screens/$DEST/"
+            (cd screens && git add -A && git commit -qm "screens: $DEST" && git push -q origin HEAD:ci-screens) && break
+            git worktree remove --force screens; sleep $((i * 3))
+          done
+          echo "https://github.com/${{ github.repository }}/tree/ci-screens/$DEST" >> "$GITHUB_STEP_SUMMARY"

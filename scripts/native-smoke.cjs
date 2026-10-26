@@ -139,6 +139,56 @@ const probe = `(async () => {
   };
 })()`
 
+// SMOKE_SHOTS=<폴더>: 언어별 패널 화면(앱이 직접 그린 그대로)과 macOS 전체 화면을 PNG로 저장
+async function screenshots(mainUrl, dir) {
+  fs.mkdirSync(dir, { recursive: true })
+  await evaluate(
+    await rendererTarget(),
+    `(async () => {
+    for (const [m, s] of [['KR','005930'], ['US','AAPL']])
+      await window.api.addStock(m, s).catch(() => {});
+    await window.api.refreshStocks();
+  })()`
+  )
+  const saved = []
+  for (const lang of ['ko', 'en', 'ja', 'ar']) {
+    await evaluate(
+      await rendererTarget(),
+      `(async () => {
+      if (!document.querySelector('.lang-select')) document.querySelector('.actions button:nth-child(3)').click();
+      await new Promise(r => setTimeout(r, 200));
+      const select = document.querySelector('.lang-select');
+      select.value = ${JSON.stringify(lang)};
+      select.dispatchEvent(new Event('change', {bubbles:true}));
+      await new Promise(r => setTimeout(r, 200));
+      document.querySelector('.modal-actions button.primary')?.click();
+      await new Promise(r => setTimeout(r, 400));
+    })()`
+    )
+    const png = await evaluate(
+      mainUrl,
+      `(async () => {
+      const {BrowserWindow} = globalThis.__smokeElectron || process.mainModule.require('electron');
+      const win = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('renderer/index.html'));
+      return (await win.webContents.capturePage()).toPNG().toString('base64');
+    })()`
+    )
+    const file = path.join(dir, `panel-${lang}.png`)
+    fs.writeFileSync(file, Buffer.from(png, 'base64'))
+    saved.push(file)
+  }
+  if (process.platform === 'darwin') {
+    const file = path.join(dir, 'screen.png')
+    try {
+      require('node:child_process').execFileSync('screencapture', ['-x', file])
+      saved.push(file)
+    } catch (e) {
+      console.error('screencapture failed: ' + e.message)
+    }
+  }
+  return saved
+}
+
 ;(async () => {
   try {
     const rendererUrl = await rendererTarget()
@@ -218,6 +268,10 @@ const probe = `(async () => {
     })()`
     )
     result.native = { ...native, ...pinned }
+    if (process.env.SMOKE_SHOTS) {
+      console.error('[smoke] screenshots')
+      result.shots = await screenshots(mainUrl, process.env.SMOKE_SHOTS)
+    }
     for (const market of result.markets) {
       if (!Number.isFinite(market.price) || !market.cardVisible) {
         throw new Error(`Native quote check failed: ${JSON.stringify(result)}\n${log}`)
