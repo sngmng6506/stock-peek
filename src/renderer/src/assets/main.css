@@ -822,7 +822,7 @@ body,
   color: rgba(235, 235, 245, 0.95);
 }
 
-/* Buy Me a Coffee 버튼 */
+/* Ko-fi 버튼 */
 .donate-desc {
   font-size: 12px;
   color: rgba(235, 235, 245, 0.5);
@@ -830,7 +830,7 @@ body,
   line-height: 1.5;
 }
 
-.bmc-btn {
+.support-btn {
   width: 100%;
   padding: 10px;
   border: none;
@@ -845,7 +845,7 @@ body,
     box-shadow 120ms;
 }
 
-.bmc-btn:hover {
+.support-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(255, 221, 0, 0.3);
 }
@@ -861,7 +861,7 @@ body,
   vertical-align: middle;
 }
 
-/* 카카오페이 QR (BMC와 함께 표시) */
+/* 카카오페이 QR (Ko-fi와 함께 표시) */
 .donate-qr {
   margin-top: 12px;
   display: flex;

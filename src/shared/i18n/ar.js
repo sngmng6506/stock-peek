@@ -60,7 +60,7 @@ export default {
   'settings.upToDate': 'لديك أحدث إصدار',
   'settings.checkFailed': 'تعذّر التحقق',
   'settings.donateDesc': 'إذا كان Stock Peek مفيدًا لك، ما رأيك بكوب قهوة؟',
-  'settings.donateBtn': 'Buy Me a Coffee',
+  'settings.donateBtn': 'Ko-fi',
   'settings.donateKakao': 'امسح عبر KakaoPay',
   'settings.close': 'إغلاق',
   // WelcomeModal

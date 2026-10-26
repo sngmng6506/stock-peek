@@ -34,4 +34,4 @@
 
 - 코드: MIT
 - `몰래주식`·`Stock Peek` 명칭과 로고: 라이선스 범위 밖. 원 프로젝트와 공식 연관된 것처럼 사용 금지
-- 문의: [sngmng6506@gmail.com](mailto:sngmng6506@gmail.com) · [Buy Me a Coffee ☕](https://buymeacoffee.com/sngmng)
+- 문의: [sngmng6506@gmail.com](mailto:sngmng6506@gmail.com) · [Ko-fi ☕](https://ko-fi.com/sngmng)

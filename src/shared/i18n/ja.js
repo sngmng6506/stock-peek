@@ -61,7 +61,7 @@ export default {
   'settings.upToDate': '最新バージョンです',
   'settings.checkFailed': '確認できませんでした',
   'settings.donateDesc': 'Stock Peek が役に立ったら、コーヒー1杯で応援してください。',
-  'settings.donateBtn': 'Buy Me a Coffee',
+  'settings.donateBtn': 'Ko-fi',
   'settings.donateKakao': 'KakaoPay でスキャン',
   'settings.close': '閉じる',
   // WelcomeModal
