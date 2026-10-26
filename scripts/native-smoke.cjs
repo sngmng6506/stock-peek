@@ -9,7 +9,6 @@ const { setTimeout: delay } = require('node:timers/promises')
 
 const PORT = 19339
 const MAIN_PORT = 19340
-const deadline = Date.now() + 60_000
 // SMOKE_APP: 배포된 앱 실행 파일 (예: Stock Peek.app/Contents/MacOS/Stock Peek). 없으면 out/ 빌드를 Electron으로 실행
 const packagedApp = process.env.SMOKE_APP
 const smokeData = fs.mkdtempSync(path.join(os.tmpdir(), 'stock-peek-smoke-'))
@@ -39,7 +38,9 @@ for (const stream of [child.stdout, child.stderr]) {
   })
 }
 
+// 호출마다 60초 (전체 실행 기준이면 느린 Intel 러너에서 두 번째 호출이 바로 실패)
 async function rendererTarget() {
+  const deadline = Date.now() + 60_000
   while (Date.now() < deadline && child.exitCode === null) {
     try {
       const response = await fetch(`http://127.0.0.1:${PORT}/json/list`)
