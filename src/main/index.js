@@ -613,7 +613,7 @@ app.whenReady().then(() => {
   if (IS_MAC) app.dock?.hide()
 
   ipcMain.handle('stocks:get-cache', () => getCache())
-  ipcMain.handle('stocks:refresh', () => refreshAll())
+  ipcMain.handle('stocks:refresh', () => refreshAll({ force: true }))
 
   ipcMain.on('panel:lock', () => {
     panelLocked = true

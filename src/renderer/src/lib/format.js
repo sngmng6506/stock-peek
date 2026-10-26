@@ -62,6 +62,16 @@ export function formatRatio(r) {
   return `${r > 0 ? '+' : ''}${r.toFixed(2)}%`
 }
 
+export function formatQuoteTime(timestamp, lang) {
+  if (!Number.isFinite(timestamp)) return null
+  return new Intl.DateTimeFormat(getLanguageInfo(lang).locale, {
+    dateStyle: 'short',
+    timeStyle: 'short',
+    calendar: 'gregory',
+    numberingSystem: 'latn'
+  }).format(new Date(timestamp))
+}
+
 // 입력 예시용 숫자 (구분 기호 없이: 입력칸에 그대로 칠 수 있게)
 export function examplePrice(marketId) {
   const m = getMarket(marketId)

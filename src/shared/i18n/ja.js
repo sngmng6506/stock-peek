@@ -14,6 +14,9 @@ export default {
   // StockCard
   'card.remove': '削除',
   'card.editHolding': '保有情報を編集',
+  'card.stale': '更新失敗 · 前回の価格',
+  'card.quoteTime': '株価 {v}',
+  'card.checkedTime': '取得 {v}',
   // HoldingEditModal
   'holding.title': '保有情報の編集',
   'holding.quantity': '数量',
