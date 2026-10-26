@@ -91,12 +91,11 @@ jobs:
         run: |
           sudo sed -i '' '/github.com/d' /etc/hosts
           DEST="$TAG/$(uname -m)"
-          git clone -q --depth 1 -b ci-screens "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}" screens
-          cd screens
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          mkdir -p "$DEST" && cp ../shots/*.png "$DEST/"
-          git add -A && git commit -qm "screens: $DEST"
-          # 두 맥이 동시에 올리므로 충돌 시 다시 받아서 재시도
-          for i in 1 2 3 4 5; do git push -q origin HEAD:ci-screens && break; sleep $((i * 3)); git pull -q --rebase origin ci-screens; done
+          # git 대신 REST API로 파일마다 올림 (두 맥이 동시에 올려도 충돌 없음)
+          for f in shots/*.png; do
+            P="$DEST/$(basename "$f")"
+            SHA=$(gh api "repos/${{ github.repository }}/contents/$P?ref=ci-screens" --jq .sha 2>/dev/null || true)
+            node -e "const fs=require('fs');const b={message:'screens: '+process.argv[1],branch:'ci-screens',content:fs.readFileSync(process.argv[2]).toString('base64')};if(process.argv[3])b.sha=process.argv[3];fs.writeFileSync('body.json',JSON.stringify(b))" "$P" "$f" "$SHA"
+            for i in 1 2 3 4 5; do gh api -X PUT "repos/${{ github.repository }}/contents/$P" --input body.json --jq .content.path && break; sleep $((i * 2)); done
+          done
           echo "https://github.com/${{ github.repository }}/tree/ci-screens/$DEST" >> "$GITHUB_STEP_SUMMARY"
