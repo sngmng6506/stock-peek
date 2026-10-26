@@ -1,4 +1,5 @@
 import Store from 'electron-store'
+import { normalizePanelSize } from '../shared/panelSize.js'
 import { isSupportedLanguage } from '../shared/languages.js'
 
 const store = new Store({
@@ -42,4 +43,12 @@ export function getLastPingDate() {
 
 export function setLastPingDate(date) {
   store.set('lastPingDate', date)
+}
+
+export function getPanelSize() {
+  return normalizePanelSize(store.get('panelSize', null))
+}
+
+export function setPanelSize(size) {
+  store.set('panelSize', normalizePanelSize(size))
 }

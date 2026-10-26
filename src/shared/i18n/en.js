@@ -1,5 +1,7 @@
 // English
 export default {
+  'settings.resetSize': 'Reset panel size',
+  'settings.resizeHint': 'Drag the edge to resize',
   'error.ERR_INVALID_HOLDING':
     'Enter a positive number for quantity and average price, or leave blank to clear.',
   // App

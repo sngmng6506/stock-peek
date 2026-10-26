@@ -133,6 +133,14 @@ function SettingsModal({ onClose }) {
           )}
         </div>
 
+        <button
+          type="button"
+          className="reset-panel-size"
+          onClick={() => window.api.resetPanelSize()}
+        >
+          {t('settings.resetSize')}
+        </button>
+
         <div className="donate">
           <div className="donate-title">{t('settings.donate')}</div>
           <div className="donate-desc">{t('settings.donateDesc')}</div>

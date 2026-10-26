@@ -11,7 +11,8 @@ import {
 } from 'electron'
 import { join } from 'path'
 import fs from 'node:fs/promises'
-import { panelGeometry } from './panelGeometry.js'
+import { PANEL_BASE_WIDTH } from '../shared/panelSize.js'
+import { panelGeometry, resizedPanelGeometry } from './panelGeometry.js'
 import { electronApp, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
@@ -38,14 +39,16 @@ import {
   getLanguage,
   setLanguage,
   getLastPingDate,
-  setLastPingDate
+  setLastPingDate,
+  getPanelSize,
+  setPanelSize
 } from './preferences.js'
 import electronUpdater from 'electron-updater'
 import { detectLanguage, getLanguageInfo } from '../shared/languages.js'
 import { translate } from '../shared/i18n/index.js'
 const { autoUpdater } = electronUpdater
 
-const PANEL_WIDTH = 280
+const PANEL_WIDTH = PANEL_BASE_WIDTH
 const PANEL_HEIGHT_INITIAL = 180
 const PANEL_HEIGHT_MIN = 120
 const PANEL_HEIGHT_BOTTOM_MARGIN = 40
@@ -57,7 +60,10 @@ const ANIM_DURATION = 200
 const INDICATOR_WIDTH = 6
 const INDICATOR_HEIGHT = 50
 
-let requestedPanelHeight = PANEL_HEIGHT_INITIAL
+let requestedPanelHeight = PANEL_HEIGHT_INITIAL // unscaled content height for automatic mode
+let customPanelSize = getPanelSize()
+let resizeSession = null
+let resizeTimer = null
 let displayChangeTimer = null
 let mainWindow = null
 let indicatorWindow = null
@@ -161,19 +167,25 @@ function getDock() {
   return getDockPosition()
 }
 
+function currentGeometry() {
+  return panelGeometry(
+    getDisplayWorkArea(),
+    getDock(),
+    customPanelSize?.height ?? requestedPanelHeight,
+    customPanelSize?.width ?? PANEL_WIDTH
+  )
+}
+
 function getHiddenX() {
-  return panelGeometry(getDisplayWorkArea(), getDock(), requestedPanelHeight).hiddenX
+  return currentGeometry().hiddenX
 }
 
 function getShownX() {
-  return panelGeometry(getDisplayWorkArea(), getDock(), requestedPanelHeight).shownX
+  return currentGeometry().shownX
 }
 
 function getPanelY() {
-  const wa = getDisplayWorkArea()
-  const dock = getDock()
-  const maxY = wa.height - PANEL_HEIGHT_MIN - PANEL_HEIGHT_BOTTOM_MARGIN
-  return wa.y + Math.max(0, Math.min(dock.y, maxY))
+  return currentGeometry().y
 }
 
 function getIndicatorX() {
@@ -342,7 +354,7 @@ function isInPanelArea(cursor) {
   const shownX = getShownX()
   return (
     cursor.x >= shownX &&
-    cursor.x < shownX + PANEL_WIDTH &&
+    cursor.x < shownX + mainWindow.getSize()[0] &&
     cursor.y >= getPanelY() &&
     cursor.y <= getPanelY() + getCurrentPanelHeight()
   )
@@ -351,7 +363,7 @@ function isInPanelArea(cursor) {
 function startHoverPolling() {
   pollTimer = setInterval(() => {
     if (!mainWindow) return
-    if (isDragging) return
+    if (isDragging || resizeSession) return
 
     const cursor = screen.getCursorScreenPoint()
 
@@ -389,13 +401,13 @@ function snapToEdge() {
 
   // 패널 중심점이 속한 모니터를 찾음 (멀티모니터 지원)
   const centerPoint = {
-    x: wx + Math.round(PANEL_WIDTH / 2),
+    x: wx + Math.round(mainWindow.getSize()[0] / 2),
     y: wy + 40
   }
   const display = screen.getDisplayNearestPoint(centerPoint)
   const wa = display.workArea
 
-  const centerX = wx + PANEL_WIDTH / 2
+  const centerX = wx + mainWindow.getSize()[0] / 2
   const edge = centerX < wa.x + wa.width / 2 ? 'left' : 'right'
   const newY = Math.max(
     0,
@@ -461,8 +473,8 @@ function createIndicatorWindow() {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: PANEL_WIDTH,
-    height: PANEL_HEIGHT_INITIAL,
+    width: currentGeometry().width,
+    height: currentGeometry().height,
     x: getHiddenX(),
     y: getPanelY(),
     frame: false,
@@ -488,6 +500,7 @@ function createWindow() {
 
   // 드래그 감지: will-move → 드래그 시작, 이동 멈추면 스냅
   mainWindow.on('will-move', () => {
+    if (resizeSession) return
     if (!isDragging) {
       isDragging = true
       panelLocked = true
@@ -504,6 +517,9 @@ function createWindow() {
       snapToEdge()
     }, 200)
   })
+
+  mainWindow.on('blur', finishPanelResize)
+  mainWindow.webContents.on('render-process-gone', finishPanelResize)
 
   mainWindow.on('ready-to-show', () => {
     startHoverPolling()
@@ -533,6 +549,7 @@ function createWindow() {
 
 function repositionForDisplays() {
   if (!mainWindow || mainWindow.isDestroyed()) return
+  finishPanelResize()
   if (cancelAnim) cancelAnim()
   cancelAnim = null
   if (dragDebounce) clearTimeout(dragDebounce)
@@ -540,7 +557,7 @@ function repositionForDisplays() {
   isDragging = false
   const display = getDockedDisplay()
   const dock = getDock()
-  const geometry = panelGeometry(display.workArea, dock, requestedPanelHeight)
+  const geometry = currentGeometry()
   setDockPosition({ ...dock, y: geometry.offsetY, displayId: display.id })
   mainWindow.setBounds({
     x: targetState === 'shown' ? geometry.shownX : geometry.hiddenX,
@@ -550,6 +567,45 @@ function repositionForDisplays() {
   })
   safeSetPosition(indicatorWindow, getIndicatorX(), getIndicatorY())
   hoverEnterTime = null
+}
+
+function resizePanelTick() {
+  if (!resizeSession || !mainWindow || mainWindow.isDestroyed()) return
+  const g = resizedPanelGeometry(
+    getDisplayWorkArea(),
+    getDock(),
+    resizeSession,
+    screen.getCursorScreenPoint(),
+    resizeSession.axis
+  )
+  customPanelSize = { width: g.width, height: g.height }
+  mainWindow.setBounds({ x: g.shownX, y: g.y, width: g.width, height: g.height })
+}
+
+function finishPanelResize() {
+  if (!resizeSession) return
+  clearInterval(resizeTimer)
+  resizeTimer = null
+  resizeSession = null
+  setPanelSize(customPanelSize)
+  if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.webContents.isDestroyed()) {
+    mainWindow.webContents.send('panel:resize-ended')
+  }
+}
+
+function beginPanelResize(axis) {
+  if (!['width', 'height', 'both'].includes(axis) || !mainWindow || targetState !== 'shown') return
+  finishPanelResize()
+  if (cancelAnim) cancelAnim()
+  cancelAnim = null
+  if (dragDebounce) clearTimeout(dragDebounce)
+  if (isDragging) panelLocked = false
+  isDragging = false
+  const g = currentGeometry()
+  mainWindow.setBounds({ x: g.shownX, y: g.y, width: g.width, height: g.height })
+  resizeSession = { ...mainWindow.getBounds(), cursor: screen.getCursorScreenPoint(), axis }
+  customPanelSize = { width: resizeSession.width, height: resizeSession.height }
+  resizeTimer = setInterval(resizePanelTick, 16)
 }
 
 function scheduleDisplayReposition() {
@@ -647,10 +703,24 @@ app.whenReady().then(() => {
     panelLocked = false
   })
 
+  ipcMain.on('panel:resize-start', (_e, axis) => beginPanelResize(axis))
+  ipcMain.on('panel:resize-end', () => {
+    resizePanelTick()
+    finishPanelResize()
+  })
+  ipcMain.handle('panel:reset-size', () => {
+    finishPanelResize()
+    customPanelSize = null
+    setPanelSize(null)
+    repositionForDisplays()
+  })
+
   ipcMain.on('panel:set-height', (_e, requested) => {
     if (!mainWindow || mainWindow.isDestroyed()) return
-    requestedPanelHeight = Math.max(PANEL_HEIGHT_MIN, Math.round(requested) || 0)
-    const { height: h } = panelGeometry(getDisplayWorkArea(), getDock(), requestedPanelHeight)
+    if (!Number.isFinite(requested)) return
+    requestedPanelHeight = Math.max(PANEL_HEIGHT_MIN, Math.round(requested))
+    if (customPanelSize || resizeSession) return
+    const { height: h } = currentGeometry()
     const [w, current] = mainWindow.getSize()
     if (current === h) return
     mainWindow.setSize(w, h)
@@ -803,6 +873,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
+  finishPanelResize()
   clearTimeout(displayChangeTimer)
   if (pollTimer) clearInterval(pollTimer)
   if (cancelAnim) cancelAnim()

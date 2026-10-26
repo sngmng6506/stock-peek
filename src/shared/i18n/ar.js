@@ -1,5 +1,7 @@
 // العربية
 export default {
+  'settings.resetSize': 'استعادة الحجم الافتراضي',
+  'settings.resizeHint': 'اسحب الحافة لتغيير الحجم',
   'error.ERR_INVALID_HOLDING': 'أدخل رقماً موجباً للكمية ومتوسط السعر، أو اترك الحقل فارغاً لمسحه.',
   // App
   'app.refresh': 'تحديث',

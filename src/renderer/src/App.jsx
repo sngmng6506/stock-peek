@@ -16,6 +16,8 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import StockCard from './components/StockCard'
+import ResizeHandles from './components/ResizeHandles'
+import { PANEL_BASE_WIDTH } from '../../shared/panelSize.js'
 import Icon from './components/Icon'
 import AddStockModal from './components/AddStockModal'
 import SettingsModal from './components/SettingsModal'
@@ -56,6 +58,16 @@ function SortableCard({ stock, onRemove, onEditHolding }) {
 }
 
 function App() {
+  const [viewport, setViewport] = useState(() => ({
+    width: window.innerWidth,
+    height: window.innerHeight
+  }))
+  const scale = viewport.width / PANEL_BASE_WIDTH
+  useEffect(() => {
+    const update = () => setViewport({ width: window.innerWidth, height: window.innerHeight })
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
   const [stocks, setStocks] = useState([])
   const [showAdd, setShowAdd] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -126,7 +138,11 @@ function App() {
 
       const modal = panel.querySelector('.modal')
       if (modal) {
-        const modalRequired = modal.offsetHeight + modalBackdropPadding
+        const modalRequired =
+          Math.min(
+            modal.scrollHeight + 2,
+            modal.classList.contains('settings-modal') ? 460 : Infinity
+          ) + modalBackdropPadding
         if (modalRequired > total) total = modalRequired
       }
 
@@ -195,141 +211,148 @@ function App() {
   const existingKeys = new Set(stocks.map(idOf))
 
   return (
-    <div className={`panel dock-${dockEdge}${sorting ? ' is-sorting' : ''}`} ref={panelRef}>
-      <header className="panel-header">
-        <span className="drag-handle" aria-hidden="true" />
-        <div className="actions">
-          <button
-            className={`icon-btn ${refreshing ? 'spinning' : ''}`}
-            onClick={handleRefresh}
-            title={t('app.refresh')}
-            aria-label={t('app.refresh')}
-          >
-            <Icon name="refresh" />
-          </button>
-          <button
-            className="icon-btn"
-            onClick={() => setShowAdd(true)}
-            title={t('app.add')}
-            aria-label={t('app.add')}
-          >
-            <Icon name="plus" />
-          </button>
-          <button
-            className="icon-btn"
-            onClick={() => setShowSettings(true)}
-            title={t('app.settings')}
-            aria-label={t('app.settings')}
-          >
-            <Icon name="settings" />
-          </button>
-          <button
-            className={`icon-btn help-btn ${showHelp ? 'active' : ''}`}
-            onClick={() => setShowHelp((v) => !v)}
-            title={t('app.help')}
-            aria-label={t('app.help')}
-            aria-expanded={showHelp}
-          >
-            <Icon name="help" />
-          </button>
-          <button
-            className={`icon-btn pin-btn ${pinned ? 'pinned' : ''}`}
-            onClick={() => {
-              if (pinned) {
-                setPinned(false)
-                window.api.unpinPanel()
-              } else {
-                setPinned(true)
-                window.api.pinPanel()
-              }
-            }}
-            title={pinned ? t('app.unpin') : t('app.pin')}
-            aria-label={pinned ? t('app.unpin') : t('app.pin')}
-            aria-pressed={pinned}
-          >
-            <Icon name="pin" />
-          </button>
-          <button
-            className="icon-btn quit-btn"
-            onClick={() => window.api.quitApp()}
-            title={t('app.quit')}
-            aria-label={t('app.quit')}
-          >
-            <Icon name="close" />
-          </button>
-        </div>
-      </header>
-
-      {showHelp && (
-        <div className="help-popover">
-          <div className="help-row">
-            <span className="help-icon" aria-hidden="true">
-              <Icon name="chart" />
-            </span>
-            <span>{t('help.chart')}</span>
-          </div>
-        </div>
-      )}
-
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragCancel={handleDragCancel}
+    <>
+      <div
+        className={`panel dock-${dockEdge}${sorting ? ' is-sorting' : ''}`}
+        ref={panelRef}
+        style={{ zoom: scale, width: PANEL_BASE_WIDTH, height: viewport.height / scale }}
       >
-        <div className="cards" ref={cardsRef}>
-          <div className="cards-inner" ref={cardsInnerRef}>
-            {stocks.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-text">{t('app.empty')}</div>
-                <button type="button" className="empty-btn" onClick={() => setShowAdd(true)}>
-                  {t('app.emptyAdd')}
-                </button>
-              </div>
-            ) : (
-              <>
-                {groups.map((g, i) => (
-                  <Fragment key={g.market}>
-                    {i > 0 && <div className="divider" />}
-                    <SortableContext
-                      items={g.items.map(idOf)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {g.items.map((s) => (
-                        <SortableCard
-                          key={idOf(s)}
-                          stock={s}
-                          onRemove={handleRemove}
-                          onEditHolding={handleEditHolding}
-                        />
-                      ))}
-                    </SortableContext>
-                  </Fragment>
-                ))}
-              </>
-            )}
+        <header className="panel-header">
+          <span className="drag-handle" aria-hidden="true" />
+          <div className="actions">
+            <button
+              className={`icon-btn ${refreshing ? 'spinning' : ''}`}
+              onClick={handleRefresh}
+              title={t('app.refresh')}
+              aria-label={t('app.refresh')}
+            >
+              <Icon name="refresh" />
+            </button>
+            <button
+              className="icon-btn"
+              onClick={() => setShowAdd(true)}
+              title={t('app.add')}
+              aria-label={t('app.add')}
+            >
+              <Icon name="plus" />
+            </button>
+            <button
+              className="icon-btn"
+              onClick={() => setShowSettings(true)}
+              title={t('app.settings')}
+              aria-label={t('app.settings')}
+            >
+              <Icon name="settings" />
+            </button>
+            <button
+              className={`icon-btn help-btn ${showHelp ? 'active' : ''}`}
+              onClick={() => setShowHelp((v) => !v)}
+              title={t('app.help')}
+              aria-label={t('app.help')}
+              aria-expanded={showHelp}
+            >
+              <Icon name="help" />
+            </button>
+            <button
+              className={`icon-btn pin-btn ${pinned ? 'pinned' : ''}`}
+              onClick={() => {
+                if (pinned) {
+                  setPinned(false)
+                  window.api.unpinPanel()
+                } else {
+                  setPinned(true)
+                  window.api.pinPanel()
+                }
+              }}
+              title={pinned ? t('app.unpin') : t('app.pin')}
+              aria-label={pinned ? t('app.unpin') : t('app.pin')}
+              aria-pressed={pinned}
+            >
+              <Icon name="pin" />
+            </button>
+            <button
+              className="icon-btn quit-btn"
+              onClick={() => window.api.quitApp()}
+              title={t('app.quit')}
+              aria-label={t('app.quit')}
+            >
+              <Icon name="close" />
+            </button>
           </div>
-        </div>
-      </DndContext>
+        </header>
 
-      {showAdd && (
-        <AddStockModal
-          onClose={() => setShowAdd(false)}
-          onAdd={handleAdd}
-          existingKeys={existingKeys}
-        />
-      )}
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
-      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
-      {editingHolding && (
-        <HoldingEditModal
-          stock={editingHolding}
-          onClose={() => setEditingHolding(null)}
-          onSave={handleSaveHolding}
-        />
-      )}
-    </div>
+        {showHelp && (
+          <div className="help-popover">
+            <div className="help-row">
+              <span className="help-icon" aria-hidden="true">
+                <Icon name="chart" />
+              </span>
+              <span>{t('help.chart')}</span>
+            </div>
+          </div>
+        )}
+
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <div className="cards" ref={cardsRef}>
+            <div className="cards-inner" ref={cardsInnerRef}>
+              {stocks.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-text">{t('app.empty')}</div>
+                  <button type="button" className="empty-btn" onClick={() => setShowAdd(true)}>
+                    {t('app.emptyAdd')}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {groups.map((g, i) => (
+                    <Fragment key={g.market}>
+                      {i > 0 && <div className="divider" />}
+                      <SortableContext
+                        items={g.items.map(idOf)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {g.items.map((s) => (
+                          <SortableCard
+                            key={idOf(s)}
+                            stock={s}
+                            onRemove={handleRemove}
+                            onEditHolding={handleEditHolding}
+                          />
+                        ))}
+                      </SortableContext>
+                    </Fragment>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        </DndContext>
+
+        {showAdd && (
+          <AddStockModal
+            onClose={() => setShowAdd(false)}
+            onAdd={handleAdd}
+            existingKeys={existingKeys}
+          />
+        )}
+        {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+        {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
+        {editingHolding && (
+          <HoldingEditModal
+            stock={editingHolding}
+            onClose={() => setEditingHolding(null)}
+            onSave={handleSaveHolding}
+          />
+        )}
+      </div>
+      <ResizeHandles edge={dockEdge} />
+    </>
   )
 }
 

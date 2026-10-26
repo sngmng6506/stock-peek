@@ -2,6 +2,14 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 const api = {
+  startPanelResize: (axis) => ipcRenderer.send('panel:resize-start', axis),
+  endPanelResize: () => ipcRenderer.send('panel:resize-end'),
+  resetPanelSize: () => ipcRenderer.invoke('panel:reset-size'),
+  onPanelResizeEnded: (cb) => {
+    const handler = () => cb()
+    ipcRenderer.on('panel:resize-ended', handler)
+    return () => ipcRenderer.off('panel:resize-ended', handler)
+  },
   getStocks: () => ipcRenderer.invoke('stocks:get-cache'),
   refreshStocks: () => ipcRenderer.invoke('stocks:refresh'),
   onStocksUpdate: (cb) => {
