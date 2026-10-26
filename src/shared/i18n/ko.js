@@ -1,5 +1,7 @@
 // 한국어 — 키 기준 언어. 새 키는 여기 먼저 추가하고 다른 언어에도 같은 키를 넣을 것 (npm run check:i18n).
 export default {
+  'settings.resetSize': '기본 크기로 복원',
+  'settings.resizeHint': '테두리를 드래그해 크기 조절',
   'error.ERR_INVALID_HOLDING':
     '수량과 평균 매입가는 0보다 큰 숫자로 입력하세요. 비우면 삭제됩니다.',
   // App

@@ -1033,3 +1033,77 @@ body,
 .selected-name {
   unicode-bidi: plaintext;
 }
+
+/* Resize hit targets use physical edges, independent of locale and content zoom. */
+#root {
+  position: relative;
+}
+.panel-header {
+  flex-shrink: 0;
+}
+.cards {
+  min-height: 0;
+}
+.modal {
+  max-height: 100%;
+  overflow-y: auto;
+}
+.settings-modal {
+  max-height: min(460px, 100%);
+}
+.resize-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+.resize-handle {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-app-region: no-drag;
+}
+.resize-width {
+  top: 0;
+  bottom: 12px;
+  width: 7px;
+  cursor: ew-resize;
+}
+.resize-height {
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 7px;
+  cursor: ns-resize;
+}
+.resize-both {
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+}
+.dock-right .resize-width,
+.dock-right .resize-both {
+  left: 0;
+}
+.dock-left .resize-width,
+.dock-left .resize-both {
+  right: 0;
+}
+.dock-right .resize-both {
+  cursor: nesw-resize;
+}
+.dock-left .resize-both {
+  cursor: nwse-resize;
+}
+.resize-handle:hover,
+.resize-handle.active {
+  background: rgba(120, 160, 220, 0.18);
+}
+.reset-panel-size {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}

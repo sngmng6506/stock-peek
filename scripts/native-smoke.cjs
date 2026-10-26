@@ -57,7 +57,7 @@ async function rendererTarget() {
   throw new Error(`Electron renderer did not start (exit ${child.exitCode}).\n${log}`)
 }
 
-function evaluate(url, expression) {
+function evaluate(url, expression, command) {
   return new Promise((resolve, reject) => {
     const socket = new WebSocket(url)
     const timer = setTimeout(() => {
@@ -74,8 +74,8 @@ function evaluate(url, expression) {
       socket.send(
         JSON.stringify({
           id: 1,
-          method: 'Runtime.evaluate',
-          params: { expression, awaitPromise: true, returnByValue: true }
+          method: command?.method || 'Runtime.evaluate',
+          params: command?.params || { expression, awaitPromise: true, returnByValue: true }
         })
       )
     })
@@ -138,6 +138,127 @@ const probe = `(async () => {
     })
   };
 })()`
+
+// Exercise real renderer pointer handlers. OS cursor positions are controlled in main
+// because CDP pointer dispatch does not move the host cursor on hosted OS runners.
+async function checkResize(mainUrl, rendererUrl) {
+  const wait = (ms = 250) => delay(ms)
+  const mouse = (type, x, y) =>
+    evaluate(rendererUrl, null, {
+      method: 'Input.dispatchMouseEvent',
+      params: { type, x, y, button: 'left', clickCount: 1 }
+    })
+  const metrics = () =>
+    evaluate(
+      rendererUrl,
+      `(() => {
+    const rect = selector => {const r=document.querySelector(selector).getBoundingClientRect(); return {width:r.width,height:r.height,x:r.x,y:r.y}};
+    return {width:innerWidth,height:innerHeight, text:rect('.card .name'), graph:rect('.card svg'), button:rect('.icon-btn'),handle:rect('.resize-both')};
+  })()`
+    )
+  await evaluate(
+    rendererUrl,
+    `document.querySelector('.settings-modal .modal-actions button')?.click()`
+  )
+  await wait()
+  const results = []
+  for (const edge of ['right', 'left']) {
+    await evaluate(
+      mainUrl,
+      `(async () => {
+      const {BrowserWindow,screen} = globalThis.__smokeElectron || process.mainModule.require('electron');
+      const win=BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('renderer/index.html'));
+      globalThis.__resizeWin=win;
+      const a=screen.getPrimaryDisplay().workArea;
+      win.emit('will-move');
+      win.setPosition(${JSON.stringify(edge)}==='left' ? a.x : a.x+a.width-win.getSize()[0], a.y+40);
+      win.emit('move');
+      await new Promise(r=>setTimeout(r,350));
+      globalThis.__resizeOriginalCursor=screen.getCursorScreenPoint;
+    })()`
+    )
+    await evaluate(rendererUrl, `window.api.resetPanelSize()`)
+    await wait()
+    const before = await metrics()
+    await evaluate(
+      mainUrl,
+      `(() => {
+      const {screen}=globalThis.__smokeElectron || process.mainModule.require('electron');
+      const b=globalThis.__resizeWin.getBounds();
+      globalThis.__resizeStart={x:b.x+${before.handle.x + 5},y:b.y+${before.handle.y + 5}};
+      screen.getCursorScreenPoint=()=>globalThis.__resizeStart;
+    })()`
+    )
+    await evaluate(
+      rendererUrl,
+      `(() => {
+      globalThis.__resizeEvents=[];
+      for (const type of ['pointerdown','pointerup','pointercancel','lostpointercapture'])
+        document.addEventListener(type,e=>globalThis.__resizeEvents.push({type,target:e.target.className}),{once:true});
+    })()`
+    )
+    await mouse('mousePressed', before.handle.x + 5, before.handle.y + 5)
+    await wait(100)
+    await evaluate(rendererUrl, `window.api.unpinPanel()`)
+    await evaluate(
+      mainUrl,
+      `(() => {
+      const {screen}=globalThis.__smokeElectron || process.mainModule.require('electron');
+      const start=globalThis.__resizeStart;
+      screen.getCursorScreenPoint=()=>({x:start.x+${edge === 'right' ? -100 : 100},y:start.y+100});
+    })()`
+    )
+    await wait(350)
+    const after = await metrics()
+    const visible = await evaluate(mainUrl, 'globalThis.__resizeWin.isVisible()')
+    if (!visible || Math.abs(after.width - before.width - 100) > 2)
+      throw new Error(
+        'Drag resize/visibility failed: ' +
+          JSON.stringify({
+            edge,
+            before,
+            after,
+            visible,
+            events: await evaluate(rendererUrl, 'globalThis.__resizeEvents'),
+            active: await evaluate(rendererUrl, `!!document.querySelector('.resize-handle.active')`)
+          })
+      )
+    const ratio = after.width / before.width
+    for (const key of ['text', 'graph', 'button']) {
+      if (Math.abs(after[key].height / before[key].height - ratio) > 0.08)
+        throw new Error('Contents did not scale: ' + JSON.stringify({ key, before, after }))
+    }
+    await mouse('mouseReleased', after.handle.x + 5, after.handle.y + 5)
+    await evaluate(rendererUrl, 'window.api.pinPanel()')
+    await wait()
+    const profile = await evaluate(
+      mainUrl,
+      `(globalThis.__smokeElectron || process.mainModule.require('electron')).app.getPath('userData')`
+    )
+    const stored = JSON.parse(
+      fs.readFileSync(path.join(profile, 'preferences.json'), 'utf8')
+    ).panelSize
+    if (stored.width !== after.width || stored.height !== after.height)
+      throw new Error('Custom size was not saved')
+    await evaluate(rendererUrl, `window.api.setPanelHeight(120)`)
+    await wait()
+    if ((await metrics()).height !== after.height)
+      throw new Error('Auto-height overrode manual size')
+    await evaluate(
+      mainUrl,
+      `(() => {const {screen}=globalThis.__smokeElectron || process.mainModule.require('electron');screen.getCursorScreenPoint=globalThis.__resizeOriginalCursor})()`
+    )
+    await evaluate(rendererUrl, `window.api.resetPanelSize()`)
+    await wait()
+    if ((await metrics()).width !== 280) throw new Error('Reset size failed')
+    const cleared = JSON.parse(
+      fs.readFileSync(path.join(profile, 'preferences.json'), 'utf8')
+    ).panelSize
+    if (cleared !== null) throw new Error('Reset did not clear saved size')
+    results.push({ edge, scaledContent: true, storedSize: true, reset: true })
+  }
+  return results
+}
 
 // SMOKE_SHOTS=<폴더>: 언어별 패널 화면(앱이 직접 그린 그대로)과 macOS 전체 화면을 PNG로 저장
 async function screenshots(mainUrl, dir) {
@@ -268,6 +389,7 @@ async function screenshots(mainUrl, dir) {
     })()`
     )
     result.native = { ...native, ...pinned }
+    result.resize = await checkResize(mainUrl, await rendererTarget())
     if (process.env.SMOKE_SHOTS) {
       console.error('[smoke] screenshots')
       result.shots = await screenshots(mainUrl, process.env.SMOKE_SHOTS)
