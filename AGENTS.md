@@ -29,8 +29,9 @@ npm run check:site             # website/가 최신인지 검사
 src/shared/markets.js     시장 정의 (통화·장 시간·심볼 규칙·순서) — main·renderer 공용
 src/shared/languages.js   지원 언어 (코드·로케일·방향·사이트 경로)
 src/shared/i18n/          언어별 번역 (ko.js가 키 기준) — main·renderer 공용
-src/main/markets/         시장별 데이터 provider (naver.js, yahoo.js 팩토리, jpx.js, index.js 등록)
+src/main/markets/         시장별 데이터 provider (naver.js, yahoo.js 팩토리, listed.js 현지어 목록+Yahoo, jpx.js, tadawul.js, index.js 등록)
 data/jp-stocks.json       JPX 東証上場銘柄一覧 변환본 — 직접 수정 금지 (update-jp-stocks.yml이 매월 갱신)
+data/sa-stocks.json       사우디 아랍어 종목명 — 수동 갱신 (Argaam 목록 복사 → scripts/import_sa_stocks.py). 거래소가 자동 수집 차단
 src/main/index.js         창·트레이·IPC 핸들러·자동 업데이트
 src/main/stockService.js  폴링, lastGood 캐시, 시세·보유 병합
 src/main/watchlist.js     관심종목 CRUD (검증은 markets.js 규칙)
@@ -39,7 +40,7 @@ src/preload/index.js      contextBridge IPC 화이트리스트
 src/renderer/src/         App.jsx, components/, i18n/ (Provider), lib/ (금액 포맷·오류 번역)
 site/                     웹사이트 원본 (site.json, strings/<lang>.json, pages/<lang>/<page>.html, llms.md)
 website/                  생성 결과 — HTML·sitemap·llms.txt 직접 수정 금지 (demo.js, style.css, robots.txt, 이미지는 직접)
-scripts/                  prepare-release.mjs, build-site.mjs, check-i18n.mjs, update_jp_stocks.py
+scripts/                  prepare-release.mjs, build-site.mjs, check-i18n.mjs, update_jp_stocks.py, import_sa_stocks.py, download_stats.py
 docs/market-expansion.md  시장·언어 추가 체크리스트
 ```
 

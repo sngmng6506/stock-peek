@@ -38,7 +38,7 @@ export default {
   'add.searchPlaceholder.US': 'مثال: Apple, AAPL',
   'add.searchPlaceholder.JP': 'مثال: Toyota, 7203',
   'add.searchPlaceholder.IN': 'مثال: Reliance, RELIANCE',
-  'add.searchPlaceholder.SA': 'مثال: Aramco, 2222',
+  'add.searchPlaceholder.SA': 'مثال: أرامكو، 2222',
   'add.alreadyAdded': 'مضاف بالفعل',
   'add.alreadyAddedTitle': 'موجود في قائمة المتابعة',
   'add.searchFail': 'فشل البحث',

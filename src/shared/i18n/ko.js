@@ -38,7 +38,7 @@ export default {
   'add.searchPlaceholder.US': '예: Apple, AAPL',
   'add.searchPlaceholder.JP': '예: トヨタ, Toyota, 7203',
   'add.searchPlaceholder.IN': '예: Reliance, RELIANCE',
-  'add.searchPlaceholder.SA': '예: Aramco, 2222',
+  'add.searchPlaceholder.SA': '예: Aramco, أرامكو, 2222',
   'add.alreadyAdded': '이미 추가됨',
   'add.alreadyAddedTitle': '이미 추가된 종목',
   'add.searchFail': '검색 실패',

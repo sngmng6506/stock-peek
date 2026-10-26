@@ -14,7 +14,7 @@
 - [x] 시세 지연: 일본 20분, 인도 NSE 실시간·BSE 15분, 사우디 15분 (Yahoo 도움말 기준)
 - [x] 일본 종목명: Yahoo는 영어명 → JPX 상장 종목 목록으로 해결 (`data/jp-stocks.json`, 월간 자동 갱신)
 - [x] 인도 현지어 종목명: 불필요 (NSE 종목명이 영어)
-- [ ] 사우디 아랍어 종목명: 현재 Yahoo 영어명만 표시·검색. 수요 있으면 Tadawul 목록으로 일본(JPX)처럼 보강
+- [x] 사우디 아랍어 종목명: `data/sa-stocks.json` (메인 시장 290개, Argaam 목록 수동 복사). 거래소 사이트는 해외·서버 접속 차단(403)이라 자동 갱신 불가. Nomu·신규 상장은 코드로 Yahoo 검색
 - [x] 시장별 거래 시간·점심 휴장·휴장 요일 정리 (JP·IN, 아래 국가별 특이사항)
 - [ ] Cloudflare Web Analytics 국가별 방문자 기준선 기록 (출시 후 비교용)
 
@@ -92,3 +92,9 @@
 - Yahoo 티커 `.SR`, 심볼 4자리 숫자. 시세 15분 지연
 - 통화 `SAR`, 아랍어 UI는 RTL
 - 아랍어 웹: 데모 그림(.demo, .desk)은 실제 화면 위치라 `direction: ltr`, 패널 안만 앱처럼 반전. 날짜는 `ar-u-ca-gregory-nu-latn` (ar-SA 기본은 회교력)
+
+## 현지어 종목명 목록 추가 방법
+
+- 목록: `data/<시장>-stocks.json` items `[코드, 현지어 이름, 구분, 정렬 순위?]`
+- provider: `src/main/markets/listed.js`의 `createListProvider({ market, suffix, label, items, fold })` — `fold`에 그 언어의 표기 차이 흡수 규칙
+- `markets.js`에 `localLang` 지정 → 그 언어 화면에서 현지어 이름 표시

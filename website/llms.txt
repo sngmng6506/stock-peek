@@ -9,7 +9,7 @@ Key facts:
 - Platforms: Windows 10 and 11; macOS 12 or later (universal build)
 - Price and license: free, MIT License
 - Markets: Korean stocks (KOSPI, KOSDAQ), US stocks and ETFs (NYSE, NASDAQ), Japanese stocks and ETFs (Tokyo Stock Exchange), Indian stocks (NSE), Saudi stocks (Tadawul)
-- Quote sources: Naver Finance for Korean stocks; Yahoo Finance for US, Japanese, Indian and Saudi stocks. Japanese quotes are delayed 20 minutes and Saudi quotes 15 minutes; NSE quotes are real-time. Japanese names and search come from the JPX listed-issues list, updated monthly
+- Quote sources: Naver Finance for Korean stocks; Yahoo Finance for US, Japanese, Indian and Saudi stocks. Japanese quotes are delayed 20 minutes and Saudi quotes 15 minutes; NSE quotes are real-time. Japanese names and search come from the JPX listed-issues list, updated monthly; Arabic names and search for Saudi stocks come from a bundled list of Main Market companies
 - Refresh: every 3 seconds while a watched market is open, every 60 seconds otherwise
 - Languages: Korean, English, Japanese, Arabic (app and website)
 - Data: watchlist, holdings and settings stay on the user's computer. Network requests are only for quotes, update checks, and a once-a-day 1-byte download from GitHub used to count daily users (no data or identifier is sent). No analytics or advertising SDKs

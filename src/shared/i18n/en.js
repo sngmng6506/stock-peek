@@ -38,7 +38,7 @@ export default {
   'add.searchPlaceholder.US': 'e.g. Apple, AAPL',
   'add.searchPlaceholder.JP': 'e.g. Toyota, トヨタ, 7203',
   'add.searchPlaceholder.IN': 'e.g. Reliance, RELIANCE',
-  'add.searchPlaceholder.SA': 'e.g. Aramco, 2222',
+  'add.searchPlaceholder.SA': 'e.g. Aramco, أرامكو, 2222',
   'add.alreadyAdded': 'Already added',
   'add.alreadyAddedTitle': 'Already in watchlist',
   'add.searchFail': 'Search failed',

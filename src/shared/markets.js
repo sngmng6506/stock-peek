@@ -76,6 +76,7 @@ export const MARKETS = [
     timeZone: 'Asia/Riyadh',
     weekdays: [0, 1, 2, 3, 4], // 일–목 (금·토 휴장)
     sessions: [['10:00', '15:00']], // 라마단 기간 시간 변경은 미반영
+    localLang: 'ar', // 종목명 원어 (data/sa-stocks.json)
     delayMinutes: 15, // Yahoo 사우디 증권거래소(Tadawul) 시세 지연
     examplePrice: 27.5,
     // 4자리 숫자 (2222 아람코 등)
