@@ -1,5 +1,12 @@
 // 한국어 — 키 기준 언어. 새 키는 여기 먼저 추가하고 다른 언어에도 같은 키를 넣을 것 (npm run check:i18n).
 export default {
+  'settings.general': '일반 설정',
+  'settings.about': '앱 정보',
+  'settings.support': '후원',
+  'settings.supportKofi': 'Ko-fi로 후원하기',
+  'settings.sizeReset': '기본 크기로 복원했습니다',
+  'settings.actionFailed': '변경하지 못했습니다. 다시 시도해 주세요.',
+
   'settings.resetSize': '기본 크기로 복원',
   'settings.resizeHint': '테두리를 드래그해 크기 조절',
   'error.ERR_INVALID_HOLDING':

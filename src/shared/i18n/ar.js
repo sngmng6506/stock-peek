@@ -1,5 +1,12 @@
 // العربية
 export default {
+  'settings.general': 'عام',
+  'settings.about': 'حول التطبيق',
+  'settings.support': 'الدعم',
+  'settings.supportKofi': 'ادعمنا على Ko-fi',
+  'settings.sizeReset': 'تمت استعادة الحجم الافتراضي',
+  'settings.actionFailed': 'تعذر تطبيق التغيير. يرجى المحاولة مجددًا.',
+
   'settings.resetSize': 'استعادة الحجم الافتراضي',
   'settings.resizeHint': 'اسحب الحافة لتغيير الحجم',
   'error.ERR_INVALID_HOLDING': 'أدخل رقماً موجباً للكمية ومتوسط السعر، أو اترك الحقل فارغاً لمسحه.',
