@@ -11,7 +11,8 @@ on:
       - 'resources/**'
       - 'build/**'
       - 'package*.json'
-      - 'electron*.{yml,mjs}'
+      - 'electron-builder.yml'
+      - 'electron.vite.config.*'
   pull_request:
   workflow_dispatch:
 

@@ -2,19 +2,29 @@
 // 일본·사우디 현지어 검색과 시세 공급처 응답을 확인한다.
 const { spawn } = require('node:child_process')
 const path = require('node:path')
+const fs = require('node:fs')
+const os = require('node:os')
 const { setTimeout: delay } = require('node:timers/promises')
 
 const PORT = 19339
 const MAIN_PORT = 19340
 const deadline = Date.now() + 60_000
 const electron = require('electron')
+const smokeData = fs.mkdtempSync(path.join(os.tmpdir(), 'stock-peek-smoke-'))
+const bootstrap = path.resolve('out/main/smoke-bootstrap.cjs')
+fs.writeFileSync(
+  bootstrap,
+  `globalThis.__smokeElectron = require('electron');
+globalThis.__smokeElectron.app.setPath('userData', ${JSON.stringify(smokeData)});
+require('./index.js');`
+)
 const child = spawn(
   electron,
   [
     `--remote-debugging-port=${PORT}`,
     `--inspect=${MAIN_PORT}`,
     '--remote-allow-origins=*',
-    path.resolve('out/main/index.js')
+    bootstrap
   ],
   { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ELECTRON_ENABLE_LOGGING: '1' } }
 )
@@ -132,7 +142,7 @@ const probe = `(async () => {
     const native = await evaluate(
       mainUrl,
       `(async () => {
-      const {BrowserWindow, screen} = process.mainModule.require('electron');
+      const {BrowserWindow, screen} = globalThis.__smokeElectron;
       const win = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('renderer/index.html'));
       const originalCursor = screen.getCursorScreenPoint;
       const area = screen.getPrimaryDisplay().workArea;
@@ -148,7 +158,7 @@ const probe = `(async () => {
     const pinned = await evaluate(
       mainUrl,
       `(async () => {
-      const {BrowserWindow, screen} = process.mainModule.require('electron');
+      const {BrowserWindow, screen} = globalThis.__smokeElectron;
       const win = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('renderer/index.html'));
       const cursor = screen.getCursorScreenPoint;
       screen.getCursorScreenPoint = () => ({x:-100000, y:-100000});
@@ -188,5 +198,14 @@ const probe = `(async () => {
     process.exitCode = 1
   } finally {
     child.kill()
+    fs.rmSync(bootstrap, { force: true })
+    // The OS runner also clears the isolated profile if Electron still holds files.
+    child.once('exit', () => {
+      try {
+        fs.rmSync(smokeData, { recursive: true, force: true })
+      } catch {
+        /* still locked */
+      }
+    })
   }
 })()
