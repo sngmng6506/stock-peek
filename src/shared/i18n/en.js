@@ -1,5 +1,7 @@
 // English
 export default {
+  'error.ERR_INVALID_HOLDING':
+    'Enter a positive number for quantity and average price, or leave blank to clear.',
   // App
   'app.refresh': 'Refresh',
   'app.add': 'Add',

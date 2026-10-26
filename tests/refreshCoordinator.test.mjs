@@ -94,3 +94,26 @@ test('a manual refresh during an automatic request forces the next fetch', async
   await Promise.all([automatic, manual])
   assert.deepEqual(forceFlags, [false, true])
 })
+
+test('fast quotes publish while a slow quote is pending, keeping previous prices', async () => {
+  const pending = deferred()
+  const items = [
+    { market: 'US', symbol: 'AAPL' },
+    { market: 'JP', symbol: '7203' }
+  ]
+  const published = []
+  const refresh = createRefreshCoordinator({
+    getItems: () => items,
+    getCached: () => [{ ...items[1], price: 100 }],
+    fetchItem: (item) =>
+      item.market === 'US' ? Promise.resolve({ ...item, price: 200 }) : pending.promise,
+    publish: (data) => published.push(data)
+  })
+  const done = refresh()
+  await new Promise((resolve) => setImmediate(resolve))
+  assert.equal(published[0][0].price, 200)
+  assert.equal(published[0][1].price, 100)
+  pending.resolve({ ...items[1], price: 101 })
+  await done
+  assert.equal(published.at(-1)[1].price, 101)
+})

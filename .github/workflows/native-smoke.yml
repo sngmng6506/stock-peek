@@ -6,6 +6,13 @@ on:
     paths:
       - '.github/workflows/native-smoke.yml'
       - 'scripts/native-smoke.cjs'
+      - 'src/**'
+      - 'data/**'
+      - 'resources/**'
+      - 'build/**'
+      - 'package*.json'
+      - 'electron*.{yml,mjs}'
+  pull_request:
   workflow_dispatch:
 
 jobs:

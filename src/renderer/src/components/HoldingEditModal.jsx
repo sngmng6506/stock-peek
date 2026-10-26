@@ -16,8 +16,8 @@ function HoldingEditModal({ stock, onClose, onSave }) {
     setError(null)
     try {
       await onSave({
-        quantity: Number(quantity) || undefined,
-        avgPrice: Number(avgPrice) || undefined
+        quantity: quantity,
+        avgPrice: avgPrice
       })
       onClose()
     } catch (err) {

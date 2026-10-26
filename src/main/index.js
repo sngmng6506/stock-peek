@@ -11,6 +11,7 @@ import {
 } from 'electron'
 import { join } from 'path'
 import fs from 'node:fs/promises'
+import { panelGeometry } from './panelGeometry.js'
 import { electronApp, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
@@ -26,7 +27,7 @@ import {
   refreshAll,
   reorderCache
 } from './stockService.js'
-import { addItem, removeItem, setItems, updateHolding } from './watchlist.js'
+import { addItem, removeItem, reorderWatchlist, updateHolding } from './watchlist.js'
 import { getProvider } from './markets/index.js'
 import { eFetch } from './markets/http.js'
 import {
@@ -56,6 +57,8 @@ const ANIM_DURATION = 200
 const INDICATOR_WIDTH = 6
 const INDICATOR_HEIGHT = 50
 
+let requestedPanelHeight = PANEL_HEIGHT_INITIAL
+let displayChangeTimer = null
 let mainWindow = null
 let indicatorWindow = null
 let tray = null
@@ -159,17 +162,11 @@ function getDock() {
 }
 
 function getHiddenX() {
-  const wa = getDisplayWorkArea()
-  const dock = getDock()
-  if (dock.edge === 'left') return wa.x - PANEL_WIDTH
-  return wa.x + wa.width
+  return panelGeometry(getDisplayWorkArea(), getDock(), requestedPanelHeight).hiddenX
 }
 
 function getShownX() {
-  const wa = getDisplayWorkArea()
-  const dock = getDock()
-  if (dock.edge === 'left') return wa.x
-  return wa.x + wa.width - PANEL_WIDTH
+  return panelGeometry(getDisplayWorkArea(), getDock(), requestedPanelHeight).shownX
 }
 
 function getPanelY() {
@@ -413,6 +410,8 @@ function snapToEdge() {
   const toY = getPanelY()
   safeSetPosition(mainWindow, toX, toY)
 
+  repositionForDisplays()
+
   // renderer에 edge 변경 알림
   if (mainWindow.webContents) {
     mainWindow.webContents.send('dock:edge-changed', edge)
@@ -532,6 +531,32 @@ function createWindow() {
   }
 }
 
+function repositionForDisplays() {
+  if (!mainWindow || mainWindow.isDestroyed()) return
+  if (cancelAnim) cancelAnim()
+  cancelAnim = null
+  if (dragDebounce) clearTimeout(dragDebounce)
+  if (isDragging) panelLocked = false
+  isDragging = false
+  const display = getDockedDisplay()
+  const dock = getDock()
+  const geometry = panelGeometry(display.workArea, dock, requestedPanelHeight)
+  setDockPosition({ ...dock, y: geometry.offsetY, displayId: display.id })
+  mainWindow.setBounds({
+    x: targetState === 'shown' ? geometry.shownX : geometry.hiddenX,
+    y: geometry.y,
+    width: geometry.width,
+    height: geometry.height
+  })
+  safeSetPosition(indicatorWindow, getIndicatorX(), getIndicatorY())
+  hoverEnterTime = null
+}
+
+function scheduleDisplayReposition() {
+  clearTimeout(displayChangeTimer)
+  displayChangeTimer = setTimeout(repositionForDisplays, 100)
+}
+
 function applyAutoStart(enabled) {
   app.setLoginItemSettings({
     openAtLogin: enabled,
@@ -624,10 +649,8 @@ app.whenReady().then(() => {
 
   ipcMain.on('panel:set-height', (_e, requested) => {
     if (!mainWindow || mainWindow.isDestroyed()) return
-    const wa = getDisplayWorkArea()
-    const dock = getDock()
-    const maxH = wa.height - dock.y - PANEL_HEIGHT_BOTTOM_MARGIN
-    const h = Math.max(PANEL_HEIGHT_MIN, Math.min(Math.round(requested) || 0, maxH))
+    requestedPanelHeight = Math.max(PANEL_HEIGHT_MIN, Math.round(requested) || 0)
+    const { height: h } = panelGeometry(getDisplayWorkArea(), getDock(), requestedPanelHeight)
     const [w, current] = mainWindow.getSize()
     if (current === h) return
     mainWindow.setSize(w, h)
@@ -688,7 +711,7 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('watchlist:reorder', (_e, items) => {
-    const next = setItems(items)
+    const next = reorderWatchlist(items)
     reorderCache(next)
     return next
   })
@@ -738,6 +761,9 @@ app.whenReady().then(() => {
   createWindow()
   createIndicatorWindow()
   createTray()
+  for (const event of ['display-added', 'display-removed', 'display-metrics-changed']) {
+    screen.on(event, scheduleDisplayReposition)
+  }
 
   autoUpdater.autoDownload = !IS_MAC
   autoUpdater.autoInstallOnAppQuit = !IS_MAC
@@ -777,6 +803,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
+  clearTimeout(displayChangeTimer)
   if (pollTimer) clearInterval(pollTimer)
   if (cancelAnim) cancelAnim()
   if (dragDebounce) clearTimeout(dragDebounce)

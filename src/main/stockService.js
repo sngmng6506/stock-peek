@@ -64,7 +64,7 @@ async function fetchOne(item, { force = false } = {}) {
     const cached = chartCache.get(key)
     const useCachedChart = cached && Date.now() - cached.ts < CHART_TTL
     const result = await provider.fetch(item.symbol, { skipChart: useCachedChart })
-    if (!Number.isFinite(result.price)) throw new Error('invalid price')
+    if (!Number.isFinite(result.price) || result.price <= 0) throw new Error('invalid price')
     if (result.prices?.length) {
       chartCache.set(key, { prices: result.prices, ts: Date.now() })
     } else if (cached) {
@@ -102,6 +102,7 @@ async function fetchOne(item, { force = false } = {}) {
 
 export const refreshAll = createRefreshCoordinator({
   getItems,
+  getCached: () => cache,
   fetchItem: fetchOne,
   publish(results) {
     cache = results

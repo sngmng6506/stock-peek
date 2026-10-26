@@ -61,8 +61,8 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
     try {
       const holding = withHolding
         ? {
-            quantity: Number(quantity) || undefined,
-            avgPrice: Number(avgPrice) || undefined
+            quantity: quantity,
+            avgPrice: avgPrice
           }
         : undefined
       await onAdd(selected.market, selected.symbol, holding)

@@ -1,4 +1,5 @@
 import { fetchJson, USER_AGENT } from './http.js'
+import { finiteNumber, positivePrice } from './numbers.js'
 
 const QUOTE_URL = (code) => `https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`
 
@@ -17,9 +18,9 @@ const CHART_HEADERS = {
 }
 
 function parseNumber(raw, formatted) {
-  const r = Number(raw)
+  const r = finiteNumber(raw)
   if (Number.isFinite(r)) return r
-  return Number(String(formatted ?? '').replace(/,/g, ''))
+  return finiteNumber(formatted)
 }
 
 function quoteFromMain(data) {
@@ -52,7 +53,7 @@ function extractQuote(json) {
   const overQ = data.overMarketPriceInfo ? quoteFromOver(data.overMarketPriceInfo) : null
 
   let chosen = mainQ
-  if (overQ && Number.isFinite(overQ.price) && overQ.time && mainQ.time) {
+  if (overQ && Number.isFinite(positivePrice(overQ.price)) && overQ.time && mainQ.time) {
     if (new Date(overQ.time).getTime() > new Date(mainQ.time).getTime()) {
       chosen = overQ
     }
@@ -75,7 +76,7 @@ function extractCloses(rows) {
   if (!Array.isArray(rows)) return []
   // 응답은 최신 → 과거 순. sparkline은 좌→우 시간순으로 그려야 하므로 reverse.
   return rows
-    .map((r) => Number(String(r.closePrice ?? '').replace(/,/g, '')))
+    .map((r) => positivePrice(r.closePrice))
     .filter((n) => Number.isFinite(n))
     .reverse()
 }
@@ -96,13 +97,28 @@ async function search(keyword) {
     }))
 }
 
-// skipChart: 차트는 별도 요청이라 캐시가 살아 있으면 생략 (stockService가 판단)
-async function fetchQuote(code, { skipChart = false } = {}) {
+// Chart requests never block quote delivery. Publish cached chart on the next poll.
+const charts = new Map()
+const chartRequests = new Map()
+const chartRetryAt = new Map()
+function refreshChart(code) {
+  if (chartRequests.has(code) || Date.now() < (chartRetryAt.get(code) || 0)) return
+  const request = fetchJson(CHART_URL(code), { headers: CHART_HEADERS })
+    .then((res) => {
+      if (!res.ok) throw new Error('chart unavailable')
+      const prices = extractCloses(res.data)
+      if (!prices.length) throw new Error('empty chart')
+      charts.set(code, prices)
+      chartRetryAt.set(code, Date.now() + 600_000)
+    })
+    .catch(() => chartRetryAt.set(code, Date.now() + 60_000))
+    .finally(() => chartRequests.delete(code))
+  chartRequests.set(code, request)
+}
+
+async function fetchQuote(code) {
+  refreshChart(code)
   const quotePromise = fetchJson(QUOTE_URL(code), { headers: QUOTE_HEADERS })
-  // 차트가 실패해도 시세는 표시한다. 즉시 catch를 붙여 시세 실패 시에도 미처리 거부가 없도록 한다.
-  const chartPromise = skipChart
-    ? null
-    : fetchJson(CHART_URL(code), { headers: CHART_HEADERS }).catch(() => null)
 
   const quoteRes = await quotePromise
   if (!quoteRes.ok) throw new Error(`Naver quote ${code}: ${quoteRes.status}`)
@@ -111,11 +127,7 @@ async function fetchQuote(code, { skipChart = false } = {}) {
   const quote = extractQuote(quoteJson)
   if (!quote) throw new Error(`Naver quote ${code}: empty payload`)
 
-  let prices = []
-  if (chartPromise) {
-    const chartRes = await chartPromise
-    if (chartRes?.ok) prices = extractCloses(chartRes.data)
-  }
+  const prices = charts.get(code) || []
 
   return {
     market: 'KR',
