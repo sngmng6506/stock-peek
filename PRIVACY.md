@@ -17,7 +17,8 @@
 
 ## 분석·광고
 
-- 광고 SDK·행동 분석 도구 없음
+- 앱: 광고 SDK·행동 분석 도구 없음
+- 웹사이트(stock-peek.com): Google AdSense 광고 표시. Google 등 제3자가 쿠키로 광고 게재 ([광고 설정](https://adssettings.google.com/)에서 맞춤 광고 해제)
 
 ## 문의
 

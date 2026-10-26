@@ -11,5 +11,6 @@
     "releases": "releases/",
     "privacy": "privacy/"
   },
-  "downloadUrlMac": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg"
+  "downloadUrlMac": "https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg",
+  "adsenseClient": "ca-pub-1440553732650075"
 }
