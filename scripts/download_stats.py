@@ -4,6 +4,7 @@
 출력(그 폴더에):
   downloads.json  README 배지 (shields.io endpoint) — 설치 파일(.exe·.dmg) 다운로드 합계
   usage.csv       관측 시점별 누적값과 직전 관측 이후 증가분, 활성 기기 수
+  stats-state.json  GitHub 자산 ID별 마지막 다운로드 수와 보존된 누적 합계
 
 하루 사용자 수: 앱(v1.6.17~)은 하루 한 번 최신 릴리즈의 ping-win/ping-mac(1바이트)을 받음.
 그 다운로드 수의 관측 간 증가분이 해당 구간에 앱을 켠 기기 수의 근사값 (식별자 없음).
@@ -28,34 +29,60 @@ def main(out_dir):
     if releases and isinstance(releases[0], list):  # gh api --paginate --slurp
         releases = [r for page in releases for r in page]
 
-    installers = checks = ping_win = ping_mac = 0
+    # 삭제된 옛 자산은 합계에서 빼지 않는다. 새 자산/기존 자산의 증가분만 더한다.
+    state_path = os.path.join(out_dir, 'stats-state.json')
+    state = None
+    if os.path.exists(state_path):
+        with open(state_path) as f:
+            state = json.load(f)
+    kinds = ('installers', 'checks', 'ping_win', 'ping_mac')
+    current = {kind: 0 for kind in kinds}
+    assets = {}
+    deltas = {kind: 0 for kind in kinds}
     for r in releases:
         for a in r.get('assets', []):
             name, n = a['name'], a['download_count']
             if name.endswith('setup.exe') or name.endswith('.dmg'):
-                installers += n
+                kind = 'installers'
             elif name in ('latest.yml', 'latest-mac.yml'):
-                checks += n
+                kind = 'checks'
             elif name == 'ping-win':
-                ping_win += n
+                kind = 'ping_win'
             elif name == 'ping-mac':
-                ping_mac += n
+                kind = 'ping_mac'
+            else:
+                continue
+            key = str(a['id'])
+            current[kind] += n
+            assets[key] = n
+            if state is not None:
+                deltas[kind] += max(0, n - state['assets'].get(key, 0))
+
+    # 예전 CSV만 있던 브랜치에서는 첫 실행에 기존 누적값을 기준으로 이관한다.
+    path = os.path.join(out_dir, 'usage.csv')
+    rows = []
+    if os.path.exists(path):
+        with open(path, newline='') as f:
+            rows = [r for r in csv.DictReader(f)]
+    if state is None:
+        previous = rows[-1] if rows else {}
+        fields = {'installers': 'installer_downloads_total', 'checks': 'update_checks_total',
+                  'ping_win': 'ping_win_total', 'ping_mac': 'ping_mac_total'}
+        totals = {kind: max(current[kind], int(previous.get(field) or 0))
+                  for kind, field in fields.items()}
+    else:
+        totals = {kind: state['totals'][kind] + deltas[kind] for kind in kinds}
+    installers, checks, ping_win, ping_mac = (totals[kind] for kind in kinds)
 
     with open(os.path.join(out_dir, 'downloads.json'), 'w') as f:
         json.dump({'schemaVersion': 1, 'label': 'downloads', 'message': f'{installers:,}', 'color': 'blue'}, f)
         f.write('\n')
 
-    path = os.path.join(out_dir, 'usage.csv')
     header = ['date', 'period_start_utc', 'period_end_utc',
               'daily_users', 'daily_users_win', 'daily_users_mac',
               'ping_win_total', 'ping_mac_total',
               'update_checks_total', 'installer_downloads_total',
               'update_checks_day', 'installer_downloads_day', 'active_users_estimate']
-    rows = []
-    if os.path.exists(path):
-        with open(path, newline='') as f:
-            rows = [r for r in csv.DictReader(f)]
-
     sampled_at = (datetime.datetime.now(datetime.timezone.utc)
                   .isoformat(timespec='seconds').replace('+00:00', 'Z'))
     today = sampled_at[:10]
@@ -88,6 +115,9 @@ def main(out_dir):
         w = csv.DictWriter(f, fieldnames=header, extrasaction='ignore', restval='')
         w.writeheader()
         w.writerows(rows)
+    with open(state_path, 'w') as f:
+        json.dump({'assets': assets, 'totals': totals}, f, sort_keys=True)
+        f.write('\n')
     print(f'installers={installers} daily_users={users} (win {d_win}, mac {d_mac}) est_active={est}')
 
 
