@@ -1,6 +1,6 @@
 # Stock Peek (몰래주식)
 
-> Free, open-source desktop widget for Windows and Mac that shows US, Korean, Japanese, Indian and Saudi watchlist quotes when you move the mouse to the screen edge. No account, no ads, no brokerage connection. Current version: v1.6.22.
+> Free, open-source desktop widget for Windows and Mac that shows US, Korean, Japanese, Indian and Saudi watchlist quotes when you move the mouse to the screen edge. No account, no ads, no brokerage connection. Current version: v1.6.23.
 
 Stock Peek lives in the system tray (menu bar on Mac). Moving the cursor to the left or right screen edge slides in a panel with the watchlist: price, daily change, a three-month daily chart, and profit and loss when shares and average price are entered. Moving the cursor away hides it.
 
