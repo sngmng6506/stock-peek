@@ -147,6 +147,8 @@ function render(lang, page) {
     `<link rel="apple-touch-icon" href="/apple-touch-icon.png" />`,
     `<link rel="stylesheet" href="/style.css?v=${site.assetVersion}" />`,
     site.adsenseClient &&
+      `<meta name="google-adsense-account" content="${site.adsenseClient}" />`,
+    site.adsenseClient &&
       `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${site.adsenseClient}" crossorigin="anonymous"></script>`,
     isDefault(lang) && page === 'home' && languageRedirect(),
     slots.head
