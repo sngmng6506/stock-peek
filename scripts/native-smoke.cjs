@@ -141,10 +141,25 @@ const probe = `(async () => {
 
 ;(async () => {
   try {
-    console.error('[smoke] renderer probe')
-    const result = await evaluate(await rendererTarget(), probe)
+    const rendererUrl = await rendererTarget()
     const targets = await (await fetch(`http://127.0.0.1:${MAIN_PORT}/json/list`)).json()
     const mainUrl = targets[0].webSocketDebuggerUrl
+    // 렌더러가 새로고침·이동·종료되면 원인을 로그에 남김
+    await evaluate(
+      mainUrl,
+      `(() => {
+      const {BrowserWindow} = globalThis.__smokeElectron || process.mainModule.require('electron');
+      const win = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('renderer/index.html'));
+      const wc = win.webContents;
+      wc.on('render-process-gone', (_e, d) => console.log('[app] render-process-gone ' + JSON.stringify(d)));
+      wc.on('did-start-navigation', (d) => console.log('[app] navigation ' + (d.url || d)));
+      wc.on('did-finish-load', () => console.log('[app] did-finish-load'));
+      wc.on('unresponsive', () => console.log('[app] unresponsive'));
+      return true;
+    })()`
+    )
+    console.error('[smoke] renderer probe')
+    const result = await evaluate(rendererUrl, probe)
     console.error('[smoke] main: auto-hide')
     const native = await evaluate(
       mainUrl,
@@ -204,6 +219,7 @@ const probe = `(async () => {
     console.log(JSON.stringify(result, null, 2))
   } catch (error) {
     console.error(error)
+    console.error('--- app log ---\n' + log)
     process.exitCode = 1
   } finally {
     child.kill()
