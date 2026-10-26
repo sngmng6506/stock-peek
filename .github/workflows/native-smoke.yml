@@ -1,0 +1,27 @@
+name: Native app smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/native-smoke.yml'
+      - 'scripts/native-smoke.cjs'
+  workflow_dispatch:
+
+jobs:
+  app:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/native-smoke.cjs
