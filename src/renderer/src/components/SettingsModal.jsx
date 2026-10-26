@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useI18n } from '../i18n'
 import { LANGUAGES } from '../../../shared/languages.js'
 
-const GITHUB_URL = 'https://github.com/sngmng6506/stock-peek'
 const CONTACT_EMAIL = 'sngmng6506@gmail.com'
 const SUPPORT_URL = 'https://ko-fi.com/sngmng'
 
@@ -163,10 +162,6 @@ function SettingsModal({ onClose }) {
               </button>
             </span>
           </div>
-          <button type="button" className="about-row link" onClick={openExternal(GITHUB_URL)}>
-            <span>GitHub</span>
-            <span>↗</span>
-          </button>
           <button
             type="button"
             className="about-row link"
