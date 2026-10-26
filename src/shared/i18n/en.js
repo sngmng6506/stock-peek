@@ -48,7 +48,7 @@ export default {
   // SettingsModal
   'settings.title': 'Settings',
   'settings.autostart': 'Launch at login',
-  'settings.donate': '☕ Buy me a coffee',
+  'settings.donate': '☕ Support on Ko-fi',
   'settings.version': 'Version',
   'settings.contact': 'Contact',
   'settings.contactTitle': 'Send an email',
@@ -61,7 +61,7 @@ export default {
   'settings.upToDate': "You're up to date",
   'settings.checkFailed': "Couldn't check",
   'settings.donateDesc': 'If Stock Peek helps you, how about a coffee?',
-  'settings.donateBtn': 'Buy Me a Coffee',
+  'settings.donateBtn': 'Ko-fi',
   'settings.donateKakao': 'Scan with KakaoPay',
   'settings.close': 'Close',
   // WelcomeModal

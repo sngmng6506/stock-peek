@@ -4,7 +4,7 @@ import { LANGUAGES } from '../../../shared/languages.js'
 
 const GITHUB_URL = 'https://github.com/sngmng6506/stock-peek'
 const CONTACT_EMAIL = 'sngmng6506@gmail.com'
-const BMC_URL = 'https://buymeacoffee.com/sngmng'
+const SUPPORT_URL = 'https://ko-fi.com/sngmng'
 
 function SettingsModal({ onClose }) {
   const { t, lang, setLang } = useI18n()
@@ -137,7 +137,7 @@ function SettingsModal({ onClose }) {
         <div className="donate">
           <div className="donate-title">{t('settings.donate')}</div>
           <div className="donate-desc">{t('settings.donateDesc')}</div>
-          <button type="button" className="bmc-btn" onClick={openExternal(BMC_URL)}>
+          <button type="button" className="support-btn" onClick={openExternal(SUPPORT_URL)}>
             ☕ {t('settings.donateBtn')}
           </button>
           {qr && (

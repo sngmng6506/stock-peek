@@ -61,7 +61,7 @@ export default {
   'settings.upToDate': '최신 버전이에요',
   'settings.checkFailed': '확인하지 못했어요',
   'settings.donateDesc': '몰래주식이 도움이 되셨다면 커피 한 잔 어떠세요?',
-  'settings.donateBtn': 'Buy Me a Coffee',
+  'settings.donateBtn': 'Ko-fi',
   'settings.donateKakao': '카카오페이로 스캔',
   'settings.close': '닫기',
   // WelcomeModal
