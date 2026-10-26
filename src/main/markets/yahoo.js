@@ -11,6 +11,21 @@ const SEARCH_URL = (kw) =>
 
 const HEADERS = { 'User-Agent': USER_AGENT, Accept: 'application/json' }
 
+// 전일 종가. range=3mo 응답에는 previousClose가 없고 chartPreviousClose는 3개월 전 종가라
+// 그대로 쓰면 등락률이 3개월 변동이 됨 → 일봉에서 현재 거래일보다 앞선 마지막 종가를 씀
+function previousClose(meta, bars) {
+  const tz = meta.exchangeTimezoneName || 'UTC'
+  const day = (t) => new Date(t * 1000).toLocaleDateString('en-CA', { timeZone: tz })
+  const now = Number(meta.regularMarketTime) || bars[bars.length - 1]?.[0]
+  if (Number.isFinite(now)) {
+    const today = day(now)
+    for (let i = bars.length - 1; i >= 0; i--) {
+      if (day(bars[i][0]) < today) return bars[i][1]
+    }
+  }
+  return Number(meta.previousClose ?? meta.chartPreviousClose)
+}
+
 /**
  * @param {object} cfg
  * @param {string} cfg.market       시장 id ('US', 'JP' …)
@@ -57,13 +72,17 @@ export function createYahooProvider({ market, suffix = '', exchanges = {}, label
 
     const meta = result.meta || {}
     const closes = result.indicators?.quote?.[0]?.close || []
-    const prices = closes.filter((p) => p !== null && Number.isFinite(p))
+    const times = result.timestamp || []
+    const bars = closes
+      .map((p, i) => [times[i], p])
+      .filter(([t, p]) => Number.isFinite(t) && p !== null && Number.isFinite(p))
+    const prices = bars.map(([, p]) => p)
 
     // 장 마감 후에는 regularMarketPrice가 비거나 stale할 수 있음 → 마지막 유효 종가로 폴백
     let price = Number(meta.regularMarketPrice)
     if (!Number.isFinite(price) && prices.length) price = prices[prices.length - 1]
 
-    const prev = Number(meta.previousClose ?? meta.chartPreviousClose)
+    const prev = previousClose(meta, bars)
     const change = Number.isFinite(prev) ? price - prev : 0
     const changeRatio = Number.isFinite(prev) && prev !== 0 ? (change / prev) * 100 : 0
 
