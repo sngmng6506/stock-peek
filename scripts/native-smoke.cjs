@@ -144,16 +144,23 @@ const probe = `(async () => {
     const rendererUrl = await rendererTarget()
     const targets = await (await fetch(`http://127.0.0.1:${MAIN_PORT}/json/list`)).json()
     const mainUrl = targets[0].webSocketDebuggerUrl
-    // 렌더러가 새로고침·이동·종료되면 원인을 로그에 남김
+    // 렌더러 첫 로드가 끝날 때까지 기다린 뒤 검사 (로드 중 평가하면 실행 컨텍스트가 사라짐).
+    // 이후 새로고침·이동·종료가 생기면 원인을 로그에 남김
     await evaluate(
       mainUrl,
-      `(() => {
+      `(async () => {
       const {BrowserWindow} = globalThis.__smokeElectron || process.mainModule.require('electron');
-      const win = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('renderer/index.html'));
+      const until = Date.now() + 30000;
+      let win;
+      while (Date.now() < until) {
+        win = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('renderer/index.html'));
+        if (win && !win.webContents.isLoading()) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      if (!win) throw new Error('main window did not load');
       const wc = win.webContents;
       wc.on('render-process-gone', (_e, d) => console.log('[app] render-process-gone ' + JSON.stringify(d)));
       wc.on('did-start-navigation', (d) => console.log('[app] navigation ' + (d.url || d)));
-      wc.on('did-finish-load', () => console.log('[app] did-finish-load'));
       wc.on('unresponsive', () => console.log('[app] unresponsive'));
       return true;
     })()`
