@@ -91,13 +91,12 @@ jobs:
         run: |
           sudo sed -i '' '/github.com/d' /etc/hosts
           DEST="$TAG/$(uname -m)"
+          git clone -q --depth 1 -b ci-screens "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}" screens
+          cd screens
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          for i in 1 2 3 4 5; do
-            rm -rf screens
-            if git fetch -q origin ci-screens; then git worktree add -q screens FETCH_HEAD; else git worktree add -q --orphan -b ci-screens screens; fi
-            mkdir -p "screens/$DEST" && cp shots/*.png "screens/$DEST/"
-            (cd screens && git add -A && git commit -qm "screens: $DEST" && git push -q origin HEAD:ci-screens) && break
-            git worktree remove --force screens; sleep $((i * 3))
-          done
+          mkdir -p "$DEST" && cp ../shots/*.png "$DEST/"
+          git add -A && git commit -qm "screens: $DEST"
+          # 두 맥이 동시에 올리므로 충돌 시 다시 받아서 재시도
+          for i in 1 2 3 4 5; do git push -q origin HEAD:ci-screens && break; sleep $((i * 3)); git pull -q --rebase origin ci-screens; done
           echo "https://github.com/${{ github.repository }}/tree/ci-screens/$DEST" >> "$GITHUB_STEP_SUMMARY"
