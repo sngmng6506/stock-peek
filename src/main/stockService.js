@@ -1,6 +1,7 @@
 import { getProvider } from './markets/index.js'
 import { isMarketOpen } from '../shared/markets.js'
 import { getItems } from './watchlist.js'
+import { createRefreshCoordinator } from './refreshCoordinator.js'
 
 const REFRESH_FAST = 3_000 // 관심 종목의 시장 중 하나라도 열려 있을 때
 const REFRESH_SLOW = 60_000 // 모두 닫혔을 때
@@ -26,51 +27,18 @@ function anyMarketOpen() {
 
 // 마지막으로 성공한 시세. key: "US-AAPL", value: 성공 결과 객체
 const lastGood = new Map()
+const failures = new Map() // key → { count, retryAt }
 
-async function fetchOne(item) {
-  const key = `${item.market}-${item.symbol}`
-  // 보유 정보를 먼저 추출 — fetch 결과와 무관하게 항상 보존.
-  const holding = {}
-  if (item.quantity != null) holding.quantity = item.quantity
-  if (item.avgPrice != null) holding.avgPrice = item.avgPrice
-
-  try {
-    const provider = getProvider(item.market)
-    if (!provider) return { ...item, ...holding, error: 'unknown market' }
-    const cached = chartCache.get(key)
-    const useCachedChart = cached && Date.now() - cached.ts < CHART_TTL
-    const result = await provider.fetch(item.symbol, { skipChart: useCachedChart })
-    if (result.prices?.length) {
-      chartCache.set(key, { prices: result.prices, ts: Date.now() })
-    } else if (cached) {
-      result.prices = cached.prices
-    }
-    // 성공 → 마지막 정상값으로 저장.
-    const merged = { ...result, ...holding }
-    lastGood.set(key, merged)
-    return merged
-  } catch (e) {
-    // 네트워크 끊김 등 실패 → 마지막 정상 가격을 유지하고 stale 플래그만 표시.
-    const prev = lastGood.get(key)
-    if (prev) {
-      return { ...prev, ...holding, stale: true }
-    }
-    // 한 번도 성공 못 한 경우에만 에러 표시. 코드는 화면에서 번역 (error.<CODE>)
-    const message = e.message || String(e)
-    const notListed = /\b404\b|no data|not found|empty payload/i.test(message)
-    return {
-      ...item,
-      ...holding,
-      error: message,
-      errorCode: notListed ? 'ERR_NOT_LISTED' : 'ERR_FETCH'
-    }
+function withCurrentHolding(quote, item) {
+  // 마지막 정상 시세에는 가격 정보만 저장하고 보유 정보는 매번 현재 목록에서 가져온다.
+  return {
+    ...quote,
+    ...(item.quantity != null ? { quantity: item.quantity } : {}),
+    ...(item.avgPrice != null ? { avgPrice: item.avgPrice } : {})
   }
 }
 
-export async function refreshAll() {
-  const list = getItems()
-  const results = await Promise.all(list.map(fetchOne))
-  cache = results
+function notify(results) {
   for (const fn of listeners) {
     try {
       fn(results)
@@ -78,22 +46,83 @@ export async function refreshAll() {
       console.error('stockService listener error:', e)
     }
   }
-  return results
 }
+
+async function fetchOne(item, { force = false } = {}) {
+  const key = `${item.market}-${item.symbol}`
+  const retry = failures.get(key)
+  if (!force && retry && Date.now() < retry.retryAt) {
+    const prev = lastGood.get(key)
+    return prev
+      ? { ...withCurrentHolding(prev, item), stale: true }
+      : { ...item, errorCode: retry.errorCode, error: retry.error }
+  }
+
+  try {
+    const provider = getProvider(item.market)
+    if (!provider) return { ...item, errorCode: 'ERR_UNKNOWN_MARKET', error: 'unknown market' }
+    const cached = chartCache.get(key)
+    const useCachedChart = cached && Date.now() - cached.ts < CHART_TTL
+    const result = await provider.fetch(item.symbol, { skipChart: useCachedChart })
+    if (!Number.isFinite(result.price)) throw new Error('invalid price')
+    if (result.prices?.length) {
+      chartCache.set(key, { prices: result.prices, ts: Date.now() })
+    } else if (cached) {
+      result.prices = cached.prices
+    }
+    // 성공 → 마지막 정상값으로 저장.
+    const quote = { ...result, fetchedAt: Date.now() }
+    lastGood.set(key, quote)
+    failures.delete(key)
+    return withCurrentHolding(quote, item)
+  } catch (e) {
+    const message = e.message || String(e)
+    const notListed = /\b404\b|no data|not found|empty payload/i.test(message)
+    const errorCode = notListed ? 'ERR_NOT_LISTED' : 'ERR_FETCH'
+    const count = (failures.get(key)?.count || 0) + 1
+    failures.set(key, {
+      count,
+      retryAt: Date.now() + Math.min(60_000, 3_000 * 2 ** Math.min(count, 5)),
+      errorCode,
+      error: message
+    })
+    // 네트워크 끊김 등 실패 → 마지막 정상 가격을 유지하고 stale 플래그만 표시.
+    const prev = lastGood.get(key)
+    if (prev) {
+      return { ...withCurrentHolding(prev, item), stale: true }
+    }
+    // 한 번도 성공 못 한 경우에만 에러 표시. 코드는 화면에서 번역 (error.<CODE>)
+    return {
+      ...item,
+      error: message,
+      errorCode
+    }
+  }
+}
+
+export const refreshAll = createRefreshCoordinator({
+  getItems,
+  fetchItem: fetchOne,
+  publish(results) {
+    cache = results
+    notify(results)
+  }
+})
 
 // --- Adaptive scheduling -----------------------------------------
 
 function scheduleNext() {
   if (!polling) return
+  if (timer) clearTimeout(timer)
   const base = anyMarketOpen() ? REFRESH_FAST : REFRESH_SLOW
   const jitter = Math.floor(Math.random() * (JITTER * 2)) - JITTER
   timer = setTimeout(tick, base + jitter)
 }
 
 function tick() {
-  refreshAll().finally(() => {
-    scheduleNext()
-  })
+  refreshAll()
+    .catch((e) => console.error('stockService refresh error:', e))
+    .finally(scheduleNext)
 }
 
 export function startPolling() {
@@ -122,11 +151,5 @@ export function subscribe(fn) {
 export function reorderCache(order) {
   const map = new Map(cache.map((c) => [`${c.market}-${c.symbol}`, c]))
   cache = order.map((o) => map.get(`${o.market}-${o.symbol}`)).filter(Boolean)
-  for (const fn of listeners) {
-    try {
-      fn(cache)
-    } catch (e) {
-      console.error('stockService listener error:', e)
-    }
-  }
+  notify(cache)
 }

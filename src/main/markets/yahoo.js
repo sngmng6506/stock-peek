@@ -1,4 +1,4 @@
-import { eFetch, USER_AGENT } from './http.js'
+import { fetchJson, USER_AGENT } from './http.js'
 
 // Yahoo Finance 기반 시장 공용 provider.
 // 시장마다 다른 건 티커 접미사(일본 '.T' 등)와 검색 결과에서 받을 거래소 코드뿐.
@@ -39,9 +39,9 @@ export function createYahooProvider({ market, suffix = '', exchanges = {}, label
     suffix && ticker.endsWith(suffix) ? ticker.slice(0, -suffix.length) : ticker
 
   async function search(keyword) {
-    const res = await eFetch(SEARCH_URL(keyword), { headers: HEADERS })
+    const res = await fetchJson(SEARCH_URL(keyword), { headers: HEADERS })
     if (!res.ok) throw new Error(`Yahoo search: ${res.status}`)
-    const json = await res.json()
+    const json = res.data
     return (json?.quotes || [])
       .filter(
         (q) =>
@@ -60,10 +60,10 @@ export function createYahooProvider({ market, suffix = '', exchanges = {}, label
   // 차트(일봉 3개월)가 시세와 같은 응답에 오므로 skipChart는 무시
   async function fetchQuote(symbol) {
     const ticker = toTicker(symbol)
-    const res = await eFetch(CHART_URL(ticker), { headers: HEADERS })
+    const res = await fetchJson(CHART_URL(ticker), { headers: HEADERS })
     if (!res.ok) throw new Error(`Yahoo ${ticker}: ${res.status}`)
 
-    const json = await res.json()
+    const json = res.data
     const result = json?.chart?.result?.[0]
     if (!result) {
       const err = json?.chart?.error?.description || 'no data'
@@ -95,6 +95,10 @@ export function createYahooProvider({ market, suffix = '', exchanges = {}, label
       change,
       changeRatio,
       isUp: change >= 0,
+      quoteTime:
+        Number.isFinite(Number(meta.regularMarketTime)) && Number(meta.regularMarketTime) > 0
+          ? Number(meta.regularMarketTime) * 1000
+          : null,
       prices
     }
   }

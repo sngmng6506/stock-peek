@@ -1,4 +1,4 @@
-import { eFetch, USER_AGENT } from './http.js'
+import { fetchJson, USER_AGENT } from './http.js'
 
 const QUOTE_URL = (code) => `https://polling.finance.naver.com/api/realtime/domestic/stock/${code}`
 
@@ -67,8 +67,17 @@ function extractQuote(json) {
     price: chosen.price,
     change: chosen.change,
     changeRatio: chosen.changeRatio,
-    isUp
+    isUp,
+    quoteTime: parseKoreanTime(chosen.time)
   }
+}
+
+function parseKoreanTime(raw) {
+  if (typeof raw !== 'string' || !raw.trim()) return null
+  const value = raw.trim().replace(' ', 'T')
+  const localTime = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(value) ? value : `${value}+09:00`
+  const ts = Date.parse(localTime)
+  return Number.isFinite(ts) ? ts : null
 }
 
 function extractCloses(rows) {
@@ -83,9 +92,9 @@ function extractCloses(rows) {
 const SEARCH_URL = (kw) => `https://ac.stock.naver.com/ac?q=${encodeURIComponent(kw)}&target=stock`
 
 async function search(keyword) {
-  const res = await eFetch(SEARCH_URL(keyword), { headers: CHART_HEADERS })
+  const res = await fetchJson(SEARCH_URL(keyword), { headers: CHART_HEADERS })
   if (!res.ok) throw new Error(`Naver search: ${res.status}`)
-  const json = await res.json()
+  const json = res.data
   return (json?.items || [])
     .filter((i) => i.nationCode === 'KOR' && i.category === 'stock')
     .map((i) => ({
@@ -98,27 +107,23 @@ async function search(keyword) {
 
 // skipChart: 차트는 별도 요청이라 캐시가 살아 있으면 생략 (stockService가 판단)
 async function fetchQuote(code, { skipChart = false } = {}) {
-  const quotePromise = eFetch(QUOTE_URL(code), { headers: QUOTE_HEADERS })
-  const chartPromise = skipChart ? null : eFetch(CHART_URL(code), { headers: CHART_HEADERS })
+  const quotePromise = fetchJson(QUOTE_URL(code), { headers: QUOTE_HEADERS })
+  // 차트가 실패해도 시세는 표시한다. 즉시 catch를 붙여 시세 실패 시에도 미처리 거부가 없도록 한다.
+  const chartPromise = skipChart
+    ? null
+    : fetchJson(CHART_URL(code), { headers: CHART_HEADERS }).catch(() => null)
 
   const quoteRes = await quotePromise
   if (!quoteRes.ok) throw new Error(`Naver quote ${code}: ${quoteRes.status}`)
 
-  const quoteJson = await quoteRes.json()
+  const quoteJson = quoteRes.data
   const quote = extractQuote(quoteJson)
   if (!quote) throw new Error(`Naver quote ${code}: empty payload`)
 
   let prices = []
   if (chartPromise) {
     const chartRes = await chartPromise
-    if (chartRes.ok) {
-      try {
-        const rows = await chartRes.json()
-        prices = extractCloses(rows)
-      } catch {
-        prices = []
-      }
-    }
+    if (chartRes?.ok) prices = extractCloses(chartRes.data)
   }
 
   return {
