@@ -85,6 +85,18 @@ jobs:
             exit 1
           fi
 
+      # 사용자처럼 Finder 방식(open)으로 실행: Dock에 안 뜨는지(UIElement) 확인 + 화면 저장
+      - name: Dock check (open)
+        run: |
+          pkill -f "$BIN" || true
+          open -n "$APP"
+          sleep 10
+          INFO=$(lsappinfo info -only ApplicationType -app "$(defaults read "$APP/Contents/Info" CFBundleIdentifier)")
+          echo "$INFO"
+          mkdir -p shots && screencapture -x shots/screen-open.png || true
+          pkill -f "$BIN" || true
+          echo "$INFO" | grep -q UIElement || { echo "::error title=Dock ($(uname -m))::Dock에 앱이 표시됨: $INFO"; exit 1; }
+
       # 앱이 직접 그린 패널(언어별)과 전체 화면을 ci-screens 브랜치 <태그>/<arm64|x86_64>/에 올림
       - name: Publish screenshots
         if: always() && hashFiles('shots/*.png') != ''

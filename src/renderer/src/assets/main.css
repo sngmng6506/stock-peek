@@ -786,6 +786,11 @@ body,
   font-size: 12px;
   font-weight: 500;
   color: rgba(235, 235, 245, 0.6);
+  /* 지연 표시(아랍어 등 긴 문구)가 줄을 넘기지 않게 */
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card .change {
@@ -1074,4 +1079,19 @@ body,
 .settings-modal :focus-visible {
   outline: 2px solid #7ba8f4;
   outline-offset: 2px;
+}
+
+/* 스크롤바(앱 전체): macOS '항상 보기'·Windows에서 흰 기본 막대 대신 얇은 어두운 막대 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(235, 235, 245, 0.18);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(235, 235, 245, 0.3);
 }

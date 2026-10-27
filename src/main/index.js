@@ -691,7 +691,11 @@ app.on('second-instance', () => {
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.stockpeek.app')
   // 트레이 상주 앱: Mac Dock에 아이콘을 띄우지 않음
-  if (IS_MAC) app.dock?.hide()
+  if (IS_MAC) {
+    app.dock?.hide()
+    // 기본 메뉴(File·View·Window…) 대신 앱 이름·편집만: 입력칸의 복사·붙여넣기 단축키는 편집 메뉴가 있어야 동작
+    Menu.setApplicationMenu(Menu.buildFromTemplate([{ role: 'appMenu' }, { role: 'editMenu' }]))
+  }
 
   ipcMain.handle('stocks:get-cache', () => getCache())
   ipcMain.handle('stocks:refresh', () => refreshAll({ force: true }))
