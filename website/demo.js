@@ -44,7 +44,8 @@
     var r = this.root.getBoundingClientRect()
     var root = this.root
     this.displays = this.displayEls.map(function (el) {
-      if (el === root) return { x: 0, y: 0, w: r.width, h: r.height }
+      // 테두리 안쪽(위치 기준 상자) 크기: 절대 위치 요소와 같은 좌표계
+      if (el === root) return { x: 0, y: 0, w: root.clientWidth, h: root.clientHeight }
       var d = el.getBoundingClientRect()
       return {
         x: d.left - r.left + el.clientLeft,
@@ -214,6 +215,24 @@
     if (this.cfg.onRender) this.cfg.onRender(this)
   }
 
+  // ---- 실제 마우스 모드: 페이지를 보는 사람의 마우스로 같은 판정 로직을 돌림 ----
+  Sim.prototype.goLive = function () {
+    if (this.live) return
+    this.live = true
+    this.tweens = []
+    this.timers = []
+    this.cur.down = false
+    this.root.classList.add('is-live')
+  }
+  Sim.prototype.goScripted = function () {
+    if (!this.live) return
+    this.live = false
+    this.root.classList.remove('is-live')
+    var d = this.displays[0]
+    this.cur = { x: d.w * 0.34, y: d.h * 0.72, down: false }
+    this.restart()
+  }
+
   // ---- script primitives (resolve on the sim clock) ----
   Sim.prototype.wait = function (ms) {
     var self = this
@@ -279,8 +298,17 @@
       self.tick(dt)
       requestAnimationFrame(frame)
     }
-    function loop() {
-      script(self).then(loop)
+    // 실제 마우스 모드에서 돌아올 때 새 루프로 다시 시작. 끊긴 옛 루프는 gen이 달라 멈춤
+    var gen = 0
+    function loop(g) {
+      if (g !== gen || self.live) return
+      script(self).then(function () {
+        loop(g)
+      })
+    }
+    self.restart = function () {
+      gen += 1
+      loop(gen)
     }
     var io = new IntersectionObserver(function (entries) {
       var vis = entries[0].isIntersecting && !document.hidden
@@ -304,7 +332,7 @@
       self.render()
     })
     this.render()
-    loop()
+    loop(gen)
   }
 
   // ---- hero: hover to open, move away to close ----
@@ -314,7 +342,8 @@
       dockY: function (d) {
         return Math.round(d.h * 0.08)
       },
-      indicatorOffset: 30
+      indicatorOffset: 30,
+      trigger: 16
     })
     if (reduce) {
       hs.state = 'shown'
@@ -342,6 +371,29 @@
         }
       }
       hs.cur = { x: hs.displays[0].w * 0.34, y: hs.displays[0].h * 0.72, down: false }
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        var resumeTimer = null
+        hero.addEventListener('mousemove', function (e) {
+          var r = hero.getBoundingClientRect()
+          if (resumeTimer) {
+            clearTimeout(resumeTimer)
+            resumeTimer = null
+          }
+          hs.goLive()
+          // 테두리(border) 안쪽 좌표로: 데모 화면 기준
+          hs.cur.x = e.clientX - r.left - hero.clientLeft
+          hs.cur.y = e.clientY - r.top - hero.clientTop
+        })
+        hero.addEventListener('mouseleave', function () {
+          // 화면 밖으로 나간 것으로 처리 → 패널이 들어감. 잠시 뒤 자동 재생으로 복귀
+          hs.cur.x = -100
+          if (resumeTimer) clearTimeout(resumeTimer)
+          resumeTimer = setTimeout(function () {
+            resumeTimer = null
+            hs.goScripted()
+          }, 2500)
+        })
+      }
       hs.start(function (s) {
         var d = s.displays[0]
         var card = function (i) {
