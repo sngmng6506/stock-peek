@@ -114,7 +114,6 @@
       <p id="latestNote" class="release-note">إصدار لنظامي Windows 10/11 وmacOS 12 وما بعده، يدعم أسعار أسهم قائمة المتابعة من السعودية وأمريكا واليابان والهند وكوريا، والرسم البياني لآخر ثلاثة أشهر، والأرباح والخسائر، والشاشات المتعددة، وإشعارات التحديث. ملاحظات الإصدار على GitHub مكتوبة بالإنجليزية.</p>
       <div class="actions">
         <span class="dl-pair"><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-setup.exe" class="btn-dl" data-dl-os="win">تنزيل لنظام Windows</a><a href="https://github.com/sngmng6506/stock-peek/releases/latest/download/stock-peek-mac.dmg" class="btn-dl btn-dl-alt" data-dl-os="mac">تنزيل لنظام Mac</a></span>
-        <a id="releaseLink" href="https://github.com/sngmng6506/stock-peek/releases/latest" class="btn-dl btn-dl-alt">عرض الإصدار على GitHub</a>
       </div>
     </article>
 
@@ -131,20 +130,20 @@
         <li>يتطلب اتصالًا بالإنترنت. قد تقيّد سياسة أمان الشركة أو صلاحيات التثبيت استخدامه.</li>
         <li>لأن التطبيق المستقل غير موقّع رقميًا، قد يعرض Windows SmartScreen تنبيهًا، وعلى Mac يجب السماح بالتشغيل الأول من إعدادات النظام.</li>
         <li>الأسعار المعروضة ليست بيانات تنفيذ رسمية ولا نصيحة استثمارية. أسعار تداول متأخرة 15 دقيقة.</li>
-        <li>بصمات SHA-256 للتحقق من الملفات مرفقة بكل <a href="https://github.com/sngmng6506/stock-peek/releases/latest">إصدار على GitHub</a>.</li>
+        <li>بصمات SHA-256 للتحقق من الملفات مرفقة بكل إصدار على GitHub.</li>
       </ul>
     </section>
 
     <section>
       <h2>الإصدارات الأخيرة</h2>
       <div id="releaseList" class="release-list">
-        <p>اطّلع على السجل الكامل في <a href="https://github.com/sngmng6506/stock-peek/releases">GitHub Releases</a>.</p>
+        <p>اطّلع على السجل الكامل في GitHub Releases.</p>
       </div>
     </section>
   </main>
 
   <footer class="wrap">
-    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/ar">الرئيسية</a><a href="/ar/guide/">دليل المنتج</a><a href="/ar/privacy/">الخصوصية</a><a href="https://github.com/sngmng6506/stock-peek">GitHub</a><a href="/releases/" lang="ko">한국어</a><a href="/en/releases/" lang="en">English</a><a href="/ja/releases/" lang="ja">日本語</a></div></div>
+    <div class="foot"><div class="foot-left">© 2026 Stock Peek</div><div class="foot-links"><a href="/ar">الرئيسية</a><a href="/ar/guide/">دليل المنتج</a><a href="/ar/privacy/">الخصوصية</a><a href="/releases/" lang="ko">한국어</a><a href="/en/releases/" lang="en">English</a><a href="/ja/releases/" lang="ja">日本語</a></div></div>
   </footer>
   <script>
   (function () {
@@ -170,11 +169,8 @@
         releases.forEach(function (release) {
           var item = document.createElement('article');
           item.className = 'release-item';
-          var anchor = document.createElement('a');
-          anchor.href = release.html_url;
+          var anchor = document.createElement('strong');
           anchor.textContent = release.name || release.tag_name;
-          anchor.target = '_blank';
-          anchor.rel = 'noopener';
           anchor.dir = 'auto';
           var meta = document.createElement('p');
           var published = release.published_at ? new Date(release.published_at).toLocaleDateString(dateLocale) : 'تاريخ الإصدار غير معروف';

@@ -78,7 +78,6 @@
     <p id="latestNote" class="release-note">This release for Windows 10/11 and macOS 12+ supports US, Korean, Japanese, Indian and Saudi watchlist quotes, three-month charts, portfolio P&amp;L, multi-monitor placement, and update notifications.</p>
     <div class="actions">
       {{downloadButtons}}
-      <a id="releaseLink" href="https://github.com/sngmng6506/stock-peek/releases/latest" class="btn-dl btn-dl-alt">View GitHub release</a>
     </div>
   </article>
 
@@ -95,14 +94,14 @@
       <li>An internet connection is required. Corporate security policy or install permissions may restrict use.</li>
       <li>Because the independent app is not code-signed, Windows SmartScreen may display a notice, and on Mac the first launch must be allowed in System Settings.</li>
       <li>Displayed quotes are not official execution data or investment advice.</li>
-      <li>SHA-256 checksums for verifying downloads are attached to each <a href="https://github.com/sngmng6506/stock-peek/releases/latest">GitHub release</a>.</li>
+      <li>SHA-256 checksums for verifying downloads are attached to each GitHub release.</li>
     </ul>
   </section>
 
   <section>
     <h2>Recent releases</h2>
     <div id="releaseList" class="release-list">
-      <p>See the complete history on <a href="https://github.com/sngmng6506/stock-peek/releases">GitHub Releases</a>.</p>
+      <p>See the complete history on GitHub Releases.</p>
     </div>
   </section>
 </main>
@@ -111,7 +110,6 @@
 <a href="/en">Home</a>
 <a href="/en/guide/">Product guide</a>
 <a href="/en/privacy/">Privacy</a>
-<a href="https://github.com/sngmng6506/stock-peek">GitHub</a>
 
 <!-- @after-footer -->
 
@@ -139,11 +137,8 @@
       releases.forEach(function (release) {
         var item = document.createElement('article');
         item.className = 'release-item';
-        var anchor = document.createElement('a');
-        anchor.href = release.html_url;
+        var anchor = document.createElement('strong');
         anchor.textContent = release.name || release.tag_name;
-        anchor.target = '_blank';
-        anchor.rel = 'noopener';
         var meta = document.createElement('p');
         var published = release.published_at ? new Date(release.published_at).toLocaleDateString('en-US') : 'Unknown release date';
         meta.textContent = release.tag_name + ' · ' + published;

@@ -78,7 +78,6 @@
     <p id="latestNote" class="release-note">한국·미국·일본·인도·사우디 관심 종목 시세, 최근 3개월 차트, 평가손익, 멀티모니터 배치와 업데이트 알림을 지원하는 Windows 10·11과 macOS 12 이상용 버전입니다.</p>
     <div class="actions">
       {{downloadButtons}}
-      <a id="releaseLink" href="https://github.com/sngmng6506/stock-peek/releases/latest" class="btn-dl btn-dl-alt">GitHub 릴리스 보기</a>
     </div>
   </article>
 
@@ -95,14 +94,14 @@
       <li>인터넷 연결이 필요하며 회사 PC에서는 보안 정책이나 설치 권한에 따라 제한될 수 있습니다.</li>
       <li>개인 개발 앱이라 코드 서명 인증서가 없어 Windows SmartScreen 안내가 표시될 수 있고, Mac은 처음 실행할 때 시스템 설정에서 허용해야 합니다.</li>
       <li>표시되는 시세는 공식 주문 체결 데이터나 투자 조언이 아닙니다.</li>
-      <li>파일 확인용 SHA-256 체크섬은 <a href="https://github.com/sngmng6506/stock-peek/releases/latest">GitHub 릴리스</a>에 함께 있습니다.</li>
+      <li>파일 확인용 SHA-256 체크섬은 GitHub 릴리스에 함께 있습니다.</li>
     </ul>
   </section>
 
   <section>
     <h2>최근 릴리스</h2>
     <div id="releaseList" class="release-list">
-      <p>전체 변경 내역은 <a href="https://github.com/sngmng6506/stock-peek/releases">GitHub Releases</a>에서 확인할 수 있습니다.</p>
+      <p>전체 변경 내역은 GitHub Releases에서 확인할 수 있습니다.</p>
     </div>
   </section>
 </main>
@@ -111,7 +110,6 @@
 <a href="/">홈</a>
 <a href="/guide/">제품 가이드</a>
 <a href="/privacy/">개인정보 안내</a>
-<a href="https://github.com/sngmng6506/stock-peek">GitHub</a>
 
 <!-- @after-footer -->
 
@@ -139,11 +137,8 @@
       releases.forEach(function (release) {
         var item = document.createElement('article');
         item.className = 'release-item';
-        var anchor = document.createElement('a');
-        anchor.href = release.html_url;
+        var anchor = document.createElement('strong');
         anchor.textContent = release.name || release.tag_name;
-        anchor.target = '_blank';
-        anchor.rel = 'noopener';
         var meta = document.createElement('p');
         var published = release.published_at ? new Date(release.published_at).toLocaleDateString('ko-KR') : '출시일 미상';
         meta.textContent = release.tag_name + ' · ' + published;
