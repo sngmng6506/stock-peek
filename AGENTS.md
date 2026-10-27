@@ -79,6 +79,7 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 | JP 목록       | 매월 8일 (수동 실행 가능)             | `update-jp-stocks.yml`: JPX 엑셀 → `data/jp-stocks.json` 커밋 → 앱 릴리즈                                                                  |
 | 다운로드 배지 | 매일 (수동 실행 가능)                 | `download-badge.yml`: 설치 파일 다운로드 합계(배지) + `ping-*` 관측 간 증가분 → `badges` 브랜치 `downloads.json`·`usage.csv`·`stats-state.json` (실제 구간은 `period_start_utc`~`period_end_utc`) |
 
+- `badges`·`ci-screens` 브랜치는 데이터 저장용 (배지·사용 통계, Mac 스크린샷). 브랜치 정리 때 삭제 금지 (저장소 Rulesets로 삭제 차단)
 - 앱 파일: `src/`, `data/`, `resources/`, `build/`, `package*.json`, `electron-builder.yml` 등. 문서·웹사이트만 바뀌면 릴리즈 안 됨
 - 릴리즈 워크플로우가 main에 버전 커밋을 push하므로 작업 전 `git pull`
 - 빌드 중 main에 웹사이트·문서만 바뀐 커밋이 들어오면 그 위에 버전 커밋을 다시 올림. 앱 파일이 바뀌었으면 다음 실행에 넘김
