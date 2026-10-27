@@ -71,7 +71,6 @@ export default {
   'settings.checkFailed': "Couldn't check",
   'settings.donateDesc': 'If Stock Peek helps you, how about a coffee?',
   'settings.donateBtn': 'Ko-fi',
-  'settings.donateKakao': 'Scan with KakaoPay',
   'settings.close': 'Close',
   // WelcomeModal
   'welcome.title': 'Welcome to Stock Peek',
