@@ -466,7 +466,11 @@ function createIndicatorWindow() {
     webPreferences: { sandbox: true }
   })
   indicatorWindow.setAlwaysOnTop(true, 'screen-saver')
-  indicatorWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false })
+  indicatorWindow.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: false,
+    // macOS: 기본값은 앱을 일반(Foreground) 앱으로 바꿔 Dock에 아이콘이 뜸 → LSUIElement 유지
+    skipTransformProcessType: true
+  })
   indicatorWindow.setIgnoreMouseEvents(false)
   indicatorWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(INDICATOR_HTML)}`)
 }
@@ -496,7 +500,11 @@ function createWindow() {
   })
 
   mainWindow.setAlwaysOnTop(true, 'screen-saver')
-  mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false })
+  mainWindow.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: false,
+    // macOS: 기본값은 앱을 일반(Foreground) 앱으로 바꿔 Dock에 아이콘이 뜸 → LSUIElement 유지
+    skipTransformProcessType: true
+  })
 
   // 드래그 감지: will-move → 드래그 시작, 이동 멈추면 스냅
   mainWindow.on('will-move', () => {
