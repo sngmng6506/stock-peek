@@ -1,6 +1,6 @@
 # Stock Peek (몰래주식)
 
-> Free, open-source desktop widget for Windows and Mac that shows US, Korean, Japanese, Indian and Saudi watchlist quotes when you move the mouse to the screen edge. No account, no ads, no brokerage connection. Current version: v1.6.33.
+> Free, open-source desktop widget for Windows and Mac that shows US, Korean, Japanese, Indian and Saudi watchlist quotes when you move the mouse to the screen edge. No account, no in-app ads, no brokerage connection. Current version: v1.6.33.
 
 Stock Peek lives in the system tray (menu bar on Mac). Moving the cursor to the left or right screen edge slides in a panel with the watchlist: price, daily change, a three-month daily chart, and profit and loss when shares and average price are entered. Moving the cursor away hides it.
 
@@ -12,7 +12,7 @@ Key facts:
 - Quote sources: Naver Finance for Korean stocks; Yahoo Finance for US, Japanese, Indian and Saudi stocks. Japanese quotes are delayed 20 minutes and Saudi quotes 15 minutes; NSE quotes are real-time. Japanese names and search come from the JPX listed-issues list, updated monthly; Arabic names and search for Saudi stocks come from a bundled list of Main Market companies
 - Refresh: every 3 seconds while a watched market is open, every 60 seconds otherwise
 - Languages: Korean, English, Japanese, Arabic (app and website)
-- Data: watchlist, holdings and settings stay on the user's computer. Network requests are only for quotes, update checks, and a once-a-day 1-byte download from GitHub used to count daily users (no data or identifier is sent). No analytics or advertising SDKs
+- Data: watchlist, holdings and settings stay on the user's computer. Network requests are only for quotes, update checks, and a once-a-day 1-byte download from GitHub used to count daily users (no data or identifier is sent). No analytics or advertising SDKs in the app. The website (stock-peek.com) shows Google AdSense ads, which use third-party cookies
 - Corporate networks: uses the system proxy and certificates, so it usually works behind company proxies; install permissions may still block it
 - Installation warnings: the app is not code-signed. Windows SmartScreen shows a warning ("More info" → "Run anyway"). On Mac the first launch must be allowed in System Settings → Privacy & Security ("Open Anyway")
 - Updates: checked at launch, hourly, when the panel opens, and from Settings. Windows installs after a notification click; Mac opens the download page
