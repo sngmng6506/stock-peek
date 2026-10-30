@@ -45,6 +45,7 @@ import {
 import electronUpdater from 'electron-updater'
 import { detectLanguage, getLanguageInfo } from '../shared/languages.js'
 import { translate } from '../shared/i18n/index.js'
+import { codedError } from '../shared/errors.js'
 const { autoUpdater } = electronUpdater
 
 const PANEL_WIDTH = PANEL_BASE_WIDTH
@@ -799,7 +800,12 @@ app.whenReady().then(() => {
     const kw = String(keyword || '').trim()
     if (!kw) return []
     const provider = getProvider(market)
-    return provider ? await provider.search(kw) : []
+    if (!provider) throw new Error('ERR_UNKNOWN_MARKET')
+    try {
+      return await provider.search(kw)
+    } catch (e) {
+      throw codedError(e, 'ERR_SEARCH_FAILED')
+    }
   })
 
   ipcMain.handle('dock:get-edge', () => getDock().edge)

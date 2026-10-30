@@ -39,7 +39,7 @@ function AddStockModal({ onClose, onAdd, existingKeys = new Set() }) {
             keyword: kw,
             market,
             items: [],
-            error: e?.message || t('add.searchFail')
+            error: errorText(e, t) || t('add.searchFail')
           })
         }
       }
