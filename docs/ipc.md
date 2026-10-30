@@ -54,7 +54,7 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 
 | 채널                          | 방식            | 입력                            | 설명                                     |
 | ----------------------------- | --------------- | ------------------------------- | ---------------------------------------- |
-| `panel:lock` / `panel:unlock` | send            | —                               | 모달이 열린 동안 자동 숨김 중지          |
+| `panel:lock` / `panel:unlock` | send            | —                               | 자동 숨김 중지. 현재 화면에서 쓰지 않음  |
 | `panel:pin` / `panel:unpin`   | send            | —                               | 고정                                     |
 | `panel:get-pinned`            | invoke          | —                               | boolean                                  |
 | `panel:pinned-changed`        | main → renderer | boolean                         | 트레이 클릭으로 고정될 때                |
