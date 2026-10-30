@@ -29,6 +29,7 @@ npm run check:site             # website/가 최신인지 검사
 ```
 src/shared/markets.js     시장 정의 (통화·장 시간·심볼 규칙·순서) — main·renderer 공용
 src/shared/languages.js   지원 언어 (코드·로케일·방향·사이트 경로)
+src/shared/errors.js      오류 코드(ERR_*) 추출·변환
 src/shared/i18n/          언어별 번역 (ko.js가 키 기준) — main·renderer 공용
 src/main/markets/         시장별 데이터 provider (naver.js, yahoo.js 팩토리, listed.js 현지어 목록+Yahoo, jpx.js, tadawul.js, index.js 등록)
 data/jp-stocks.json       JPX 東証上場銘柄一覧 변환본 — 직접 수정 금지 (update-jp-stocks.yml이 매월 갱신)
@@ -43,6 +44,8 @@ site/                     웹사이트 원본 (site.json, strings/<lang>.json, p
 website/                  생성 결과 — HTML·sitemap·llms.txt 직접 수정 금지 (demo.js, style.css, robots.txt, 이미지는 직접)
 scripts/                  prepare-release.mjs, build-site.mjs, check-i18n.mjs, update_jp_stocks.py, import_sa_stocks.py, download_stats.py
 docs/market-expansion.md  시장·언어 추가 체크리스트
+docs/ipc.md               IPC 채널 입력·출력·오류 코드
+docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 ```
 
 ## 규칙
@@ -53,9 +56,10 @@ docs/market-expansion.md  시장·언어 추가 체크리스트
 - 네트워크 실패: `lastGood` 값 유지 + stale 표시
 - 폴링: 관심 종목이 있는 시장 중 하나라도 장중이면 3초, 아니면 60초. 장 시간은 `Intl` 시간대로 판정(서머타임 자동), 공휴일 미반영. 차트 10분 캐시
 - 멀티모니터: `displayId` 저장, 해당 모니터 없으면 primary로 폴백
-- IPC 추가: `main/index.js` 핸들러와 `preload/index.js` 화이트리스트 둘 다 수정
+- IPC 추가: `main/index.js` 핸들러, `preload/index.js` 화이트리스트, `docs/ipc.md` 같이 수정
 - UI 문구: `src/shared/i18n/ko.js`에 키 추가 후 모든 언어 파일에 같은 키. `{v}`·`{n}` 자리표시자는 언어 간 동일
-- main 오류: 문구 대신 코드(`ERR_*`)로 던지고 화면에서 `error.<CODE>`로 번역
+- main 오류: 문구 대신 코드(`ERR_*`)로 던지고 화면에서 `errorText()`로 번역. 외부 API 오류 문구는 `codedError`로 코드로 바꿈
+- UI 색상·크기 변경: `docs/design-system.md` 같이 수정
 - 미니멀: 기능 추가보다 제거·단순화 우선
 - Mac: Apple 서명·공증 없음(ad-hoc). 자동 설치 불가 → `IS_MAC`이면 새 버전 알림 + 다운로드 페이지만. Dock 숨김(`LSUIElement`), 메뉴 막대는 `resources/trayTemplate*.png`
 - 사용자 수 집계: 하루 한 번 최신 릴리즈의 `ping-win`/`ping-mac`(1바이트)만 받음 (`dailyPing`). 식별자·사용 정보 전송 금지. 바꾸면 개인정보 페이지 4개 언어·`PRIVACY.md`·`site/llms.md` 같이 수정

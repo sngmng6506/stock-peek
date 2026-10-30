@@ -34,6 +34,7 @@ function HoldingEditModal({ stock, onClose, onSave }) {
   const clearAll = async () => {
     if (busy) return
     setBusy(true)
+    setError(null)
     try {
       await onSave({ quantity: undefined, avgPrice: undefined })
       onClose()

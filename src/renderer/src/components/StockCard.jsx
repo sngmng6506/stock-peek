@@ -46,11 +46,10 @@ function StockCard({ stock, onRemove, onEditHolding }) {
         )}
         <div className="row">
           <span className="name">{stock.symbol}</span>
-          <span className="change down">err</span>
         </div>
         <div className="row">
           <span className="err-msg" title={stock.error}>
-            {stock.errorCode ? t(`error.${stock.errorCode}`) : stock.error}
+            {t(`error.${stock.errorCode || 'ERR_FETCH'}`)}
           </span>
         </div>
       </div>
