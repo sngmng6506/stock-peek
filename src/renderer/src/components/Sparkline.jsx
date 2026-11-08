@@ -25,7 +25,7 @@ function Sparkline({ prices, isUp }) {
     })
     .join(' ')
 
-  const stroke = isUp ? '#0F6E56' : '#A32D2D'
+  const stroke = isUp ? '#178A68' : '#C03A3A'
 
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">

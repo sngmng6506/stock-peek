@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -40,22 +40,44 @@ function groupByMarket(stocks, lang) {
     .map(([market, items]) => ({ market, items }))
 }
 
-function SortableCard({ stock, onRemove, onEditHolding }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: idOf(stock)
-  })
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 50 : 'auto'
+// 시세는 3초마다 IPC로 새 객체가 오므로 참조가 아니라 값으로 비교 (prices 배열은 원소까지)
+function sameValue(a, b) {
+  if (a === b) return true
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((v, i) => v === b[i])
   }
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <StockCard stock={stock} onRemove={onRemove} onEditHolding={onEditHolding} />
-    </div>
-  )
+  return false
 }
+
+function sameItem(a, b) {
+  if (a === b) return true
+  const keys = Object.keys(a)
+  if (keys.length !== Object.keys(b).length) return false
+  return keys.every((k) => sameValue(a[k], b[k]))
+}
+
+const SortableCard = memo(
+  function SortableCard({ stock, onRemove, onEditHolding }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+      id: idOf(stock)
+    })
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.4 : 1,
+      zIndex: isDragging ? 50 : 'auto'
+    }
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <StockCard stock={stock} onRemove={onRemove} onEditHolding={onEditHolding} />
+      </div>
+    )
+  },
+  (prev, next) =>
+    prev.onRemove === next.onRemove &&
+    prev.onEditHolding === next.onEditHolding &&
+    sameItem(prev.stock, next.stock)
+)
 
 function App() {
   const [viewport, setViewport] = useState(() => ({
@@ -166,11 +188,11 @@ function App() {
     await window.api.addStock(market, symbol, holding)
   }
 
-  const handleRemove = async (stock) => {
+  const handleRemove = useCallback(async (stock) => {
     await window.api.removeStock(stock.market, stock.symbol)
-  }
+  }, [])
 
-  const handleEditHolding = (stock) => setEditingHolding(stock)
+  const handleEditHolding = useCallback((stock) => setEditingHolding(stock), [])
 
   const handleSaveHolding = async (holding) => {
     if (!editingHolding) return
