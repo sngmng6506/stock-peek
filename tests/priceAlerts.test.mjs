@@ -114,3 +114,16 @@ test('corrupt or future state refuses writes', () => {
   assert.throws(()=>repo.list(),/ERR_ALERT_STORE/)
   assert.throws(()=>repo.add({market:'US',symbol:'NVDA',direction:'above',target:100}),/ERR_ALERT_STORE/)
 })
+
+test('long gaps rebase the alert instead of retroactively notifying after sleep', () => {
+  const f = fixture()
+  const a = f.repo.add({market:'US',symbol:'NVDA',direction:'above',target:100})
+  const earlier = { ...a, lastSide:'other', lastMarketAt:'2026-11-22T04:30:00Z' }
+  const first = evaluateAlert(earlier, quote(125,'2026-11-22T04:59:00Z'), now)
+  assert.equal(first.triggered,false)
+  assert.equal(first.next.lastSide,'target')
+  const second = evaluateAlert(first.next, quote(90,'2026-11-22T04:59:01Z'), now)
+  assert.equal(second.triggered,false)
+  const third = evaluateAlert(second.next, quote(101,'2026-11-22T04:59:02Z'), now)
+  assert.equal(third.triggered,true)
+})

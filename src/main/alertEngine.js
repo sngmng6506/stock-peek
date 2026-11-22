@@ -49,8 +49,11 @@ export function evaluateAlert(alert, quote, now) {
   const side = alert.direction === 'above'
     ? quote.price >= alert.target ? 'target' : 'other'
     : quote.price <= alert.target ? 'target' : 'other'
-  // A new alert never fires immediately when the initial quote is already beyond the target.
-  const triggered = alert.lastSide === 'other' && side === 'target'
+  // After sleep, offline periods or market closures, a gap is NOT an observed crossing.
+  // Rebase from the first fresh quote instead of sending a catch-up notification.
+  const gap = alert.lastMarketAt ? Date.parse(time) - Date.parse(alert.lastMarketAt) : Infinity
+  const continuous = gap > 0 && gap <= 10 * 60_000
+  const triggered = continuous && alert.lastSide === 'other' && side === 'target'
   return {
     next: { ...alert, lastSide: side, lastMarketAt: time,
       ...(triggered ? { status: 'triggered', triggeredAt: new Date(now).toISOString() } : {}) },
