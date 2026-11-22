@@ -26,7 +26,7 @@ test('uses stateless structured output with no user-identifiable logging',async(
   assert.equal(body.response_format.type,'json_schema')
   assert.equal(body.response_format.json_schema.strict,true)
   assert.equal(body.provider.require_parameters,true)
-  assert.equal(body.model,'openai/gpt-4o-mini')
+  assert.equal(body.model,'anthropic/claude-sonnet-5.5')
   assert.equal(sent.url,'https://openrouter.ai/api/v1/chat/completions')
   assert.equal(body.messages[0].role,'system')
   assert.equal(body.messages[1].role,'user')

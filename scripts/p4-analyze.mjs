@@ -33,7 +33,7 @@ if(!inputPath || !outputPath || inputPath===outputPath){
     const useModel=process.env.P4_ENABLE_MODEL==='1'
     const generate=useModel?createOpenAiNarrator({
       fetchImpl:fetch,apiKey:process.env.OPENAI_API_KEY,
-      model:process.env.P4_MODEL||'openai/gpt-4o-mini'
+      model:process.env.P4_MODEL||'anthropic/claude-sonnet-5.5'
     }):null
     const run=createAnalysisPipeline({filings:provider,generate})
     const result=await run(input)

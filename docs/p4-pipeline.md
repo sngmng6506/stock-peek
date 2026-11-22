@@ -43,7 +43,7 @@ Optional experimental OpenRouter LLM narration (server-side only):
 ```bash
 export OPENROUTER_API_KEY="(set secret in environment, never git)"
 export P4_ENABLE_MODEL=1
-export P4_MODEL=openai/gpt-4o-mini
+export P4_MODEL=anthropic/claude-sonnet-5.5
 node scripts/p4-analyze.mjs .private/request.json .private/report-llm.json
 ```
 
@@ -68,7 +68,7 @@ Next: verified corpus mapping refresh / pagination; official filing body or XBRL
 - Set `DART_API_KEY` in your local secret store or environment. **Never paste a real key in GitHub, .env files committed to the repo, screenshots, issue comments or client code.**
 - The OpenDART 40-character key is transmitted as the `crtfc_key` query parameter to the official API only. Treat request URLs and access logs as secrets; the CLI deliberately logs error codes only. <https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001>
 - OpenDART still needs verified stock-code → 8-digit corporation-code mapping in `DART_CORP_MAP_JSON` until automatic official mapping is built.
-- Set `OPENROUTER_API_KEY` only on the trusted backend host. Default model is `openai/gpt-4o-mini`, override with `P4_MODEL` for a model that supports `json_schema` on OpenRouter. <https://openrouter.ai/docs/features/structured-outputs>
+- Set `OPENROUTER_API_KEY` only on the trusted backend host. Default model is `anthropic/claude-sonnet-5.5`, override with `P4_MODEL` for a model that supports `json_schema` on OpenRouter. <https://openrouter.ai/docs/features/structured-outputs>
 - **No OpenRouter key was supplied in this configuration step.** Enabling the model without one fails closed with `ERR_MODEL_NOT_CONFIGURED`.
 - OpenRouter is a model router: chosen downstream provider's retention/privacy policy and per-token fees must be reviewed before sending user-selected holdings or thesis. Do not claim `store:false` guarantees zero retention across routed providers.
 - If a credential was ever posted in a chat or ticket, rotate it in the provider dashboard before deploying publicly; keep the replacement only in secrets.
@@ -79,7 +79,7 @@ For Windows PowerShell operator testing (replace placeholders locally; never com
 $env:DART_API_KEY = Read-Host 'OpenDART key'
 $env:OPENROUTER_API_KEY = Read-Host 'OpenRouter key'
 $env:P4_ENABLE_MODEL = '1'
-$env:P4_MODEL = 'openai/gpt-4o-mini'
+$env:P4_MODEL = 'anthropic/claude-sonnet-5.5'
 # Also configure SEC_USER_AGENT and DART_CORP_MAP_JSON as appropriate.
 node scripts/p4-analyze.mjs .private/request.json .private/report.json
 ```

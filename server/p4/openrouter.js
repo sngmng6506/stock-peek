@@ -15,7 +15,7 @@ const schema={
   }
 }
 
-export function createOpenRouterNarrator({fetchImpl,apiKey,model='openai/gpt-4o-mini'}) {
+export function createOpenRouterNarrator({fetchImpl,apiKey,model='anthropic/claude-sonnet-5.5'}) {
   if(typeof fetchImpl!=='function'||typeof apiKey!=='string'||!apiKey.trim())
     throw new Error('ERR_MODEL_NOT_CONFIGURED')
   return async function generate({request,evidence,coverage,asOf}) {
