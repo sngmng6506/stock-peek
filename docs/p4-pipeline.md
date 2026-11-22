@@ -38,12 +38,12 @@ node scripts/p4-analyze.mjs .private/request.json .private/report.json
 
 For KR, additionally configure `DART_API_KEY` and `DART_CORP_MAP_JSON` as a JSON mapping of listed ticker to the verified 8-digit `corp_code`, e.g. `{"005930":"<your verified corp code>"}` (placeholder is **not** a runnable code).
 
-Optional experimental LLM narration (server-side only):
+Optional experimental OpenRouter LLM narration (server-side only):
 
 ```bash
-export OPENAI_API_KEY="(secret in environment, never git)"
+export OPENROUTER_API_KEY="(set secret in environment, never git)"
 export P4_ENABLE_MODEL=1
-export P4_MODEL=gpt-4o-mini
+export P4_MODEL=openai/gpt-4o-mini
 node scripts/p4-analyze.mjs .private/request.json .private/report-llm.json
 ```
 
@@ -54,11 +54,32 @@ The CLI produces a local private JSON report file with creation-exclusive writes
 - A report requires at least one successfully queried stock. Per-stock errors are explicitly returned under `coverage` and `failures`; partial coverage is *not* described as "no news".
 - Request contract: max 5 unique KR/US stocks, bounded activity, explicit consent flags for holdings, history and investment thesis. All user details remain opt-in.
 - Official source URLs are validated against known domains. Unknown URLs and invented citation IDs are rejected.
-- The optional OpenAI Responses adapter uses strict JSON Schema, `store:false`, a request timeout and server-only API key; model errors/refusals fail closed. **Schema/citation checks do not prove the factual truth of a natural-language interpretation**. Keep this model output experimental until semantic auditing and reliable article/filing content extraction are added.
+- The optional OpenRouter Chat Completions adapter requests JSON Schema, uses `provider.require_parameters: true`, a request timeout, and a server-only API key; model errors/refusals fail closed. Model/provider support for strict structured output is variable; server checks remain mandatory. **Schema/citation checks do not prove the factual truth of a natural-language interpretation**. Keep this model output experimental until semantic auditing and reliable article/filing content extraction are added.
 - No API token belongs in Electron, renderer, preload, public environment variables, GitHub, or a client-requested URL.
 - There is **no authenticated Worker API yet**. Do not expose the CLI as a network service or wire the renderer's analysis button directly to it. User authentication, cost ceilings, idempotency and credit settlement are the P6 prerequisites for production.
 - Data freshness: from the last requested `lookbackDays` (capped at 30 for official provider fetch) to the server's current time; daily delta vs the **last successful report** requires persistent report metadata and remains pending.
 - This version does not parse full SEC/DART document bodies, structured financial statements, earnings, FX rates, licensed news, or user history analytics. It cannot produce the originally promised personalized *impact* judgment. Do not describe it as such.
-- Offline tests: `tests/p4Pipeline.test.mjs`, `tests/p4Model.test.mjs`. Live API, key permissions, response changes, rate limits, Windows/macOS integration and API cost are not yet validated.
+- Offline tests: `tests/p4Pipeline.test.mjs`, `tests/p4Model.test.mjs`. Live OpenDART/SEC/OpenRouter API, key permissions, response changes, rate limits, Windows/macOS integration and API cost are not yet validated.
 
 Next: verified corpus mapping refresh / pagination; official filing body or XBRL financial facts; licensed news; persistent previous-report delta; semantic fact checking; authenticated Worker; UI results; PDF and P6 credit ledger.
+
+## OpenDART / OpenRouter credential configuration
+
+- Set `DART_API_KEY` in your local secret store or environment. **Never paste a real key in GitHub, .env files committed to the repo, screenshots, issue comments or client code.**
+- The OpenDART 40-character key is transmitted as the `crtfc_key` query parameter to the official API only. Treat request URLs and access logs as secrets; the CLI deliberately logs error codes only. <https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001>
+- OpenDART still needs verified stock-code → 8-digit corporation-code mapping in `DART_CORP_MAP_JSON` until automatic official mapping is built.
+- Set `OPENROUTER_API_KEY` only on the trusted backend host. Default model is `openai/gpt-4o-mini`, override with `P4_MODEL` for a model that supports `json_schema` on OpenRouter. <https://openrouter.ai/docs/features/structured-outputs>
+- **No OpenRouter key was supplied in this configuration step.** Enabling the model without one fails closed with `ERR_MODEL_NOT_CONFIGURED`.
+- OpenRouter is a model router: chosen downstream provider's retention/privacy policy and per-token fees must be reviewed before sending user-selected holdings or thesis. Do not claim `store:false` guarantees zero retention across routed providers.
+- If a credential was ever posted in a chat or ticket, rotate it in the provider dashboard before deploying publicly; keep the replacement only in secrets.
+
+For Windows PowerShell operator testing (replace placeholders locally; never commit values):
+
+```powershell
+$env:DART_API_KEY = Read-Host 'OpenDART key'
+$env:OPENROUTER_API_KEY = Read-Host 'OpenRouter key'
+$env:P4_ENABLE_MODEL = '1'
+$env:P4_MODEL = 'openai/gpt-4o-mini'
+# Also configure SEC_USER_AGENT and DART_CORP_MAP_JSON as appropriate.
+node scripts/p4-analyze.mjs .private/request.json .private/report.json
+```

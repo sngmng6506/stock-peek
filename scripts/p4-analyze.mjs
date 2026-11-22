@@ -1,10 +1,10 @@
 // Usage: SEC_USER_AGENT='Stock Peek Research contact@example.com' node scripts/p4-analyze.mjs ./private-request.json ./private-report.json
 // Optional: DART_API_KEY, DART_CORP_MAP_JSON='{"005930":"<8-digit corp code>"}'
-// Optional: OPENAI_API_KEY + P4_ENABLE_MODEL=1 (server-side ONLY).
+// Optional: OPENROUTER_API_KEY + P4_ENABLE_MODEL=1 (server-side ONLY).
 import { readFile, writeFile } from 'node:fs/promises'
 import { createOfficialFilingProvider } from '../server/p4/filings.js'
 import { createAnalysisPipeline } from '../server/p4/pipeline.js'
-import { createOpenAiNarrator } from '../server/p4/openai.js'
+import { createOpenRouterNarrator } from '../server/p4/openrouter.js'
 
 const [inputPath,outputPath]=process.argv.slice(2)
 if(!inputPath || !outputPath || inputPath===outputPath){
@@ -33,7 +33,7 @@ if(!inputPath || !outputPath || inputPath===outputPath){
     const useModel=process.env.P4_ENABLE_MODEL==='1'
     const generate=useModel?createOpenAiNarrator({
       fetchImpl:fetch,apiKey:process.env.OPENAI_API_KEY,
-      model:process.env.P4_MODEL||'gpt-4o-mini'
+      model:process.env.P4_MODEL||'openai/gpt-4o-mini'
     }):null
     const run=createAnalysisPipeline({filings:provider,generate})
     const result=await run(input)

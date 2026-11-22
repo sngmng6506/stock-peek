@@ -269,9 +269,10 @@ PDF는 복사가능한 텍스트·클릭 가능한 출처 링크 포함. 저장�
 
 - [P4 개발·시험 문서](p4-pipeline.md) 참고. `server/p4/filings.js`: SEC 공식 티커→CIK 매핑과 EDGAR 제출 내역, OpenDART 공시 목록 조회 어댑터. OpenDART는 인증 키 및 검증된 8자리 기업 고유번호 매핑이 필요하다.
 - `server/p4/pipeline.js`: P3 요청 스키마 검증, 공시 메타데이터·공식 링크 검증, 출처 중복 제거, 부분 조회 실패 구분, 근거 ID 확인. 기존 파일 내 민감정보를 외부로 자동 전송하지 않는다.
-- `server/p4/openai.js`: 서버에서만 사용할 수 있는 선택적 OpenAI Responses JSON Schema 출력 어댑터. **실제 모델 API 접속, 비용, 사실 정합성은 검증되지 않았다.**
+- `server/p4/openrouter.js`: 서버에서만 사용할 수 있는 선택적 OpenRouter Chat Completions JSON Schema 출력 어댑터. **실제 모델 API 접속, 비용, 사실 정합성은 검증되지 않았다.**
 - `scripts/p4-analyze.mjs`: 개발자 수동 실행 전용 비공개 JSON 입력/결과 생성기. 일반 사용자 Electron UI, 클라우드 공개 API, 구독권 및 차감 시스템은 연결하지 않는다.
 - 공시 본문·재무 수치와 상업 이용이 허용된 기사 본문이 없는 현재 단계에서는 **새로운 공시가 제출되었다는 사실만** 검증할 수 있다. 기업 영향이나 보유 포트폴리오 전망을 도출하지 않는다.
+- OpenDART 키는 `DART_API_KEY`, OpenRouter 키는 `OPENROUTER_API_KEY` 환경변수에만 설정한다. 기본 라우팅 모델은 `openai/gpt-4o-mini`이며, 라이브 연결 및 비용 검증 전까지 운영 유료 분석으로 취급하지 않는다.
 - P4는 **부분 구현**이다. 최신 뉴스 연동, 본문/XBRL 검증, 직전 리포트 대비 의미 있는 변화, 인증된 Worker API, 운영 데이터 접근 통제는 남아 있다.
 
 ## 10. 개발 순서와 합격 기준

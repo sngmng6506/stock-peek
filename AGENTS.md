@@ -78,7 +78,7 @@ docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 - Mac: Apple 서명·공증 없음(ad-hoc). 자동 설치 불가 → `IS_MAC`이면 새 버전 알림 + 다운로드 페이지만. Dock 숨김(`LSUIElement`), 메뉴 막대는 `resources/trayTemplate*.png`
 - 사용자 수 집계: 하루 한 번 최신 릴리즈의 `ping-win`/`ping-mac`(1바이트)만 받음 (`dailyPing`). 식별자·사용 정보 전송 금지. 바꾸면 개인정보 페이지 4개 언어·`PRIVACY.md`·`site/llms.md` 같이 수정
 - 광고: 앱에는 광고 없음, 웹사이트만 Google AdSense (`site.json` `adsenseClient`). 광고 문구는 "앱 광고 없음"으로 구분. 바꾸면 개인정보 페이지 4개 언어·`PRIVACY.md`·`site/llms.md` 같이 수정
-- P4: `server/p4/` API 키는 서버 환경변수만 사용. `scripts/p4-analyze.mjs` 입력·출력은 `.private/` 아래에 보관(무시 대상). Electron 앱에서 OpenAI/DART 비밀키 직접 호출 금지. 공시 제목만으로 재무·투자 영향을 확정하지 않는다.
+- P4: OpenDART=`DART_API_KEY`, OpenRouter=`OPENROUTER_API_KEY`; 모델 선택=`P4_MODEL` (기본 `openai/gpt-4o-mini`). `server/p4/` API 키는 서버 환경변수만 사용. `scripts/p4-analyze.mjs` 입력·출력은 `.private/` 아래에 보관(무시 대상). Electron 앱에서 OpenAI/DART 비밀키 직접 호출 금지. 공시 제목만으로 재무·투자 영향을 확정하지 않는다.
 - 비밀값: 토큰·계정 ID·인증서 커밋 금지
 
 ## 시장·언어 추가
