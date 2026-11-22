@@ -9,3 +9,6 @@ out
 .wrangler
 *.tsbuildinfo
 Thumbs.db
+
+# P4 operator-only inputs/outputs and reports (may contain personal financial data)
+.private/
