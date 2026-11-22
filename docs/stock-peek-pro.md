@@ -275,6 +275,13 @@ PDF는 복사가능한 텍스트·클릭 가능한 출처 링크 포함. 저장�
 - OpenDART 키는 `DART_API_KEY`, OpenRouter 키는 `OPENROUTER_API_KEY` 환경변수에만 설정한다. 기본 라우팅 모델은 `anthropic/claude-sonnet-5.5`이며, 라이브 연결 및 비용 검증 전까지 운영 유료 분석으로 취급하지 않는다.
 - P4는 **부분 구현**이다. 최신 뉴스 연동, 본문/XBRL 검증, 직전 리포트 대비 의미 있는 변화, 인증된 Worker API, 운영 데이터 접근 통제는 남아 있다.
 
+### Cloudflare Pages 테스트 API (미배포)
+
+- `stockpeek-proxy/`에 자체 Pages Functions 프로젝트 코드 추가. `GET /api/health`, 운영자 인증이 필요한 `POST /api/analyze`를 제공한다. 코드만 등록했으며 **Cloudflare 배포·실제 API 실행 성공을 의미하지 않는다**.
+- `ANALYSIS_ENABLED=1` 명시 설정, 별도 `ANALYSIS_TEST_TOKEN` Secret, `ANALYSIS_DB` D1 일일 쿼터가 모두 있어야 호출된다. 브라우저 Origin 요청 차단, 미설정/무인증 요청 차단, 12KB 요청 상한 적용.
+- Cloudflare Pages `stockpeek-proxy` 프로젝트의 실제 Git 연결·루트/빌드/기존 Functions 구성을 확인한 뒤에만 적용. `stockpeek-proxy/README.md`에 바인딩/배포/한계 설명.
+- 이 테스트 API는 사용자 계정/결제/크레딧/저장된 보고서가 없으므로 Electron 일반 사용자에게 연결하지 않는다. D1 일일 **테스트 한도는 유료 크레딧이 아니다**.
+
 ## 10. 개발 순서와 합격 기준
 
 | 단계 | 산출물 | 합격 기준 |

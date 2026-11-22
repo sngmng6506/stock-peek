@@ -1,0 +1,9 @@
+{
+  "name": "stockpeek-proxy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test ../tests/pagesProxy.test.mjs",
+    "check:sync": "node ../scripts/check-proxy-sync.mjs"
+  }
+}

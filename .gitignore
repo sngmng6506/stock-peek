@@ -12,3 +12,8 @@ Thumbs.db
 
 # P4 operator-only inputs/outputs and reports (may contain personal financial data)
 .private/
+
+# Cloudflare Pages local secrets
+.dev.vars
+.dev.vars.*
+stockpeek-proxy/.env*

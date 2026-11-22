@@ -46,6 +46,8 @@ src/shared/personalizedPreview.js   로컬 AI 분석 요청 v2 미리보기
 src/main/thesisStore.js      투자 관점 로컬 저장 어댑터
 tests/personalizedPreview.test.mjs  데이터 포함 선택 및 미리보기 테스트
 server/p4/                P4 공식 공시 메타데이터/서버 측 모델 프로토타입 (Electron에 번들 금지)
+stockpeek-proxy/           독립 Cloudflare Pages Functions 테스트용 프록시 (운영 서비스 아님)
+scripts/check-proxy-sync.mjs  server/p4/와 stockpeek-proxy/functions/_lib/ 동일성 검증
 scripts/p4-analyze.mjs      수동 개발자 테스트용 CLI (인증된 사용자 API 아님)
 docs/p4-pipeline.md         P4 설정·현황·운영 제한
 src/main/preferences.js   도킹·언어·welcome 설정
@@ -78,6 +80,7 @@ docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 - Mac: Apple 서명·공증 없음(ad-hoc). 자동 설치 불가 → `IS_MAC`이면 새 버전 알림 + 다운로드 페이지만. Dock 숨김(`LSUIElement`), 메뉴 막대는 `resources/trayTemplate*.png`
 - 사용자 수 집계: 하루 한 번 최신 릴리즈의 `ping-win`/`ping-mac`(1바이트)만 받음 (`dailyPing`). 식별자·사용 정보 전송 금지. 바꾸면 개인정보 페이지 4개 언어·`PRIVACY.md`·`site/llms.md` 같이 수정
 - 광고: 앱에는 광고 없음, 웹사이트만 Google AdSense (`site.json` `adsenseClient`). 광고 문구는 "앱 광고 없음"으로 구분. 바꾸면 개인정보 페이지 4개 언어·`PRIVACY.md`·`site/llms.md` 같이 수정
+- Pages 프록시: `ANALYSIS_ENABLED` 기본 비활성, `ANALYSIS_TEST_TOKEN`은 Cloudflare Secret, `ANALYSIS_DB` D1 바인딩 필수. 무인증/일일 한도 미설정 상태로 LLM 엔드포인트 열지 않음. 기존 Pages 배포 루트 확인 전 자동 배포 성공 주장 금지.
 - P4: OpenDART=`DART_API_KEY`, OpenRouter=`OPENROUTER_API_KEY`; 모델 선택=`P4_MODEL` (기본 `anthropic/claude-sonnet-5.5`). `server/p4/` API 키는 서버 환경변수만 사용. `scripts/p4-analyze.mjs` 입력·출력은 `.private/` 아래에 보관(무시 대상). Electron 앱에서 OpenAI/DART 비밀키 직접 호출 금지. 공시 제목만으로 재무·투자 영향을 확정하지 않는다.
 - 비밀값: 토큰·계정 ID·인증서 커밋 금지
 
