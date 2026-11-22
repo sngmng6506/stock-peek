@@ -44,6 +44,23 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 
 `quantity`·`avgPrice`: 비어 있으면 미입력, 아니면 0보다 큰 유한한 수.
 
+## 로컬 활동 이력 (P1)
+
+현재 관심 목록과 변경 로그는 같은 `watchlist` electron-store 파일에 한 번의 whole-store write로 저장한다. 기존 설치의 첫 실행 시 현재 목록을 `baseline_imported`로 보존하며 과거 매수·매도를 추정하지 않는다.
+
+| 채널 | 방식 | 입력 | 출력 | 특징 |
+|---|---|---|---|---|
+| `activity:get-summary` | invoke | — | `{schemaVersion, startedAt, count, recent[]}` | 최근 변경 5건, baseline 제외 |
+| `activity:export` | invoke | — | `{status:'saved'\|'cancelled'}` | OS 파일 저장 대화상자에서 JSON 파일 생성. 민감한 보유 정보 포함 가능 |
+| `activity:clear` | invoke | — | `{schemaVersion, startedAt, count:0, recent:[]}` | 이력만 초기화, 현재 종목/보유 정보 유지. UI의 삭제 확인 필수 |
+
+- `watchlist_added` / `watchlist_removed` = 관심 목록 변경. **실제 매수·매도 아님**.
+- `holding_edited` = 사용자 입력 수량/평단 수정. 거래 체결/거래일/손익을 추정하지 않는다.
+- `watchlist_replaced` = 시스템 일괄 목록 교체; 실제 매매로 취급하지 않는다.
+- 정렬·조회·값이 달라지지 않은 수정은 이력을 추가하지 않는다.
+- 이력 스키마 버전이 알 수 없거나 손상된 경우 `ERR_ACTIVITY_INVALID_HISTORY`를 반환하고 덮어쓰지 않는다.
+- 이력은 기본적으로 **로컬 전용**이며 클라우드에 전송하지 않는다.
+
 ## 검색
 
 | 채널            | 입력                  | 출력                                                                        | 오류                                      |

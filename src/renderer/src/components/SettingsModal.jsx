@@ -15,6 +15,9 @@ function SettingsModal({ onClose }) {
   const [updateAvailable, setUpdateAvailable] = useState(null)
   const [updateReady, setUpdateReady] = useState(null)
   const [check, setCheck] = useState(null) // null | 'checking' | 'latest' | 'available' | 'ready' | 'error'
+  const [activity, setActivity] = useState(null)
+  const [activityBusy, setActivityBusy] = useState(false)
+  const [activityNotice, setActivityNotice] = useState('')
 
   useEffect(() => {
     window.api
@@ -31,6 +34,9 @@ function SettingsModal({ onClose }) {
         if (u?.ready) setUpdateReady(u.ready)
       })
       .catch(() => {})
+    window.api.getActivitySummary().then(setActivity).catch(() => {
+      setActivityNotice('error')
+    })
     const u1 = window.api.onUpdateAvailable(setUpdateAvailable)
     const u2 = window.api.onUpdateReady(setUpdateReady)
     return () => {
@@ -80,6 +86,34 @@ function SettingsModal({ onClose }) {
     latest: t('settings.upToDate'),
     error: t('settings.checkFailed')
   }[check]
+
+  const exportHistory = async () => {
+    if (activityBusy) return
+    setActivityBusy(true)
+    setActivityNotice('')
+    try {
+      const result = await window.api.exportActivity()
+      if (result?.status === 'saved') setActivityNotice('exported')
+    } catch {
+      setActivityNotice('error')
+    } finally {
+      setActivityBusy(false)
+    }
+  }
+
+  const clearHistory = async () => {
+    if (activityBusy || !window.confirm(t('settings.activityConfirm'))) return
+    setActivityBusy(true)
+    setActivityNotice('')
+    try {
+      setActivity(await window.api.clearActivity())
+      setActivityNotice('cleared')
+    } catch {
+      setActivityNotice('error')
+    } finally {
+      setActivityBusy(false)
+    }
+  }
 
   const openExternal = (url) => () => window.api.openExternal(url)
 
@@ -199,6 +233,40 @@ function SettingsModal({ onClose }) {
               </p>
             )}
           </section>
+          <section className="settings-section" aria-labelledby="settings-activity">
+            <h3 id="settings-activity">{t('settings.activity')}</h3>
+            <p className="settings-status">{t('settings.activityHint')}</p>
+            <div className="setting-row">
+              <span>{t('settings.activityCount')}</span>
+              <span className="settings-value">{activity?.count ?? '—'}</span>
+            </div>
+            {activity?.recent?.map((event) => (
+              <div className="setting-row" key={event.eventId}>
+                <span>{t('activity.' + event.type)} {event.stock?.symbol || ''}</span>
+                <span className="settings-value">{new Date(event.occurredAt).toLocaleDateString(lang)}</span>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="setting-row setting-action"
+              disabled={activityBusy || !activity}
+              onClick={exportHistory}
+            >
+              <span>{t('settings.activityExport')}</span>
+              <span aria-hidden="true">↓</span>
+            </button>
+            <button
+              type="button"
+              className="setting-row setting-action"
+              disabled={activityBusy || !activity?.count}
+              onClick={clearHistory}
+            >
+              <span>{t('settings.activityClear')}</span>
+              <span aria-hidden="true">×</span>
+            </button>
+            {activityNotice && <p className="settings-status" role="status">{activityNotice === 'error' ? t('settings.actionFailed') : t('settings.activity' + (activityNotice === 'exported' ? 'Exported' : 'Cleared'))}</p>}
+          </section>
+
           <section className="settings-section" aria-labelledby="settings-about">
             <h3 id="settings-about">{t('settings.about')}</h3>
             <div className="setting-row">

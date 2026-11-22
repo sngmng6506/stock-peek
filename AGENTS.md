@@ -36,7 +36,9 @@ data/jp-stocks.json       JPX 東証上場銘柄一覧 변환본 — 직접 수�
 data/sa-stocks.json       사우디 아랍어 종목명 — 수동 갱신 (Argaam 목록 복사 → scripts/import_sa_stocks.py). 거래소가 자동 수집 차단
 src/main/index.js         창·트레이·IPC 핸들러·자동 업데이트
 src/main/stockService.js  폴링, lastGood 캐시, 시세·보유 병합
-src/main/watchlist.js     관심종목 CRUD (검증은 markets.js 규칙)
+src/main/watchlist.js     관심종목 CRUD + 로컬 활동 이력 어댑터
+src/main/watchlistRepository.js   관심 목록·보유정보 변경 이벤트 순수 로직 (단일 저장소 전체 쓰기)
+tests/activityHistory.test.mjs    활동 이력·baseline·이상/중복 기록 테스트
 src/main/preferences.js   도킹·언어·welcome 설정
 src/preload/index.js      contextBridge IPC 화이트리스트
 src/renderer/src/         App.jsx, components/, i18n/ (Provider), lib/ (금액 포맷·오류 번역)
@@ -53,6 +55,7 @@ docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 
 - HTTP: `eFetch`(`src/main/markets/http.js`, Electron `net.fetch`)만 사용. Node `fetch`는 시스템 프록시·인증서를 무시해 사내망에서 실패
 - 시장·언어 하드코딩 금지: `'KR'`, `'원'`, `'ko-KR'` 같은 분기 대신 `src/shared/` 레지스트리와 `lib/format.js` 사용
+- 활동 이력: `watchlist.items`와 `watchlist.activityHistory`는 `store.store = {...}` **한 번에 저장**. 종목 삭제는 매도가 아니며 보유정보 수정도 매수·매도 거래가 아니다. 기본 목록 초기 상태는 `baseline_imported`로만 기록하고 과거 이력을 추정하지 않는다.
 - 시세 병합: `{...quote, ...holding}` 순서 유지. 사용자 입력(수량·평단)이 API 값에 덮이면 안 됨
 - 네트워크 실패: `lastGood` 값 유지 + stale 표시
 - 폴링: 관심 종목이 있는 시장 중 하나라도 장중이면 3초, 아니면 60초. 장 시간은 `Intl` 시간대로 판정(서머타임 자동), 공휴일 미반영. 차트 10분 캐시

@@ -5,11 +5,13 @@ import {
   Menu,
   nativeImage,
   Notification,
+  dialog,
   screen,
   shell,
   Tray
 } from 'electron'
 import { join } from 'path'
+import { writeFile } from 'node:fs/promises'
 import { PANEL_BASE_WIDTH } from '../shared/panelSize.js'
 import { panelGeometry, resizedPanelGeometry } from './panelGeometry.js'
 import { electronApp, is } from '@electron-toolkit/utils'
@@ -27,7 +29,7 @@ import {
   refreshAll,
   reorderCache
 } from './stockService.js'
-import { addItem, removeItem, reorderWatchlist, updateHolding } from './watchlist.js'
+import { addItem, removeItem, reorderWatchlist, updateHolding, getActivitySummary, exportActivity, clearActivity } from './watchlist.js'
 import { getProvider } from './markets/index.js'
 import { eFetch } from './markets/http.js'
 import {
@@ -767,6 +769,24 @@ app.whenReady().then(() => {
       shell.openExternal(url)
     }
   })
+
+  // Activity history stays on-device. Export is an explicit local save action.
+  ipcMain.handle('activity:get-summary', () => getActivitySummary())
+  ipcMain.handle('activity:export', async () => {
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+      title: 'Stock Peek Activity History',
+      defaultPath: 'stock-peek-activity.json',
+      filters: [{ name: 'JSON', extensions: ['json'] }]
+    })
+    if (canceled || !filePath) return { status: 'cancelled' }
+    try {
+      await writeFile(filePath, JSON.stringify(exportActivity(), null, 2) + '\n', 'utf8')
+      return { status: 'saved' }
+    } catch (error) {
+      throw codedError(error, 'ERR_ACTIVITY_EXPORT')
+    }
+  })
+  ipcMain.handle('activity:clear', () => clearActivity())
 
   ipcMain.handle('watchlist:add', async (_e, { market, symbol, quantity, avgPrice }) => {
     const list = addItem(market, symbol, { quantity, avgPrice })

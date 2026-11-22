@@ -1,5 +1,17 @@
 // English
 export default {
+  'settings.activity': "Activity history",
+  'settings.activityHint': "Watchlist and holding edits are recorded only on this device. They are not confirmed trades.",
+  'settings.activityCount': "Recorded changes",
+  'settings.activityExport': "Export history as JSON",
+  'settings.activityExported': "Activity history saved.",
+  'settings.activityClear': "Clear history",
+  'settings.activityConfirm': "Delete activity history? Your current watchlist and holdings will remain, but the history cannot be recovered.",
+  'settings.activityCleared': "Activity history cleared.",
+  'activity.watchlist_added': "Added stock",
+  'activity.watchlist_removed': "Removed stock",
+  'activity.holding_edited': "Edited holding",
+  'activity.watchlist_replaced': "List replaced",
   'settings.general': 'General',
   'settings.about': 'About',
   'settings.support': 'Support',

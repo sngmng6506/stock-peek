@@ -1,5 +1,17 @@
 // العربية
 export default {
+  'settings.activity': "سجل النشاط",
+  'settings.activityHint': "تُحفظ تغييرات قائمة المتابعة وبيانات الحيازة على هذا الجهاز فقط. وهي ليست سجل تداولات مؤكدة.",
+  'settings.activityCount': "التغييرات المسجلة",
+  'settings.activityExport': "تصدير السجل بصيغة JSON",
+  'settings.activityExported': "تم حفظ سجل النشاط.",
+  'settings.activityClear': "مسح السجل",
+  'settings.activityConfirm': "هل تريد حذف سجل النشاط؟ ستبقى قائمة المتابعة وبيانات الحيازة الحالية، لكن لا يمكن استعادة السجل.",
+  'settings.activityCleared': "تم مسح سجل النشاط.",
+  'activity.watchlist_added': "إضافة سهم",
+  'activity.watchlist_removed': "إزالة سهم",
+  'activity.holding_edited': "تعديل الحيازة",
+  'activity.watchlist_replaced': "استبدال القائمة",
   'settings.general': 'عام',
   'settings.about': 'حول التطبيق',
   'settings.support': 'الدعم',

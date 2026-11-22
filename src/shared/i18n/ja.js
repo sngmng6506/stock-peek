@@ -1,5 +1,17 @@
 // 日本語
 export default {
+  'settings.activity': "操作履歴",
+  'settings.activityHint': "銘柄の追加・削除や保有情報の編集履歴はこのPC内に保存されます。実際の売買履歴ではありません。",
+  'settings.activityCount': "記録件数",
+  'settings.activityExport': "履歴をJSONで保存",
+  'settings.activityExported': "履歴を保存しました。",
+  'settings.activityClear': "履歴を消去",
+  'settings.activityConfirm': "操作履歴を削除しますか？現在の銘柄と保有情報は維持されますが、履歴は復元できません。",
+  'settings.activityCleared': "履歴を消去しました。",
+  'activity.watchlist_added': "銘柄を追加",
+  'activity.watchlist_removed': "銘柄を削除",
+  'activity.holding_edited': "保有情報を編集",
+  'activity.watchlist_replaced': "リストを一括変更",
   'settings.general': '一般設定',
   'settings.about': 'アプリ情報',
   'settings.support': 'サポート',

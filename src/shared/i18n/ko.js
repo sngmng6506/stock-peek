@@ -1,5 +1,17 @@
 // 한국어 — 키 기준 언어. 새 키는 여기 먼저 추가하고 다른 언어에도 같은 키를 넣을 것 (npm run check:i18n).
 export default {
+  'settings.activity': "활동 이력",
+  'settings.activityHint': "관심 종목 및 보유정보 수정은 이 PC에만 기록됩니다. 실제 매수·매도 내역이 아닙니다.",
+  'settings.activityCount': "기록된 변경",
+  'settings.activityExport': "이력 JSON 내보내기",
+  'settings.activityExported': "활동 이력을 저장했습니다.",
+  'settings.activityClear': "이력 초기화",
+  'settings.activityConfirm': "활동 이력을 삭제할까요? 현재 관심 종목과 보유정보는 유지되지만 이력은 복구할 수 없습니다.",
+  'settings.activityCleared': "활동 이력을 초기화했습니다.",
+  'activity.watchlist_added': "관심 종목 추가",
+  'activity.watchlist_removed': "관심 종목 삭제",
+  'activity.holding_edited': "보유정보 수정",
+  'activity.watchlist_replaced': "목록 일괄 변경",
   'settings.general': '일반 설정',
   'settings.about': '앱 정보',
   'settings.support': '후원',
