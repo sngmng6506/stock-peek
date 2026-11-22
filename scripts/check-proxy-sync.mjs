@@ -4,7 +4,7 @@ const names = ['filings.js', 'pipeline.js', 'openrouter.js']
 for (const name of names) {
   const [source, deployed] = await Promise.all([
     readFile(new URL('../server/p4/' + name, import.meta.url)),
-    readFile(new URL('../stockpeek-proxy/functions/_lib/' + name, import.meta.url))
+    readFile(new URL('../stockpeek-proxy/lib/' + name, import.meta.url))
   ])
   if (!source.equals(deployed)) {
     process.stderr.write('P4 Pages copy out of sync: ' + name + '\n')

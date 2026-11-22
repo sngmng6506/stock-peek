@@ -1,6 +1,6 @@
-import { createOfficialFilingProvider } from '../_lib/filings.js'
-import { createAnalysisPipeline } from '../_lib/pipeline.js'
-import { createOpenRouterNarrator } from '../_lib/openrouter.js'
+import { createOfficialFilingProvider } from '../../lib/filings.js'
+import { createAnalysisPipeline } from '../../lib/pipeline.js'
+import { createOpenRouterNarrator } from '../../lib/openrouter.js'
 
 const MAX_BODY_BYTES = 12_000
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
@@ -106,7 +106,7 @@ export async function onRequestPost({ request, env }) {
 
   // Do not incur API costs for invalid requests.
   try {
-    const { validateAnalysisRequest } = await import('../_lib/pipeline.js')
+    const { validateAnalysisRequest } = await import('../../lib/pipeline.js')
     validateAnalysisRequest(input)
   } catch { return response(400, 'ERR_ANALYSIS_REQUEST') }
 

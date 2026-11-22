@@ -6,11 +6,11 @@ This directory is an **independently deployable Pages project**. Nothing here is
 
 - `functions/api/health.js` → public `GET /api/health` (status only)
 - `functions/api/analyze.js` → **operator-only** `POST /api/analyze` (off by default)
-- `functions/_lib/` → exact copies of `server/p4/` (required because Pages project root is this directory)
+- `lib/` → exact copies of `server/p4/` (required because Pages project root is this directory)
 - `public/` → minimal static page
 - `migrations/0001_rate_limits.sql` → D1 quota table; does **not** implement payment credits
 
-Run `node scripts/check-proxy-sync.mjs` from the repository root after modifying canonical P4 modules. The test and deployment must fail if local copies diverge.
+Run `node scripts/check-proxy-sync.mjs` from the repository root after modifying canonical P4 modules. The synchronization test fails if local copies diverge; include the test in the deployment build command before publishing.
 
 ## Before enabling any external request
 
