@@ -24,6 +24,7 @@ import SettingsModal from './components/SettingsModal'
 import WelcomeModal from './components/WelcomeModal'
 import HoldingEditModal from './components/HoldingEditModal'
 import PriceAlertModal from './components/PriceAlertModal'
+import AiAnalysisModal from './components/AiAnalysisModal'
 import { useI18n } from './i18n'
 import { marketOrder } from '../../shared/markets.js'
 
@@ -98,6 +99,7 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(false)
   const [editingHolding, setEditingHolding] = useState(null)
   const [alertStock, setAlertStock] = useState(null)
+  const [showAi, setShowAi] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [dockEdge, setDockEdge] = useState('right')
   const [pinned, setPinned] = useState(false)
@@ -185,7 +187,7 @@ function App() {
       modal.querySelectorAll('.settings-section').forEach((section) => ro.observe(section))
     }
     return () => ro.disconnect()
-  }, [showAdd, showSettings, showWelcome, editingHolding, alertStock])
+  }, [showAdd, showSettings, showWelcome, editingHolding, alertStock, showAi])
 
   const handleAdd = async (market, symbol, holding) => {
     await window.api.addStock(market, symbol, holding)
@@ -266,6 +268,14 @@ function App() {
               aria-label={t('app.add')}
             >
               <Icon name="plus" />
+            </button>
+            <button
+              className="icon-btn"
+              onClick={() => setShowAi(true)}
+              title={t('ai.title')}
+              aria-label={t('ai.title')}
+            >
+              <Icon name="sparkles" />
             </button>
             <button
               className="icon-btn"
@@ -374,6 +384,7 @@ function App() {
           />
         )}
         {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+        {showAi && <AiAnalysisModal onClose={() => setShowAi(false)} />}
         {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
         {alertStock && <PriceAlertModal stock={alertStock} onClose={() => setAlertStock(null)} />}
         {editingHolding && (

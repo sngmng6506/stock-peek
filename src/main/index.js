@@ -30,9 +30,12 @@ import {
   reorderCache,
   setAlertPolling
 } from './stockService.js'
-import { addItem, removeItem, reorderWatchlist, updateHolding, getActivitySummary, exportActivity, clearActivity } from './watchlist.js'
+import { addItem, removeItem, reorderWatchlist, updateHolding, getActivitySummary, exportActivity, clearActivity, getItems } from './watchlist.js'
 import { getProvider } from './markets/index.js'
 import { alerts } from './alertStore.js'
+import { thesis } from './thesisStore.js'
+import { buildPersonalizedPreview } from '../shared/personalizedPreview.js'
+import { normalizeThesis } from '../shared/thesisModel.js'
 import { eFetch } from './markets/http.js'
 import {
   isWelcomeShown,
@@ -825,6 +828,25 @@ app.whenReady().then(() => {
   })
 
   // Activity history stays on-device. Export is an explicit local save action.
+  ipcMain.handle('ai:get-context', () => ({
+    stocks: getItems().map(({ market, symbol }) => ({ market, symbol })),
+    thesis: thesis.get()
+  }))
+  ipcMain.handle('ai:get-thesis', () => thesis.get())
+  ipcMain.handle('ai:save-thesis', (_event, value) => thesis.save(value))
+  ipcMain.handle('ai:preview', (_event, options) => {
+    // Local preview only. Does not contact a server, LLM or payment provider.
+    const watchlist = getItems()
+    const currentThesis = options?.includeThesis
+      ? (options.thesisDraft ? normalizeThesis(options.thesisDraft) : thesis.get())
+      : null
+    // Touch history only if explicitly requested.
+    const history = options?.includeHistory ? exportActivity().activityHistory : null
+    return buildPersonalizedPreview(watchlist, history, currentThesis, {
+      ...options, locale: resolveLanguage()
+    })
+  })
+
   ipcMain.handle('activity:get-summary', () => getActivitySummary())
   ipcMain.handle('activity:export', async () => {
     const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {

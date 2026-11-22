@@ -41,6 +41,10 @@ src/main/alertStore.js   가격 알림 electron-store
 src/main/watchlist.js     관심종목 CRUD + 로컬 활동 이력 어댑터
 src/main/watchlistRepository.js   관심 목록·보유정보 변경 이벤트 순수 로직 (단일 저장소 전체 쓰기)
 tests/activityHistory.test.mjs    활동 이력·baseline·이상/중복 기록 테스트
+src/shared/thesisModel.js     투자 관점 순수 계약
+src/shared/personalizedPreview.js   로컬 AI 분석 요청 v2 미리보기
+src/main/thesisStore.js      투자 관점 로컬 저장 어댑터
+tests/personalizedPreview.test.mjs  데이터 포함 선택 및 미리보기 테스트
 src/main/preferences.js   도킹·언어·welcome 설정
 src/preload/index.js      contextBridge IPC 화이트리스트
 src/renderer/src/         App.jsx, components/, i18n/ (Provider), lib/ (금액 포맷·오류 번역)

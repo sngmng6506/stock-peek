@@ -60,6 +60,22 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 
 `quantity`·`avgPrice`: 비어 있으면 미입력, 아니면 0보다 큰 유한한 수.
 
+## AI 분석 준비 (P3 — 로컬 전용)
+
+| 채널 | 입력 | 출력 | 설명 |
+|---|---|---|---|
+| `ai:get-context` | — | `{stocks:[{market,symbol}], thesis}` | 현재 관심 목록과 로컬 투자 관점 |
+| `ai:get-thesis` | — | `{schemaVersion,text,horizon,focus,updatedAt}` | 선택적 자유 입력 투자 관점 |
+| `ai:save-thesis` | `{text,horizon,focus}` | 저장한 투자 관점 | 길이·선택값 검증, 원본은 로컬 저장 |
+| `ai:preview` | `{selectedKeys,includeHoldings,includeHistory,includeThesis,thesisDraft?,lookbackDays?}` | `{status:'preview_only',request,scope}` | **네트워크 요청 없음, 크레딧 미사용, PDF 미생성** |
+
+- 요청 스키마 `schemaVersion:2`; 최대 5종목, 최근 활동 기간 기본 90일(1–365일), 최대 100건.
+- 보유 수량·평단가, 활동 이력, 투자 관점은 **기본 제외**. 각각 사용자 선택이 있는 경우만 미리보기에 포함.
+- `thesisDraft`는 선택적 미저장 편집 내용이며 **미리보기 자체는 저장하지 않음**. 별도 저장 버튼으로만 보관.
+- 관심 종목 추가·삭제는 거래 내역으로 간주하지 않는다. 평단가·수량 변경도 매수/매도가 아님.
+- 현재는 **분석 데이터를 외부로 전송하지 않는다**. 향후 서버 단계에서는 사용자에게 동일한 필드 범위를 확인시킨 후 별도 인증·동의를 구현.
+- 기존 `aiReport.js`의 근거·PDF 계약 v1은 실험용이며, P3 미리보기 v2는 아직 LLM 출력 스키마와 연결되지 않았다.
+
 ## 로컬 활동 이력 (P1)
 
 현재 관심 목록과 변경 로그는 같은 `watchlist` electron-store 파일에 한 번의 whole-store write로 저장한다. 기존 설치의 첫 실행 시 현재 목록을 `baseline_imported`로 보존하며 과거 매수·매도를 추정하지 않는다.
