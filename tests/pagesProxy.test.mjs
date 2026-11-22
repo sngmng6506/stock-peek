@@ -100,6 +100,7 @@ test('valid mocked SEC + OpenRouter integration returns only citations and no bi
       assert.equal(options.headers.Authorization, 'Bearer ' + env.OPENROUTER_API_KEY)
       const request = JSON.parse(options.body)
       assert.equal(request.model, 'anthropic/claude-sonnet-5.5')
+      assert.equal(JSON.stringify(request).includes('should-never-appear'), false)
       return new Response(JSON.stringify({ choices: [{finish_reason: 'stop', message: {
         content: JSON.stringify({schemaVersion: 1, summary: 'One SEC filing was listed, contents not reviewed.',
           highlights: [{ text: 'SEC form 8-K listed', sourceIds: ['sec:0001045810-26-000010'] }],
@@ -109,7 +110,10 @@ test('valid mocked SEC + OpenRouter integration returns only citations and no bi
     throw Error('unexpected URL')
   }
   try {
-    const [status, body] = await answer(req(), env)
+    const raw = requestBody()
+    raw.stocks[0].privateNote = 'should-never-appear'
+    raw.unexpectedRootField = 'should-never-appear'
+    const [status, body] = await answer(req(raw), env)
     assert.equal(status, 200)
     assert.equal(body.ok, true)
     assert.equal(body.result.status, 'generated_unbilled')

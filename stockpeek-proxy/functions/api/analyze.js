@@ -1,5 +1,5 @@
 import { createOfficialFilingProvider } from '../../lib/filings.js'
-import { createAnalysisPipeline } from '../../lib/pipeline.js'
+import { createAnalysisPipeline, validateAnalysisRequest } from '../../lib/pipeline.js'
 import { createOpenRouterNarrator } from '../../lib/openrouter.js'
 
 const MAX_BODY_BYTES = 12_000
@@ -104,10 +104,51 @@ export async function onRequestPost({ request, env }) {
       : response(400, 'ERR_REQUEST_JSON')
   }
 
-  // Do not incur API costs for invalid requests.
+  // Rebuild the request from an explicit allowlist. Unknown JSON fields never
+  // reach upstream models, even when an operator's client sends extra properties.
   try {
-    const { validateAnalysisRequest } = await import('../../lib/pipeline.js')
     validateAnalysisRequest(input)
+    const options = input.options
+    const limitedSnapshot = item => {
+      if (!item || typeof item !== 'object') return null
+      const out = {}
+      if (typeof item.market === 'string') out.market = item.market.slice(0, 8)
+      if (typeof item.symbol === 'string') out.symbol = item.symbol.slice(0, 20)
+      if (options.includeHoldings) {
+        if (typeof item.quantity === 'number' && Number.isFinite(item.quantity))
+          out.quantity = item.quantity
+        if (typeof item.avgPrice === 'number' && Number.isFinite(item.avgPrice))
+          out.avgPrice = item.avgPrice
+      }
+      return out
+    }
+    input = {
+      schemaVersion: 2,
+      locale: ['ko', 'en', 'ja', 'ar'].includes(input.locale) ? input.locale : 'ko',
+      stocks: input.stocks.map(stock => ({
+        market: stock.market, symbol: stock.symbol, key: stock.key,
+        ...(options.includeHoldings && stock.holding
+          ? { holding: { quantity: stock.holding.quantity, avgPrice: stock.holding.avgPrice } }
+          : {})
+      })),
+      options: {
+        includeHoldings: options.includeHoldings, includeHistory: options.includeHistory,
+        includeThesis: options.includeThesis, lookbackDays: options.lookbackDays
+      },
+      ...(options.includeThesis && input.investmentThesis ? {
+        investmentThesis: {
+          text: input.investmentThesis.text, horizon: input.investmentThesis.horizon,
+          focus: input.investmentThesis.focus
+        }
+      } : {}),
+      ...(options.includeHistory ? {
+        activity: input.activity.map(event => ({
+          type: event.type, occurredAt: event.occurredAt,
+          stock: { market: event.stock.market, symbol: event.stock.symbol },
+          before: limitedSnapshot(event.before), after: limitedSnapshot(event.after)
+        }))
+      } : {})
+    }
   } catch { return response(400, 'ERR_ANALYSIS_REQUEST') }
 
   try {
