@@ -1,4 +1,5 @@
 import Sparkline from './Sparkline'
+import Icon from './Icon'
 import { useI18n } from '../i18n'
 import { displayName, formatMoney, formatNumber, formatRatio } from '../lib/format'
 import { getMarket } from '../../../shared/markets.js'
@@ -23,7 +24,7 @@ function CardBtn({ onClick, title, label, className }) {
   )
 }
 
-function StockCard({ stock, onRemove, onEditHolding }) {
+function StockCard({ stock, onRemove, onEditHolding, onAlert }) {
   const { t, lang } = useI18n()
   if (stock.loading) {
     return (
@@ -62,6 +63,9 @@ function StockCard({ stock, onRemove, onEditHolding }) {
   return (
     <div className="card">
       <div className="card-actions">
+        {onAlert && (
+          <CardBtn onClick={() => onAlert(stock)} title={t('alert.title')} label={<Icon name="bell" />} className="card-alert" />
+        )}
         {onEditHolding && (
           <CardBtn
             onClick={() => onEditHolding(stock)}

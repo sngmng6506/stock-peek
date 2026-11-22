@@ -35,7 +35,9 @@ src/main/markets/         시장별 데이터 provider (naver.js, yahoo.js 팩�
 data/jp-stocks.json       JPX 東証上場銘柄一覧 변환본 — 직접 수정 금지 (update-jp-stocks.yml이 매월 갱신)
 data/sa-stocks.json       사우디 아랍어 종목명 — 수동 갱신 (Argaam 목록 복사 → scripts/import_sa_stocks.py). 거래소가 자동 수집 차단
 src/main/index.js         창·트레이·IPC 핸들러·자동 업데이트
-src/main/stockService.js  폴링, lastGood 캐시, 시세·보유 병합
+src/main/stockService.js  패널/알림 공유 폴링, lastGood 캐시, 시세·보유 병합
+src/main/alertEngine.js  로컬 가격 알림 1회 교차 판정 순수 로직
+src/main/alertStore.js   가격 알림 electron-store
 src/main/watchlist.js     관심종목 CRUD + 로컬 활동 이력 어댑터
 src/main/watchlistRepository.js   관심 목록·보유정보 변경 이벤트 순수 로직 (단일 저장소 전체 쓰기)
 tests/activityHistory.test.mjs    활동 이력·baseline·이상/중복 기록 테스트
@@ -58,6 +60,7 @@ docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 - 활동 이력: `watchlist.items`와 `watchlist.activityHistory`는 `store.store = {...}` **한 번에 저장**. 종목 삭제는 매도가 아니며 보유정보 수정도 매수·매도 거래가 아니다. 기본 목록 초기 상태는 `baseline_imported`로만 기록하고 과거 이력을 추정하지 않는다.
 - 시세 병합: `{...quote, ...holding}` 순서 유지. 사용자 입력(수량·평단)이 API 값에 덮이면 안 됨
 - 네트워크 실패: `lastGood` 값 유지 + stale 표시
+- 가격 알림: 유효한 새 `marketAt` 거래 시각이 있는 시세만 판정; `stale`/오류/장시간 이전 시세로 발송 금지. 처음 관측 가격이 목표측이어도 즉시 알리지 않음; 반대측→목표측 교차에서 1회 발송. Pro 과금 미적용.
 - 폴링: 관심 종목이 있는 시장 중 하나라도 장중이면 3초, 아니면 60초. 장 시간은 `Intl` 시간대로 판정(서머타임 자동), 공휴일 미반영. 차트 10분 캐시
 - 멀티모니터: `displayId` 저장, 해당 모니터 없으면 primary로 폴백
 - IPC 추가: `main/index.js` 핸들러, `preload/index.js` 화이트리스트, `docs/ipc.md` 같이 수정

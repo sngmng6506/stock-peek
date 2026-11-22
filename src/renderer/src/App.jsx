@@ -23,6 +23,7 @@ import AddStockModal from './components/AddStockModal'
 import SettingsModal from './components/SettingsModal'
 import WelcomeModal from './components/WelcomeModal'
 import HoldingEditModal from './components/HoldingEditModal'
+import PriceAlertModal from './components/PriceAlertModal'
 import { useI18n } from './i18n'
 import { marketOrder } from '../../shared/markets.js'
 
@@ -57,7 +58,7 @@ function sameItem(a, b) {
 }
 
 const SortableCard = memo(
-  function SortableCard({ stock, onRemove, onEditHolding }) {
+  function SortableCard({ stock, onRemove, onEditHolding, onAlert }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: idOf(stock)
     })
@@ -69,13 +70,14 @@ const SortableCard = memo(
     }
     return (
       <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-        <StockCard stock={stock} onRemove={onRemove} onEditHolding={onEditHolding} />
+        <StockCard stock={stock} onRemove={onRemove} onEditHolding={onEditHolding} onAlert={onAlert} />
       </div>
     )
   },
   (prev, next) =>
     prev.onRemove === next.onRemove &&
     prev.onEditHolding === next.onEditHolding &&
+    prev.onAlert === next.onAlert &&
     sameItem(prev.stock, next.stock)
 )
 
@@ -95,6 +97,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
   const [editingHolding, setEditingHolding] = useState(null)
+  const [alertStock, setAlertStock] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
   const [dockEdge, setDockEdge] = useState('right')
   const [pinned, setPinned] = useState(false)
@@ -182,7 +185,7 @@ function App() {
       modal.querySelectorAll('.settings-section').forEach((section) => ro.observe(section))
     }
     return () => ro.disconnect()
-  }, [showAdd, showSettings, showWelcome, editingHolding])
+  }, [showAdd, showSettings, showWelcome, editingHolding, alertStock])
 
   const handleAdd = async (market, symbol, holding) => {
     await window.api.addStock(market, symbol, holding)
@@ -193,6 +196,7 @@ function App() {
   }, [])
 
   const handleEditHolding = useCallback((stock) => setEditingHolding(stock), [])
+  const handleAlert = useCallback((stock) => setAlertStock(stock), [])
 
   const handleSaveHolding = async (holding) => {
     if (!editingHolding) return
@@ -350,6 +354,7 @@ function App() {
                             stock={s}
                             onRemove={handleRemove}
                             onEditHolding={handleEditHolding}
+                            onAlert={handleAlert}
                           />
                         ))}
                       </SortableContext>
@@ -370,6 +375,7 @@ function App() {
         )}
         {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
         {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
+        {alertStock && <PriceAlertModal stock={alertStock} onClose={() => setAlertStock(null)} />}
         {editingHolding && (
           <HoldingEditModal
             stock={editingHolding}

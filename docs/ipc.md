@@ -19,6 +19,7 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 | `price`, `change`, `changeRatio` | number   | 현재가, 전일 대비, 등락률(%)                                      |
 | `isUp`                           | boolean  | `change >= 0`                                                     |
 | `prices`                         | number[] | 3개월 일봉 종가 (차트, 10분 캐시)                                 |
+| `marketAt`                       | string?  | 공급자가 알려주는 가격의 마지막 거래 시각 (ISO 8601); 없으면 알림 차단 |
 | `quantity`, `avgPrice`           | number?  | 사용자 입력 보유 정보. 시세보다 우선                              |
 | `stale`                          | boolean? | 갱신 실패, 마지막 정상 시세 표시 중                               |
 | `error`, `errorCode`             | string?  | 한 번도 시세를 받지 못한 경우만. 화면은 `errorCode`만 번역해 표시 |
@@ -30,6 +31,21 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 | `stocks:get-cache` | invoke          | —    | `Stock[]` 마지막 결과      |
 | `stocks:refresh`   | invoke          | —    | 강제 갱신 (실패 대기 무시) |
 | `stocks:update`    | main → renderer | —    | `Stock[]`, 갱신될 때마다   |
+
+## 가격 알림 (P2)
+
+| 채널 | 입력 | 출력 | 설명 |
+|---|---|---|---|
+| `alerts:list` | — | `Alert[]` | 로컬에 저장된 가격 알림 |
+| `alerts:create` | `{market,symbol,direction:'above'|'below',target:number}` | `Alert` | 1회 조건 생성 |
+| `alerts:remove` | `id:string` | `Alert[]` | 조건 삭제 |
+
+- `Alert.status`: `waiting` 또는 `triggered` (완료 조건은 자동 재알림하지 않음).
+- 가격 알림은 처음 유효한 거래 시세를 기준 상태로 저장하고, 이후 목표와 반대편→목표편 **실제 교차**가 관측되어야 발송한다.
+- `marketAt`(시세 제공처 거래 기준 시각) 미확인·오래된 시세·`stale`/오류·타종목 응답은 평가하지 않는다.
+- 기기 절전·앱 종료·주기 조회 간 가격 반전은 감지하지 못할 수 있다. 시장별 지연 가격은 실시간 거래소 알림이 아니다.
+- 동일한 종목 알림은 `watchlist:remove` 후 삭제한다.
+- 현재 가격 알림 로직은 **로컬 기술 MVP**이고 Pro 라이선스/유료 결제 연동이 없다.
 
 ## 관심 종목
 

@@ -79,6 +79,7 @@ export function createYahooProvider({ market, suffix = '', exchanges = {}, label
       currency: meta.currency,
       name: meta.shortName || meta.longName || meta.symbol || ticker,
       price,
+      marketAt: Number.isFinite(meta.regularMarketTime) ? new Date(meta.regularMarketTime * 1000).toISOString() : null,
       change,
       changeRatio,
       isUp: change >= 0,

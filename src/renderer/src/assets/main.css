@@ -1086,3 +1086,13 @@ body,
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Price alert modal reuses existing modal and settings primitives. */
+.alert-hint { font-size: 11px; line-height: 1.5; opacity: .68; margin: 6px 0 12px; }
+.alert-label { display: block; font-size: 11px; opacity: .75; margin: 10px 0 4px; }
+.alert-input { width: 100%; box-sizing: border-box; min-height: 32px; background: rgba(255,255,255,.07); color: inherit; border: 1px solid rgba(255,255,255,.16); border-radius: 5px; padding: 6px 8px; }
+.alert-input option { color: #111; }
+.alert-list { max-height: 140px; overflow-y: auto; margin-top: 12px; }
+.alert-entry { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; font-size: 11px; border-top: 1px solid rgba(255,255,255,.08); }
+.alert-entry button { background: transparent; color: inherit; border: 0; cursor: pointer; opacity: .75; }
+.card-alert:hover { color: #f5d37a; }

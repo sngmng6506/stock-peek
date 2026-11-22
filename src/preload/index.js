@@ -10,6 +10,9 @@ const api = {
     ipcRenderer.on('panel:resize-ended', handler)
     return () => ipcRenderer.off('panel:resize-ended', handler)
   },
+  getAlerts: () => ipcRenderer.invoke('alerts:list'),
+  createAlert: (input) => ipcRenderer.invoke('alerts:create', input),
+  removeAlert: (id) => ipcRenderer.invoke('alerts:remove', id),
   getStocks: () => ipcRenderer.invoke('stocks:get-cache'),
   refreshStocks: () => ipcRenderer.invoke('stocks:refresh'),
   onStocksUpdate: (cb) => {

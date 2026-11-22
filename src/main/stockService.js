@@ -9,6 +9,7 @@ const JITTER = 250 // ms, 다중 사용자 호출 분산용
 const CHART_TTL = 600_000 // 차트는 일봉(3개월)이라 10분 캐시로 충분
 
 let polling = false
+let backgroundPolling = false
 let timer = null
 let cache = []
 const listeners = new Set()
@@ -113,9 +114,9 @@ export const refreshAll = createRefreshCoordinator({
 // --- Adaptive scheduling -----------------------------------------
 
 function scheduleNext() {
-  if (!polling) return
+  if (!polling && !backgroundPolling) return
   if (timer) clearTimeout(timer)
-  const base = anyMarketOpen() ? REFRESH_FAST : REFRESH_SLOW
+  const base = polling && anyMarketOpen() ? REFRESH_FAST : REFRESH_SLOW
   const jitter = Math.floor(Math.random() * (JITTER * 2)) - JITTER
   timer = setTimeout(tick, base + jitter)
 }
@@ -129,12 +130,26 @@ function tick() {
 export function startPolling() {
   if (polling) return
   polling = true
-  tick() // 즉시 첫 fetch + 이후 자동 스케줄
+  tick()
 }
 
 export function stopPolling() {
   polling = false
-  if (timer) {
+  if (backgroundPolling) scheduleNext()
+  else if (timer) {
+    clearTimeout(timer)
+    timer = null
+  }
+}
+
+export function setAlertPolling(enabled) {
+  const next = Boolean(enabled)
+  if (backgroundPolling === next) return
+  backgroundPolling = next
+  if (polling || backgroundPolling) {
+    if (backgroundPolling && !polling) tick()
+    else scheduleNext()
+  } else if (timer) {
     clearTimeout(timer)
     timer = null
   }

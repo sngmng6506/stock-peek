@@ -43,6 +43,15 @@ function quoteFromOver(over) {
   }
 }
 
+// The upstream timestamp is Korean exchange-local if it carries no timezone.
+function koreanTradeTime(value) {
+  if (typeof value !== 'string' || !value.trim()) return null
+  const raw = value.trim()
+  const zoned = /(Z|[+-]\d{2}:?\d{2})$/i.test(raw) ? raw : raw + '+09:00'
+  const time = Date.parse(zoned)
+  return Number.isFinite(time) ? new Date(time).toISOString() : null
+}
+
 function extractQuote(json) {
   const data = json?.datas?.[0] || json?.result?.areas?.[0]?.datas?.[0]
   if (!data) return null
@@ -68,7 +77,8 @@ function extractQuote(json) {
     price: chosen.price,
     change: chosen.change,
     changeRatio: chosen.changeRatio,
-    isUp
+    isUp,
+    marketAt: koreanTradeTime(chosen.time)
   }
 }
 

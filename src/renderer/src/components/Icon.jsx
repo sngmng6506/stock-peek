@@ -5,7 +5,8 @@ const paths = {
   help: 'M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4M12 17h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
   pin: 'M9 3h6l-1 7 4 4v2H6v-2l4-4-1-7M12 16v5',
   close: 'M6 6l12 12M6 18 18 6',
-  chart: 'M4 4v16h16M7 14l4-4 4 2 5-6'
+  chart: 'M4 4v16h16M7 14l4-4 4 2 5-6',
+  bell: 'M18 8a6 6 0 0 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9M10 21h4'
 }
 
 export default function Icon({ name }) {

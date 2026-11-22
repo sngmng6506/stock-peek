@@ -27,10 +27,12 @@ import {
   getCache,
   subscribe,
   refreshAll,
-  reorderCache
+  reorderCache,
+  setAlertPolling
 } from './stockService.js'
 import { addItem, removeItem, reorderWatchlist, updateHolding, getActivitySummary, exportActivity, clearActivity } from './watchlist.js'
 import { getProvider } from './markets/index.js'
+import { alerts } from './alertStore.js'
 import { eFetch } from './markets/http.js'
 import {
   isWelcomeShown,
@@ -81,6 +83,7 @@ let dragDebounce = null
 let updateInfo = null
 let updateReady = null
 let updateNotification = null
+const alertNotifications = new Set()
 let notifiedVersion = null
 
 // Mac 빌드는 코드 서명이 없어 Squirrel.Mac 자동 설치가 불가 → 새 버전 알림 + 다운로드 페이지만
@@ -148,6 +151,42 @@ function notifyUpdate(version) {
   })
   updateNotification.on('click', installUpdate)
   updateNotification.show()
+}
+
+function refreshAlertMonitoring() {
+  try {
+    setAlertPolling(alerts.list().some(a => a.status === 'waiting'))
+  } catch (error) {
+    // A corrupted or future store version must not prevent the entire app from launching.
+    console.error('Price alert storage unavailable:', error)
+    setAlertPolling(false)
+  }
+}
+
+function notifyPriceAlert({ alert, price }) {
+  if (!Notification.isSupported()) return
+  const n = new Notification({
+    title: t('notify.alertTitle', { v: alert.symbol }),
+    body: t(alert.direction === 'above' ? 'notify.alertAbove' : 'notify.alertBelow',
+      { v: String(price), n: String(alert.target) }),
+    icon
+  })
+  alertNotifications.add(n)
+  n.on('close', () => alertNotifications.delete(n))
+  n.on('click', () => { if (mainWindow && !mainWindow.isDestroyed()) setTarget('shown') })
+  n.show()
+}
+
+function evaluatePriceAlerts(results) {
+  try {
+    const triggered = alerts.process(results)
+    if (triggered.length) {
+      for (const result of triggered) notifyPriceAlert(result)
+      refreshAlertMonitoring()
+    }
+  } catch (error) {
+    console.error('Price alert processing failed:', error)
+  }
 }
 
 function getDockedDisplay() {
@@ -707,6 +746,21 @@ app.whenReady().then(() => {
     Menu.setApplicationMenu(Menu.buildFromTemplate([{ role: 'appMenu' }, { role: 'editMenu' }]))
   }
 
+  subscribe(evaluatePriceAlerts)
+  refreshAlertMonitoring()
+
+  ipcMain.handle('alerts:list', () => alerts.list())
+  ipcMain.handle('alerts:create', (_event, input) => {
+    const created = alerts.add(input)
+    refreshAlertMonitoring()
+    return created
+  })
+  ipcMain.handle('alerts:remove', (_event, id) => {
+    const next = alerts.remove(id)
+    refreshAlertMonitoring()
+    return next
+  })
+
   ipcMain.handle('stocks:get-cache', () => getCache())
   ipcMain.handle('stocks:refresh', () => refreshAll({ force: true }))
 
@@ -800,6 +854,8 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('watchlist:remove', async (_e, { market, symbol }) => {
     const list = removeItem(market, symbol)
+    alerts.removeStock(market, symbol)
+    refreshAlertMonitoring()
     refreshAll()
     return list
   })
