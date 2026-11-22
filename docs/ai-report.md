@@ -1,5 +1,7 @@
 # Stock Peek AI daily report (MVP, stage 1)
 
+> **Superseded product policy (2026-11-22).** This document records the original stage-1 implementation, **not the current pricing or daily limit**. The canonical product specification is [Stock Peek Pro — 통합 설계 v1.0](stock-peek-pro.md): **₩990 per 10 credits, one-time top-up, no daily cap**, user activity history and optional investment thesis. Existing code is still a partial foundation (72-hour evidence, no actual PDF/LLM/payment).
+
 Status: **domain contract + one-page HTML template only**. No production news integration, no LLM calls, no payment, no PDF download UI yet. This is an intentionally non-deployed foundation.
 
 ## Product promise

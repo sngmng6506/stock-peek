@@ -45,6 +45,7 @@ website/                  생성 결과 — HTML·sitemap·llms.txt 직접 수�
 scripts/                  prepare-release.mjs, build-site.mjs, check-i18n.mjs, update_jp_stocks.py, import_sa_stocks.py, download_stats.py
 docs/market-expansion.md  시장·언어 추가 체크리스트
 docs/ipc.md               IPC 채널 입력·출력·오류 코드
+docs/stock-peek-pro.md    Pro·AI 크레딧 통합 제품/아키텍처 설계 (기준 정책)
 docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 ```
 
