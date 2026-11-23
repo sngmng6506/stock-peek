@@ -4,8 +4,13 @@
   "main": "./src/worker.js",
   "compatibility_date": "2026-11-20",
   "workers_dev": true,
-  // Preserve dashboard-managed plain Variables across Wrangler deploys.
-  "keep_vars": true,
+  // Explicit non-secret runtime configuration, versioned with deploy source.
+  "vars": {
+    "ANALYSIS_ENABLED": "0",
+    "ANALYSIS_DAILY_LIMIT": "3",
+    "P4_MODEL": "anthropic/claude-sonnet-5.5",
+    "SEC_USER_AGENT": "StockPeek/1.0 (sngmng6506@gmail.com)"
+  },
   "d1_databases": [
     {
       "binding": "ANALYSIS_DB",
