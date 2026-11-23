@@ -32,6 +32,23 @@ jobs:
       - run: npm run lint -- --max-warnings 0
       - run: npm run build
       - run: npm test
+      - name: Parse PowerShell 5.1-compatible operator scripts
+        shell: pwsh
+        run: |
+          foreach ($path in @(
+            'stockpeek-proxy/scripts/smoke-analysis.ps1',
+            'stockpeek-proxy/scripts/run-live-test.ps1'
+          )) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $path, [ref]$tokens, [ref]$parseErrors
+            ) | Out-Null
+            if ($parseErrors.Count -gt 0) {
+              $parseErrors | ForEach-Object { Write-Error $_.Message }
+              exit 1
+            }
+          }
       - run: node scripts/check-proxy-sync.mjs
       - run: node scripts/check-i18n.mjs
       - run: node scripts/build-site.mjs --check
