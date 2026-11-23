@@ -1,0 +1,81 @@
+name: Verify live stockpeek-proxy (non-billable)
+
+# Runs only when this file is first introduced/changed, or manually requested.
+# Does NOT use any Secret, authenticated model endpoint, or billing API.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/live-proxy-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-proxy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check public Worker contract and disabled analysis
+        env:
+          PROXY_URL: https://stockpeek-proxy.sngmng.workers.dev
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict'
+          const base = process.env.PROXY_URL
+          async function request(path, init) {
+            const response = await fetch(base + path, {
+              signal: AbortSignal.timeout(15000),
+              ...init
+            })
+            const body = await response.json()
+            return { response, body }
+          }
+          async function check(name, fn) {
+            try {
+              await fn()
+              console.log('PASS:', name)
+            } catch (error) {
+              console.error('FAIL:', name, error?.message || error)
+              process.exitCode = 1
+            }
+          }
+
+          await check('existing /health', async () => {
+            const { response, body } = await request('/health')
+            assert.equal(response.status, 200)
+            assert.deepEqual(body, { ok: true, name: 'stockpeek-proxy' })
+          })
+          await check('new /api/health', async () => {
+            const { response, body } = await request('/api/health')
+            assert.equal(response.status, 200)
+            assert.deepEqual(body, { ok: true, service: 'stockpeek-proxy', mode: 'restricted' })
+          })
+          await check('KR 005930 quote skipChart', async () => {
+            const { response, body } = await request('/api/stock?market=KR&symbol=005930&skipChart=1')
+            assert.equal(response.status, 200)
+            assert.equal(body.market, 'KR')
+            assert.equal(body.symbol, '005930')
+            assert.equal(typeof body.price, 'number')
+            assert.ok(body.price > 0)
+          })
+          await check('US MSFT search', async () => {
+            const { response, body } = await request('/api/search?market=US&q=MSFT')
+            assert.equal(response.status, 200)
+            assert.ok(Array.isArray(body))
+            assert.ok(body.some(stock => stock.market === 'US' && stock.symbol === 'MSFT'))
+          })
+          await check('analysis disabled before any billable call', async () => {
+            // Empty JSON must be rejected by the enabled analysis API; while disabled,
+            // the fail-closed guard runs first and never reaches OpenRouter.
+            const { response, body } = await request('/api/analyze', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: '{}'
+            })
+            assert.equal(response.status, 503)
+            assert.deepEqual(body, { ok: false, error: 'ERR_ANALYSIS_DISABLED' })
+            assert.equal(response.headers.get('access-control-allow-origin'), null)
+          })
+          NODE
