@@ -31,8 +31,8 @@ if(!inputPath || !outputPath || inputPath===outputPath){
       dartCorpMap:map
     })
     const useModel=process.env.P4_ENABLE_MODEL==='1'
-    const generate=useModel?createOpenAiNarrator({
-      fetchImpl:fetch,apiKey:process.env.OPENAI_API_KEY,
+    const generate=useModel?createOpenRouterNarrator({
+      fetchImpl:fetch,apiKey:process.env.OPENROUTER_API_KEY,
       model:process.env.P4_MODEL||'anthropic/claude-sonnet-5.5'
     }):null
     const run=createAnalysisPipeline({filings:provider,generate})

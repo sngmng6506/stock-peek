@@ -1,0 +1,61 @@
+name: One-time formatter for P4 and proxy
+
+# One-time migration: format the files already flagged by strict ESLint.
+# Triggered only when this workflow file is first added/changed, not on its own bot commit.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/format-p4-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  format-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Format only files ESLint reports as nonconforming
+        run: |
+          node <<'NODE'
+          const { spawnSync, execFileSync } = require('node:child_process')
+          const node = process.execPath
+          const p = spawnSync(node, ['./node_modules/eslint/bin/eslint.js', '.', '--format', 'json'], {
+            encoding: 'utf8', maxBuffer: 32 * 1024 * 1024
+          })
+          if (p.error || !p.stdout) throw p.error || new Error('No ESLint JSON output')
+          const results = JSON.parse(p.stdout)
+          const files = results.filter(r => r.messages.some(m => m.ruleId === 'prettier/prettier'))
+            .map(r => r.filePath)
+          console.log('Prettier files to fix:', files.length)
+          if (files.length) {
+            execFileSync(node, ['./node_modules/prettier/bin/prettier.cjs', '--write', ...files],
+              { stdio: 'inherit' })
+          }
+          NODE
+      - name: Verify lint and tests after formatting
+        run: |
+          npm run lint -- --max-warnings 0
+          npm test
+          node scripts/check-proxy-sync.mjs
+          npm run build
+          node scripts/check-i18n.mjs
+          node scripts/build-site.mjs --check
+      - name: Commit formatter results directly to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          if git diff --cached --quiet; then
+            echo "No formatting changes"
+          else
+            git commit -m "style: satisfy strict Prettier lint in Stock Peek P4 and proxy"
+            git push origin HEAD:main
+          fi

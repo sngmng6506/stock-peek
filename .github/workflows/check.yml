@@ -12,6 +12,10 @@ on:
       - 'scripts/check-i18n.mjs'
       - 'src/**'
       - 'tests/**'
+      - 'stockpeek-proxy/**'
+      - 'server/p4/**'
+      - 'scripts/p4-analyze.mjs'
+      - 'scripts/check-proxy-sync.mjs'
       - 'package.json'
       - '.github/workflows/check.yml'
   pull_request:
@@ -28,5 +32,6 @@ jobs:
       - run: npm run lint -- --max-warnings 0
       - run: npm run build
       - run: npm test
+      - run: node scripts/check-proxy-sync.mjs
       - run: node scripts/check-i18n.mjs
       - run: node scripts/build-site.mjs --check

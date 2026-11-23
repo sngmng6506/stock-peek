@@ -49,3 +49,28 @@ The operator confirmed Cloudflare Workers binding `ANALYSIS_DB` points to the D1
 ## Wrangler 4.166.0 deployment warning (2026-11-23)
 
 The first live deployment warned that the locally configured Worker **removed** all four dashboard plain Variables. Therefore `wrangler.jsonc` now declares those exact public Variables. Confirm they are present in the next `wrangler deploy --dry-run` output and then deploy this configuration. Dashboard Secrets must be checked separately; this change does not validate or expose them. Do not enable analysis until the health endpoint and legacy quote/search routes have been tested.
+
+## One-shot live test on Windows PowerShell 5.1
+
+The operator has already verified that `/health`, `/api/health`, Korean stock quote and US stock search return valid responses, and an unauthenticated `POST /api/analyze` returns HTTP 503 while disabled. These checks do not prove D1 query execution or OpenRouter model connectivity.
+
+**Before live testing:** confirm Secrets `DART_API_KEY`, `OPENROUTER_API_KEY` and `ANALYSIS_TEST_TOKEN` still exist in the same Worker. Know the **actual token value** locally, or rotate it in Cloudflare before using the script. The token must be at least 32 characters (supported alphabet: ASCII letters, digits, underscore, hyphen or period). Do not send it through chat or commit it.
+
+From `stockpeek-proxy` in PowerShell 5.1:
+
+```powershell
+.\scripts\smoke-analysis.ps1 -Mode Disabled
+.\scripts\run-live-test.ps1 -ConfirmLiveCosts
+```
+
+The one-shot runner checks disabled mode first; temporarily changes `ANALYSIS_ENABLED` to `1` in the **local** `wrangler.jsonc`, deploys; verifies missing-token rejection (HTTP 401); prompts for `ANALYSIS_TEST_TOKEN` as a secure input; calls one MSFT 30-day metadata-only report; **restores the original config and deploys disabled mode again in a finally block**, including most error cases. On power loss / forced termination / rollback failure, manually restore `ANALYSIS_ENABLED=0` and run `npx wrangler deploy`, then verify HTTP 503. A live request consumes one daily quota slot before provider calls and may incur API charges even on failures. The script prints result metadata only.
+
+If live request fails, the authenticated endpoint returns allowlisted error codes (e.g. `ERR_ANALYSIS_NO_COVERAGE`, `ERR_MODEL_HTTP`) without raw upstream response or secrets. For D1 quota verification, in the D1 console run:
+
+```sql
+SELECT day, used, updated_at FROM analysis_daily_usage ORDER BY updated_at DESC LIMIT 5;
+```
+
+Do not paste D1 `token_hash` or private report bodies in bug reports. Investigate `ERR_ANALYSIS_NO_COVERAGE` as SEC fetch/access failures; `ERR_MODEL_HTTP` as provider/authorization/model/JSON Schema issues. Neither indicates successful paid report generation.
+
+Latest known OpenRouter model is `anthropic/claude-sonnet-5.5`. Deployment remains operator-only; do not copy the token into Electron/website assets.

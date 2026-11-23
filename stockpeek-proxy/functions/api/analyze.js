@@ -173,9 +173,14 @@ export async function onRequestPost({ request, env }) {
     const run = createAnalysisPipeline({ filings: filing, generate: narrator })
     const output = await run(input)
     return new Response(JSON.stringify({ ok: true, result: output }), { status: 200, headers: JSON_HEADERS })
-  } catch {
-    // Never log secrets, source URLs with keys, holdings, thesis text, or upstream response bodies.
-    return response(502, 'ERR_ANALYSIS_FAILED')
+  } catch (error) {
+    // Return only known, non-sensitive error codes to an authenticated operator.
+    // Never include upstream response bodies, DART URLs with credentials or prompts.
+    const code = error instanceof Error &&
+      /^(ERR_ANALYSIS_NO_COVERAGE|ERR_MODEL_(HTTP|INCOMPLETE|REFUSAL|RESPONSE|JSON|NOT_CONFIGURED)|ERR_NEWS_NOT_LICENSED)$/.test(error.message)
+      ? error.message
+      : 'ERR_ANALYSIS_FAILED'
+    return response(502, code)
   }
 }
 

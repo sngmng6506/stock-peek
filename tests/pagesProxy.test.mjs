@@ -72,7 +72,9 @@ test('daily quota denies paid calls at the boundary', async () => {
   const oldFetch = globalThis.fetch
   globalThis.fetch = async () => { throw Error('network unavailable') }
   try {
-    assert.equal((await answer(req(), env))[0], 502)
+    const [failedStatus, failedBody] = await answer(req(), env)
+    assert.equal(failedStatus, 502)
+    assert.equal(failedBody.error, 'ERR_ANALYSIS_NO_COVERAGE')
     assert.equal((await answer(req(), env))[0], 429)
     assert.equal(used, 2)
   } finally { globalThis.fetch = oldFetch }
