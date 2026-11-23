@@ -9,15 +9,15 @@ The production URL `https://stockpeek-proxy.sngmng.workers.dev/` is a **standalo
 - `POST /api/analyze`: new **restricted operator test endpoint**, imported from `functions/api/analyze.js` (legacy Pages Function handler reused as a plain module)
 - `lib/{filings,pipeline,openrouter}.js`: copies of canonical `../server/p4/` modules (enforced via `node scripts/check-proxy-sync.mjs` from repo root)
 - `migrations/0001_rate_limits.sql`: D1 operator daily quota table, **not** billing credits
-- `wrangler.example.jsonc`: template, **not** deployable before D1 configuration
+- `wrangler.jsonc`: production-target Worker configuration with existing D1 binding (`ANALYSIS_DB` → `stock-peek`); no credentials or operator tokens
 - `tests/workerProxy.test.mjs`: integration-level router contract tests using mocked quotes/search; `tests/pagesProxy.test.mjs`: closed-by-default analyze tests
 
-**The GitHub repo does not control the current Worker automatically.** GitHub commit is not a Cloudflare deployment. The bundle shown in the Cloudflare dashboard has no GitHub source attached, so use a deliberately verified Wrangler deployment or connect the Worker to GitHub only after comparing its current settings.
+**The GitHub repo does not control the current Worker automatically.** GitHub commit is not a Cloudflare deployment. The bundle shown in the Cloudflare dashboard did not show a GitHub source attached, so use a deliberately verified Wrangler deployment or connect the Worker to GitHub only after comparing its current settings.
 
 ## Deploy safely (operator only)
 
 1. In Cloudflare `stockpeek-proxy` → Settings / Bindings, record the existing binding names and **D1 database name + UUID**. Back up the current Worker code/version before deploying. Compare the reconstructed quote/search behavior against the currently deployed version (price/chart/search are independent and must keep working).
-2. Copy `wrangler.example.jsonc` to `wrangler.jsonc` inside this directory. Replace **both** D1 placeholders with the **already existing** D1 database's name/UUID; do not create or bind an empty replacement. Confirm `ANALYSIS_DB` matches the current binding name. Leave `keep_vars: true` to preserve dashboard-set Variables. Wrangler does not delete Secrets during a normal code deploy (per Cloudflare documentation), but **review bindings in deployment output before confirming**.
+2. The tracked `wrangler.jsonc` already points to the existing database `stock-peek` (UUID `22cd62c8-82f0-4708-9849-4fce7c952ce4`) as `ANALYSIS_DB`. **Confirm this UUID belongs to the same Cloudflare account as the running Worker before deploying.** Keep `keep_vars: true` to preserve dashboard Variables. Do not edit `wrangler.jsonc` to include Secrets. Review every binding in the deployment output before proceeding.
 3. Keep `ANALYSIS_ENABLED=0` in the existing Worker Variables. Verify the existing Secrets: `DART_API_KEY`, `OPENROUTER_API_KEY`, `ANALYSIS_TEST_TOKEN` (minimum 32 characters), as well as regular Variables `SEC_USER_AGENT`, `P4_MODEL=anthropic/claude-sonnet-5.5`, `ANALYSIS_DAILY_LIMIT=3`. Do **not** store secret values in source or Wrangler vars. Rotate previously displayed credentials.
 4. Confirm the `analysis_daily_usage` table exists in the **same** D1 database configured above.
 5. Run from the repository root: `node --test tests/pagesProxy.test.mjs tests/workerProxy.test.mjs` and `node scripts/check-proxy-sync.mjs`. Run regular `npm test` and lint/build if dependencies are installed. A GitHub push does not prove tests or upstream connectivity.
@@ -39,3 +39,8 @@ The production URL `https://stockpeek-proxy.sngmng.workers.dev/` is a **standalo
 If deployment breaks legacy stock/search behavior, restore the previous Worker deployment/version using Cloudflare's deployment history and verify both `/api/stock` and `/api/search`. Do not blindly redeploy another revision.
 
 Cloudflare docs: https://developers.cloudflare.com/workers/wrangler/configuration/ | https://developers.cloudflare.com/workers/wrangler/commands/workers/
+
+
+## Configuration verified 2026-11-23
+
+The operator confirmed Cloudflare Workers binding `ANALYSIS_DB` points to the D1 database named `stock-peek`, UUID `22cd62c8-82f0-4708-9849-4fce7c952ce4`. This is **configuration evidence, not live API validation**. The dashboard-managed `DART_API_KEY`, `OPENROUTER_API_KEY`, `ANALYSIS_TEST_TOKEN`, `SEC_USER_AGENT` and other plain Variables are **not** stored in this repository. No Cloudflare authenticated deployment has been executed from this environment.

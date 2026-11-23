@@ -1,0 +1,16 @@
+{
+  // Production Cloudflare Worker configuration. No credentials in source.
+  "name": "stockpeek-proxy",
+  "main": "./src/worker.js",
+  "compatibility_date": "2026-11-20",
+  "workers_dev": true,
+  // Preserve dashboard-managed plain Variables across Wrangler deploys.
+  "keep_vars": true,
+  "d1_databases": [
+    {
+      "binding": "ANALYSIS_DB",
+      "database_name": "stock-peek",
+      "database_id": "22cd62c8-82f0-4708-9849-4fce7c952ce4"
+    }
+  ]
+}
