@@ -24,16 +24,32 @@ export function makeAlert(input, id, now) {
   if (typeof target !== 'number' || !Number.isFinite(target) || target <= 0)
     throw new Error('ERR_ALERT_TARGET')
   return {
-    id, market, symbol, direction: input.direction, target,
-    createdAt: new Date(now).toISOString(), status: 'waiting', lastSide: null,
-    lastMarketAt: null, triggeredAt: null
+    id,
+    market,
+    symbol,
+    direction: input.direction,
+    target,
+    createdAt: new Date(now).toISOString(),
+    status: 'waiting',
+    lastSide: null,
+    lastMarketAt: null,
+    triggeredAt: null
   }
 }
 
 export function isValidQuote(alert, quote, now) {
-  if (!quote || quote.stale || quote.loading || quote.errorCode || quote.error ||
-      quote.market !== alert.market || quote.symbol !== alert.symbol ||
-      !Number.isFinite(quote.price) || quote.price <= 0) return false
+  if (
+    !quote ||
+    quote.stale ||
+    quote.loading ||
+    quote.errorCode ||
+    quote.error ||
+    quote.market !== alert.market ||
+    quote.symbol !== alert.symbol ||
+    !Number.isFinite(quote.price) ||
+    quote.price <= 0
+  )
+    return false
   const time = Date.parse(quote.marketAt)
   const nowMs = Date.parse(now)
   if (!Number.isFinite(time) || !Number.isFinite(nowMs) || time > nowMs + 60_000) return false
@@ -42,26 +58,41 @@ export function isValidQuote(alert, quote, now) {
 }
 
 export function evaluateAlert(alert, quote, now) {
-  if (alert.status === 'triggered' || !isValidQuote(alert, quote, now)) return { next: alert, triggered: false }
+  if (alert.status === 'triggered' || !isValidQuote(alert, quote, now))
+    return { next: alert, triggered: false }
   const time = new Date(quote.marketAt).toISOString()
   if (alert.lastMarketAt && Date.parse(time) <= Date.parse(alert.lastMarketAt))
     return { next: alert, triggered: false }
-  const side = alert.direction === 'above'
-    ? quote.price >= alert.target ? 'target' : 'other'
-    : quote.price <= alert.target ? 'target' : 'other'
+  const side =
+    alert.direction === 'above'
+      ? quote.price >= alert.target
+        ? 'target'
+        : 'other'
+      : quote.price <= alert.target
+        ? 'target'
+        : 'other'
   // After sleep, offline periods or market closures, a gap is NOT an observed crossing.
   // Rebase from the first fresh quote instead of sending a catch-up notification.
   const gap = alert.lastMarketAt ? Date.parse(time) - Date.parse(alert.lastMarketAt) : Infinity
   const continuous = gap > 0 && gap <= 10 * 60_000
   const triggered = continuous && alert.lastSide === 'other' && side === 'target'
   return {
-    next: { ...alert, lastSide: side, lastMarketAt: time,
-      ...(triggered ? { status: 'triggered', triggeredAt: new Date(now).toISOString() } : {}) },
+    next: {
+      ...alert,
+      lastSide: side,
+      lastMarketAt: time,
+      ...(triggered ? { status: 'triggered', triggeredAt: new Date(now).toISOString() } : {})
+    },
     triggered
   }
 }
 
-export function createAlertRepository({ read, write, now = () => new Date().toISOString(), newId }) {
+export function createAlertRepository({
+  read,
+  write,
+  now = () => new Date().toISOString(),
+  newId
+}) {
   const state = () => {
     const result = read()
     if (result == null) return { schemaVersion: VERSION, alerts: [] }
@@ -75,8 +106,14 @@ export function createAlertRepository({ read, write, now = () => new Date().toIS
     const alerts = list()
     if (alerts.length >= ALERT_LIMIT) throw new Error('ERR_ALERT_LIMIT')
     const item = makeAlert(input, newId(), now())
-    if (alerts.some(a => stockId(a.market, a.symbol) === stockId(item.market, item.symbol) &&
-      a.direction === item.direction && a.status !== 'triggered'))
+    if (
+      alerts.some(
+        (a) =>
+          stockId(a.market, a.symbol) === stockId(item.market, item.symbol) &&
+          a.direction === item.direction &&
+          a.status !== 'triggered'
+      )
+    )
       throw new Error('ERR_ALERT_DUPLICATE')
     persist([...alerts, item])
     return item
@@ -84,12 +121,12 @@ export function createAlertRepository({ read, write, now = () => new Date().toIS
   const remove = (id) => {
     if (typeof id !== 'string') throw new Error('ERR_ALERT_ID')
     const alerts = list()
-    if (alerts.some(a => a.id === id)) persist(alerts.filter(a => a.id !== id))
+    if (alerts.some((a) => a.id === id)) persist(alerts.filter((a) => a.id !== id))
     return list()
   }
   const removeStock = (market, symbol) => {
     const alerts = list()
-    const next = alerts.filter(a => stockId(a.market, a.symbol) !== stockId(market, symbol))
+    const next = alerts.filter((a) => stockId(a.market, a.symbol) !== stockId(market, symbol))
     if (next.length !== alerts.length) persist(next)
   }
   const process = (quotes) => {
@@ -97,9 +134,9 @@ export function createAlertRepository({ read, write, now = () => new Date().toIS
     const current = list()
     let dirty = false
     const triggered = []
-    const next = current.map(a => {
+    const next = current.map((a) => {
       // Find a non-stale quote; a partial update may contain stale cache entries.
-      const quote = quotes.find(q => q.market === a.market && q.symbol === a.symbol)
+      const quote = quotes.find((q) => q.market === a.market && q.symbol === a.symbol)
       const result = evaluateAlert(a, quote, now())
       if (result.next !== a) dirty = true
       if (result.triggered) triggered.push({ alert: result.next, price: quote.price })

@@ -34,9 +34,12 @@ function SettingsModal({ onClose }) {
         if (u?.ready) setUpdateReady(u.ready)
       })
       .catch(() => {})
-    window.api.getActivitySummary().then(setActivity).catch(() => {
-      setActivityNotice('error')
-    })
+    window.api
+      .getActivitySummary()
+      .then(setActivity)
+      .catch(() => {
+        setActivityNotice('error')
+      })
     const u1 = window.api.onUpdateAvailable(setUpdateAvailable)
     const u2 = window.api.onUpdateReady(setUpdateReady)
     return () => {
@@ -242,8 +245,12 @@ function SettingsModal({ onClose }) {
             </div>
             {activity?.recent?.map((event) => (
               <div className="setting-row" key={event.eventId}>
-                <span>{t('activity.' + event.type)} {event.stock?.symbol || ''}</span>
-                <span className="settings-value">{new Date(event.occurredAt).toLocaleDateString(lang)}</span>
+                <span>
+                  {t('activity.' + event.type)} {event.stock?.symbol || ''}
+                </span>
+                <span className="settings-value">
+                  {new Date(event.occurredAt).toLocaleDateString(lang)}
+                </span>
               </div>
             ))}
             <button
@@ -264,7 +271,15 @@ function SettingsModal({ onClose }) {
               <span>{t('settings.activityClear')}</span>
               <span aria-hidden="true">×</span>
             </button>
-            {activityNotice && <p className="settings-status" role="status">{activityNotice === 'error' ? t('settings.actionFailed') : t('settings.activity' + (activityNotice === 'exported' ? 'Exported' : 'Cleared'))}</p>}
+            {activityNotice && (
+              <p className="settings-status" role="status">
+                {activityNotice === 'error'
+                  ? t('settings.actionFailed')
+                  : t(
+                      'settings.activity' + (activityNotice === 'exported' ? 'Exported' : 'Cleared')
+                    )}
+              </p>
+            )}
           </section>
 
           <section className="settings-section" aria-labelledby="settings-about">

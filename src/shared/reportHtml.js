@@ -1,24 +1,30 @@
 // Pure A4 layout; print this document with Electron webContents.printToPDF({ pageSize: 'A4' }).
 // Call only with validateReportOutput() output, never raw LLM HTML.
-const escapeHtml = (value) => String(value)
-  .replaceAll('&', '&amp;')
-  .replaceAll('<', '&lt;')
-  .replaceAll('>', '&gt;')
-  .replaceAll('"', '&quot;')
-  .replaceAll("'", '&#39;')
+const escapeHtml = (value) =>
+  String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 
 export function renderReportHtml(report) {
   const safe = escapeHtml
   const stocks = report.stocks.map((s) => safe(`${s.market}:${s.symbol}`)).join(' · ')
   const sourceNumbers = new Map(report.sources.map((source, index) => [source.id, index + 1]))
-  const highlights = report.highlights.map((item) => {
-    const refs = item.sourceIds.map((id) => sourceNumbers.get(id)).filter(Boolean)
-    return `<li>${safe(item.text)} <small>[${refs.join(', ')}]</small></li>`
-  }).join('')
+  const highlights = report.highlights
+    .map((item) => {
+      const refs = item.sourceIds.map((id) => sourceNumbers.get(id)).filter(Boolean)
+      return `<li>${safe(item.text)} <small>[${refs.join(', ')}]</small></li>`
+    })
+    .join('')
   const watchItems = report.watchItems.map((item) => `<li>${safe(item)}</li>`).join('')
-  const sources = report.sources.map((item, i) =>
-    `<li><span>[${i + 1}] ${safe(item.publisher)} · ${safe(item.publishedAt.slice(0, 16).replace('T', ' '))} UTC · ${safe(item.evidenceLevel === 'headline-only' ? '제목·메타데이터만 확인' : '이용 허가된 발췌 자료')}</span><a href="${safe(item.url)}">${safe(item.title)}</a></li>`
-  ).join('')
+  const sources = report.sources
+    .map(
+      (item, i) =>
+        `<li><span>[${i + 1}] ${safe(item.publisher)} · ${safe(item.publishedAt.slice(0, 16).replace('T', ' '))} UTC · ${safe(item.evidenceLevel === 'headline-only' ? '제목·메타데이터만 확인' : '이용 허가된 발췌 자료')}</span><a href="${safe(item.url)}">${safe(item.title)}</a></li>`
+    )
+    .join('')
   return `<!doctype html>
 <html lang="${safe(report.locale)}">
 <head><meta charset="utf-8"><title>Stock Peek AI Report</title>
@@ -42,7 +48,7 @@ a { color:#263d62; text-decoration:none; }
 footer { border-top:1px solid #d5dce5; margin-top:12px; padding-top:6px; color:#667085; font-size:7.3pt; }
 </style></head>
 <body>
-<header><h1>STOCK PEEK <span style="font-size:11pt">/ AI REPORT</span></h1><div class="meta">${safe(report.asOf.slice(0,16).replace('T',' '))} UTC</div></header>
+<header><h1>STOCK PEEK <span style="font-size:11pt">/ AI REPORT</span></h1><div class="meta">${safe(report.asOf.slice(0, 16).replace('T', ' '))} UTC</div></header>
 <p class="meta">관심 종목: ${stocks}</p>
 <section class="summary"><strong>오늘의 요약</strong><p>${safe(report.summary)}</p></section>
 <section><h2>새로운 소식 및 변화</h2>${highlights ? `<ul>${highlights}</ul>` : '<p>확인된 신규 근거 자료가 없습니다. 임의로 변화를 생성하지 않았습니다.</p>'}</section>

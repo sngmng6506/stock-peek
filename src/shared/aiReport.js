@@ -30,7 +30,10 @@ export function buildReportRequest(watchlist, options = {}) {
   if (!Array.isArray(watchlist)) fail('ERR_REPORT_WATCHLIST')
   const { includeHoldings = false, selectedKeys = null, locale = 'ko' } = options
   if (typeof includeHoldings !== 'boolean' || !text(locale, 12)) fail('ERR_REPORT_OPTIONS')
-  if (selectedKeys != null && (!Array.isArray(selectedKeys) || selectedKeys.some((v) => typeof v !== 'string'))) {
+  if (
+    selectedKeys != null &&
+    (!Array.isArray(selectedKeys) || selectedKeys.some((v) => typeof v !== 'string'))
+  ) {
     fail('ERR_REPORT_SELECTION')
   }
   const selected = selectedKeys == null ? null : new Set(selectedKeys)
@@ -149,9 +152,10 @@ export function validateReportOutput(report, request, context) {
   if (!context.evidence.length && normalized.length) fail('ERR_REPORT_CITATIONS')
   const watchItems = Array.isArray(report.watchItems) ? report.watchItems : []
   if (watchItems.length > 4) fail('ERR_REPORT_WATCH_ITEMS')
-  const portfolioNote = report.portfolioNote == null
-    ? null
-    : checkedLine(report.portfolioNote, 350, 'ERR_REPORT_PORTFOLIO')
+  const portfolioNote =
+    report.portfolioNote == null
+      ? null
+      : checkedLine(report.portfolioNote, 350, 'ERR_REPORT_PORTFOLIO')
   if (!request.includeHoldings && portfolioNote != null) fail('ERR_REPORT_PORTFOLIO')
   return {
     schemaVersion: 1,

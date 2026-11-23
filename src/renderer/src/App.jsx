@@ -71,7 +71,12 @@ const SortableCard = memo(
     }
     return (
       <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-        <StockCard stock={stock} onRemove={onRemove} onEditHolding={onEditHolding} onAlert={onAlert} />
+        <StockCard
+          stock={stock}
+          onRemove={onRemove}
+          onEditHolding={onEditHolding}
+          onAlert={onAlert}
+        />
       </div>
     )
   },

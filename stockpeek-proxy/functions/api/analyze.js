@@ -3,13 +3,17 @@ import { createAnalysisPipeline, validateAnalysisRequest } from '../../lib/pipel
 import { createOpenRouterNarrator } from '../../lib/openrouter.js'
 
 const MAX_BODY_BYTES = 12_000
-const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
-const response = (status, error) => new Response(JSON.stringify({ ok: false, error }), { status, headers: JSON_HEADERS })
+const JSON_HEADERS = {
+  'content-type': 'application/json; charset=utf-8',
+  'cache-control': 'no-store'
+}
+const response = (status, error) =>
+  new Response(JSON.stringify({ ok: false, error }), { status, headers: JSON_HEADERS })
 
 async function digest(value) {
   const raw = new TextEncoder().encode(value)
   const bytes = await crypto.subtle.digest('SHA-256', raw)
-  return Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2, '0')).join('')
+  return Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, '0')).join('')
 }
 
 function fixedTimeEqual(a, b) {
@@ -23,7 +27,9 @@ function fixedTimeEqual(a, b) {
 async function authenticate(request, env) {
   const token = env.ANALYSIS_TEST_TOKEN
   if (typeof token !== 'string' || token.length < 32) return null
-  const match = /^Bearer ([A-Za-z0-9_\-.]{32,256})$/.exec(request.headers.get('authorization') || '')
+  const match = /^Bearer ([A-Za-z0-9_\-.]{32,256})$/.exec(
+    request.headers.get('authorization') || ''
+  )
   if (!match) return null
   const [expected, presented] = await Promise.all([digest(token), digest(match[1])])
   if (!fixedTimeEqual(expected, presented)) return null
@@ -37,14 +43,19 @@ async function checkLimit(env, tokenHash) {
   const day = new Date().toISOString().slice(0, 10)
   const limit = Math.min(10, Math.max(1, Number(env.ANALYSIS_DAILY_LIMIT) || 3))
   // Atomic UPSERT: concurrent requests cannot bypass the quota.
-  const result = await db.prepare(`
+  const result = await db
+    .prepare(
+      `
     INSERT INTO analysis_daily_usage (day, token_hash, used, updated_at)
     VALUES (?, ?, 1, ?)
     ON CONFLICT(day, token_hash) DO UPDATE SET
       used = used + 1, updated_at = excluded.updated_at
     WHERE used < ?
     RETURNING used
-  `).bind(day, tokenHash, new Date().toISOString(), limit).first()
+  `
+    )
+    .bind(day, tokenHash, new Date().toISOString(), limit)
+    .first()
   return Boolean(result)
 }
 
@@ -63,7 +74,10 @@ async function readLimitedBody(request) {
     }
     const bytes = new Uint8Array(total)
     let offset = 0
-    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length }
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset)
+      offset += chunk.length
+    }
     return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
   } finally {
     reader.releaseLock()
@@ -73,7 +87,10 @@ async function readLimitedBody(request) {
 async function safeFetchJson(url, options = {}) {
   // Only preconstructed official source URLs from the filing adapter are accepted.
   const u = new URL(url)
-  if (u.protocol !== 'https:' || !['data.sec.gov', 'www.sec.gov', 'opendart.fss.or.kr'].includes(u.hostname))
+  if (
+    u.protocol !== 'https:' ||
+    !['data.sec.gov', 'www.sec.gov', 'opendart.fss.or.kr'].includes(u.hostname)
+  )
     throw new Error('ERR_SOURCE_URL')
   const res = await fetch(u.href, { ...options, signal: AbortSignal.timeout(10_000) })
   if (!res.ok) throw new Error('ERR_SOURCE_HTTP')
@@ -81,7 +98,11 @@ async function safeFetchJson(url, options = {}) {
   if (size > 5_000_000) throw new Error('ERR_SOURCE_SIZE')
   const data = await res.text()
   if (data.length > 5_000_000) throw new Error('ERR_SOURCE_SIZE')
-  try { return JSON.parse(data) } catch { throw new Error('ERR_SOURCE_JSON') }
+  try {
+    return JSON.parse(data)
+  } catch {
+    throw new Error('ERR_SOURCE_JSON')
+  }
 }
 
 export async function onRequestPost({ request, env }) {
@@ -95,10 +116,12 @@ export async function onRequestPost({ request, env }) {
   if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json'))
     return response(415, 'ERR_CONTENT_TYPE')
   const headerSize = Number(request.headers.get('content-length'))
-  if (Number.isFinite(headerSize) && headerSize > MAX_BODY_BYTES) return response(413, 'ERR_REQUEST_TOO_LARGE')
+  if (Number.isFinite(headerSize) && headerSize > MAX_BODY_BYTES)
+    return response(413, 'ERR_REQUEST_TOO_LARGE')
   let input
-  try { input = JSON.parse(await readLimitedBody(request)) }
-  catch (error) {
+  try {
+    input = JSON.parse(await readLimitedBody(request))
+  } catch (error) {
     return error?.message === 'ERR_REQUEST_TOO_LARGE'
       ? response(413, 'ERR_REQUEST_TOO_LARGE')
       : response(400, 'ERR_REQUEST_JSON')
@@ -109,7 +132,7 @@ export async function onRequestPost({ request, env }) {
   try {
     validateAnalysisRequest(input)
     const options = input.options
-    const limitedSnapshot = item => {
+    const limitedSnapshot = (item) => {
       if (!item || typeof item !== 'object') return null
       const out = {}
       if (typeof item.market === 'string') out.market = item.market.slice(0, 8)
@@ -125,40 +148,58 @@ export async function onRequestPost({ request, env }) {
     input = {
       schemaVersion: 2,
       locale: ['ko', 'en', 'ja', 'ar'].includes(input.locale) ? input.locale : 'ko',
-      stocks: input.stocks.map(stock => ({
-        market: stock.market, symbol: stock.symbol, key: stock.key,
+      stocks: input.stocks.map((stock) => ({
+        market: stock.market,
+        symbol: stock.symbol,
+        key: stock.key,
         ...(options.includeHoldings && stock.holding
           ? { holding: { quantity: stock.holding.quantity, avgPrice: stock.holding.avgPrice } }
           : {})
       })),
       options: {
-        includeHoldings: options.includeHoldings, includeHistory: options.includeHistory,
-        includeThesis: options.includeThesis, lookbackDays: options.lookbackDays
+        includeHoldings: options.includeHoldings,
+        includeHistory: options.includeHistory,
+        includeThesis: options.includeThesis,
+        lookbackDays: options.lookbackDays
       },
-      ...(options.includeThesis && input.investmentThesis ? {
-        investmentThesis: {
-          text: input.investmentThesis.text, horizon: input.investmentThesis.horizon,
-          focus: input.investmentThesis.focus
-        }
-      } : {}),
-      ...(options.includeHistory ? {
-        activity: input.activity.map(event => ({
-          type: event.type, occurredAt: event.occurredAt,
-          stock: { market: event.stock.market, symbol: event.stock.symbol },
-          before: limitedSnapshot(event.before), after: limitedSnapshot(event.after)
-        }))
-      } : {})
+      ...(options.includeThesis && input.investmentThesis
+        ? {
+            investmentThesis: {
+              text: input.investmentThesis.text,
+              horizon: input.investmentThesis.horizon,
+              focus: input.investmentThesis.focus
+            }
+          }
+        : {}),
+      ...(options.includeHistory
+        ? {
+            activity: input.activity.map((event) => ({
+              type: event.type,
+              occurredAt: event.occurredAt,
+              stock: { market: event.stock.market, symbol: event.stock.symbol },
+              before: limitedSnapshot(event.before),
+              after: limitedSnapshot(event.after)
+            }))
+          }
+        : {})
     }
-  } catch { return response(400, 'ERR_ANALYSIS_REQUEST') }
+  } catch {
+    return response(400, 'ERR_ANALYSIS_REQUEST')
+  }
 
   try {
     if (!(await checkLimit(env, auth))) return response(429, 'ERR_ANALYSIS_DAILY_LIMIT')
-  } catch { return response(503, 'ERR_RATE_DB') }
+  } catch {
+    return response(503, 'ERR_RATE_DB')
+  }
 
   try {
     let map
-    try { map = env.DART_CORP_MAP_JSON ? JSON.parse(env.DART_CORP_MAP_JSON) : {} }
-    catch { return response(503, 'ERR_DART_MAPPING_CONFIG') }
+    try {
+      map = env.DART_CORP_MAP_JSON ? JSON.parse(env.DART_CORP_MAP_JSON) : {}
+    } catch {
+      return response(503, 'ERR_DART_MAPPING_CONFIG')
+    }
     const filing = createOfficialFilingProvider({
       fetchJson: safeFetchJson,
       secUserAgent: env.SEC_USER_AGENT,
@@ -172,14 +213,20 @@ export async function onRequestPost({ request, env }) {
     })
     const run = createAnalysisPipeline({ filings: filing, generate: narrator })
     const output = await run(input)
-    return new Response(JSON.stringify({ ok: true, result: output }), { status: 200, headers: JSON_HEADERS })
+    return new Response(JSON.stringify({ ok: true, result: output }), {
+      status: 200,
+      headers: JSON_HEADERS
+    })
   } catch (error) {
     // Return only known, non-sensitive error codes to an authenticated operator.
     // Never include upstream response bodies, DART URLs with credentials or prompts.
-    const code = error instanceof Error &&
-      /^(ERR_ANALYSIS_NO_COVERAGE|ERR_MODEL_(HTTP|INCOMPLETE|REFUSAL|RESPONSE|JSON|NOT_CONFIGURED)|ERR_NEWS_NOT_LICENSED)$/.test(error.message)
-      ? error.message
-      : 'ERR_ANALYSIS_FAILED'
+    const code =
+      error instanceof Error &&
+      /^(ERR_ANALYSIS_NO_COVERAGE|ERR_MODEL_(HTTP|INCOMPLETE|REFUSAL|RESPONSE|JSON|NOT_CONFIGURED)|ERR_NEWS_NOT_LICENSED)$/.test(
+        error.message
+      )
+        ? error.message
+        : 'ERR_ANALYSIS_FAILED'
     return response(502, code)
   }
 }

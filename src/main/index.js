@@ -30,7 +30,16 @@ import {
   reorderCache,
   setAlertPolling
 } from './stockService.js'
-import { addItem, removeItem, reorderWatchlist, updateHolding, getActivitySummary, exportActivity, clearActivity, getItems } from './watchlist.js'
+import {
+  addItem,
+  removeItem,
+  reorderWatchlist,
+  updateHolding,
+  getActivitySummary,
+  exportActivity,
+  clearActivity,
+  getItems
+} from './watchlist.js'
 import { getProvider } from './markets/index.js'
 import { alerts } from './alertStore.js'
 import { thesis } from './thesisStore.js'
@@ -158,7 +167,7 @@ function notifyUpdate(version) {
 
 function refreshAlertMonitoring() {
   try {
-    setAlertPolling(alerts.list().some(a => a.status === 'waiting'))
+    setAlertPolling(alerts.list().some((a) => a.status === 'waiting'))
   } catch (error) {
     // A corrupted or future store version must not prevent the entire app from launching.
     console.error('Price alert storage unavailable:', error)
@@ -170,13 +179,17 @@ function notifyPriceAlert({ alert, price }) {
   if (!Notification.isSupported()) return
   const n = new Notification({
     title: t('notify.alertTitle', { v: alert.symbol }),
-    body: t(alert.direction === 'above' ? 'notify.alertAbove' : 'notify.alertBelow',
-      { v: String(price), n: String(alert.target) }),
+    body: t(alert.direction === 'above' ? 'notify.alertAbove' : 'notify.alertBelow', {
+      v: String(price),
+      n: String(alert.target)
+    }),
     icon
   })
   alertNotifications.add(n)
   n.on('close', () => alertNotifications.delete(n))
-  n.on('click', () => { if (mainWindow && !mainWindow.isDestroyed()) setTarget('shown') })
+  n.on('click', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) setTarget('shown')
+  })
   n.show()
 }
 
@@ -838,12 +851,15 @@ app.whenReady().then(() => {
     // Local preview only. Does not contact a server, LLM or payment provider.
     const watchlist = getItems()
     const currentThesis = options?.includeThesis
-      ? (options.thesisDraft ? normalizeThesis(options.thesisDraft) : thesis.get())
+      ? options.thesisDraft
+        ? normalizeThesis(options.thesisDraft)
+        : thesis.get()
       : null
     // Touch history only if explicitly requested.
     const history = options?.includeHistory ? exportActivity().activityHistory : null
     return buildPersonalizedPreview(watchlist, history, currentThesis, {
-      ...options, locale: resolveLanguage()
+      ...options,
+      locale: resolveLanguage()
     })
   })
 

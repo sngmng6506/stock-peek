@@ -12,7 +12,7 @@ function iso(value) {
 
 function cleanSnapshot(value, includeHoldings) {
   if (value === null) return null
-  if (Array.isArray(value)) return value.slice(0, 30).map(x => cleanSnapshot(x, includeHoldings))
+  if (Array.isArray(value)) return value.slice(0, 30).map((x) => cleanSnapshot(x, includeHoldings))
   if (!value || typeof value !== 'object') return null
   const result = {}
   if (typeof value.market === 'string') result.market = value.market
@@ -31,7 +31,11 @@ function normalizeActivity(history, selected, includeHoldings, asOf, lookbackDay
   const safe = []
   for (const event of history.events) {
     if (!event || typeof event !== 'object') continue
-    if (!['watchlist_added','watchlist_removed','holding_edited','watchlist_replaced'].includes(event.type))
+    if (
+      !['watchlist_added', 'watchlist_removed', 'holding_edited', 'watchlist_replaced'].includes(
+        event.type
+      )
+    )
       continue
     const at = iso(event.occurredAt)
     if (!at || Date.parse(at) < sinceMs || Date.parse(at) > Date.parse(asOf)) continue
@@ -41,7 +45,8 @@ function normalizeActivity(history, selected, includeHoldings, asOf, lookbackDay
     // Holdings edits are only meaningful when the user opts into holdings disclosure.
     if (event.type === 'holding_edited' && !includeHoldings) continue
     safe.push({
-      type: event.type, occurredAt: at,
+      type: event.type,
+      occurredAt: at,
       stock: { market: stock.market, symbol: stock.symbol },
       before: cleanSnapshot(event.before, includeHoldings),
       after: cleanSnapshot(event.after, includeHoldings),
@@ -57,7 +62,7 @@ export function buildPersonalizedPreview(watchlist, history, thesis, options = {
   const includeHistory = options.includeHistory === true
   const includeThesis = options.includeThesis === true
   const includeHoldings = options.includeHoldings === true
-  for (const name of ['includeHistory','includeThesis','includeHoldings']) {
+  for (const name of ['includeHistory', 'includeThesis', 'includeHoldings']) {
     if (options[name] !== undefined && typeof options[name] !== 'boolean')
       throw new Error('ERR_REPORT_OPTIONS')
   }
@@ -67,16 +72,21 @@ export function buildPersonalizedPreview(watchlist, history, thesis, options = {
   const asOf = iso(options.asOf || new Date().toISOString())
   if (!asOf) throw new Error('ERR_REPORT_TIME')
   const request = buildReportRequest(watchlist, {
-    selectedKeys: options.selectedKeys, includeHoldings, locale: options.locale || 'ko'
+    selectedKeys: options.selectedKeys,
+    includeHoldings,
+    locale: options.locale || 'ko'
   })
-  const selected = new Set(request.stocks.map(s => s.key))
+  const selected = new Set(request.stocks.map((s) => s.key))
   const detail = includeThesis ? normalizeThesis(thesis) : null
   const activity = includeHistory
     ? normalizeActivity(history, selected, includeHoldings, asOf, lookbackDays)
     : []
   const payload = {
-    schemaVersion: 2, asOf, locale: request.locale,
-    stocks: request.stocks, options: { includeHoldings, includeHistory, includeThesis, lookbackDays },
+    schemaVersion: 2,
+    asOf,
+    locale: request.locale,
+    stocks: request.stocks,
+    options: { includeHoldings, includeHistory, includeThesis, lookbackDays },
     ...(detail && (detail.text || detail.horizon !== 'unspecified' || detail.focus !== 'balanced')
       ? { investmentThesis: { text: detail.text, horizon: detail.horizon, focus: detail.focus } }
       : {}),
@@ -90,7 +100,7 @@ export function buildPersonalizedPreview(watchlist, history, thesis, options = {
       stockCount: request.stocks.length,
       eventCount: activity.length,
       historyTruncated: includeHistory && history.events.length > MAX_ACTIVITY,
-      holdingsCount: request.stocks.filter(s => !!s.holding).length,
+      holdingsCount: request.stocks.filter((s) => !!s.holding).length,
       disclaimer: 'watchlist and holding edits are not executions or trading history'
     }
   }

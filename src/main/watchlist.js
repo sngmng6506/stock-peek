@@ -9,7 +9,9 @@ const store = new Store({
 // electron-store's whole-store setter performs one persisted write.
 const repo = createWatchlistRepository({
   read: () => store.store,
-  write: (value) => { store.store = value }
+  write: (value) => {
+    store.store = value
+  }
 })
 
 export const getItems = repo.getItems

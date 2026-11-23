@@ -64,7 +64,12 @@ function StockCard({ stock, onRemove, onEditHolding, onAlert }) {
     <div className="card">
       <div className="card-actions">
         {onAlert && (
-          <CardBtn onClick={() => onAlert(stock)} title={t('alert.title')} label={<Icon name="bell" />} className="card-alert" />
+          <CardBtn
+            onClick={() => onAlert(stock)}
+            title={t('alert.title')}
+            label={<Icon name="bell" />}
+            className="card-alert"
+          />
         )}
         {onEditHolding && (
           <CardBtn

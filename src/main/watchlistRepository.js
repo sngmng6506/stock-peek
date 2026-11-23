@@ -53,13 +53,19 @@ function same(a, b) {
 }
 
 function isHistory(value) {
-  return value?.schemaVersion === HISTORY_VERSION &&
-    typeof value.startedAt === 'string' && Array.isArray(value.events)
+  return (
+    value?.schemaVersion === HISTORY_VERSION &&
+    typeof value.startedAt === 'string' &&
+    Array.isArray(value.events)
+  )
 }
 
 // All behavior is dependency-injected so it can be tested without Electron.
 export function createWatchlistRepository({
-  read, write, now = () => new Date().toISOString(), newId = randomUUID
+  read,
+  write,
+  now = () => new Date().toISOString(),
+  newId = randomUUID
 }) {
   if (typeof read !== 'function' || typeof write !== 'function') {
     throw new TypeError('Watchlist persistence requires read and write')
@@ -93,13 +99,15 @@ export function createWatchlistRepository({
     return {
       schemaVersion: HISTORY_VERSION,
       startedAt: at,
-      events: [record('baseline_imported', at, {
-        stock: null,
-        before: null,
-        after: itemsOf(data).map(itemSnapshot),
-        origin: 'migration',
-        semantic: 'initial_snapshot_not_trade'
-      })]
+      events: [
+        record('baseline_imported', at, {
+          stock: null,
+          before: null,
+          after: itemsOf(data).map(itemSnapshot),
+          origin: 'migration',
+          semantic: 'initial_snapshot_not_trade'
+        })
+      ]
     }
   }
 
@@ -111,7 +119,10 @@ export function createWatchlistRepository({
     const activityHistory = historyOf(data, at)
     const changed = change && !same(beforeItems, nextItems)
     const nextHistory = changed
-      ? { ...activityHistory, events: [...activityHistory.events, record(change.type, at, change.details)] }
+      ? {
+          ...activityHistory,
+          events: [...activityHistory.events, record(change.type, at, change.details)]
+        }
       : activityHistory
     // One whole-store assignment, never separate list and history writes.
     write({ ...data, items: nextItems, activityHistory: nextHistory })
@@ -137,10 +148,15 @@ export function createWatchlistRepository({
     validate(item)
     Object.assign(item, holdingFields(holding))
     const list = getItems()
-    if (list.some((i) => i.market === item.market && i.symbol === item.symbol)) fail('ERR_DUPLICATE')
+    if (list.some((i) => i.market === item.market && i.symbol === item.symbol))
+      fail('ERR_DUPLICATE')
     return commit([...list, item], {
       type: 'watchlist_added',
-      details: { stock: normalize(item.market, item.symbol), before: null, after: itemSnapshot(item) }
+      details: {
+        stock: normalize(item.market, item.symbol),
+        before: null,
+        after: itemSnapshot(item)
+      }
     })
   }
 
@@ -236,7 +252,14 @@ export function createWatchlistRepository({
   }
 
   return {
-    getItems, addItem, setItems, updateHolding, removeItem, reorderWatchlist,
-    getActivitySummary, exportActivity, clearActivity
+    getItems,
+    addItem,
+    setItems,
+    updateHolding,
+    removeItem,
+    reorderWatchlist,
+    getActivitySummary,
+    exportActivity,
+    clearActivity
   }
 }

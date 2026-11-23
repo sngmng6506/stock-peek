@@ -9,13 +9,18 @@ export function normalizeThesis(raw) {
     throw new Error('ERR_THESIS_TEXT')
   const horizon = raw.horizon
   const focus = raw.focus
-  if (!['unspecified', 'short', 'medium', 'long'].includes(horizon)) throw new Error('ERR_THESIS_HORIZON')
-  if (!['balanced', 'fundamentals', 'industry', 'risks'].includes(focus)) throw new Error('ERR_THESIS_FOCUS')
+  if (!['unspecified', 'short', 'medium', 'long'].includes(horizon))
+    throw new Error('ERR_THESIS_HORIZON')
+  if (!['balanced', 'fundamentals', 'industry', 'risks'].includes(focus))
+    throw new Error('ERR_THESIS_FOCUS')
   return { schemaVersion: THESIS_VERSION, text: text.trim(), horizon, focus }
 }
 
 export const EMPTY_THESIS = Object.freeze({
-  schemaVersion: THESIS_VERSION, text: '', horizon: 'unspecified', focus: 'balanced'
+  schemaVersion: THESIS_VERSION,
+  text: '',
+  horizon: 'unspecified',
+  focus: 'balanced'
 })
 
 export function createThesisRepository({ read, write, now = () => new Date().toISOString() }) {
