@@ -1,0 +1,17 @@
+{
+  // TEMPLATE ONLY: copy to wrangler.jsonc after inspecting current Cloudflare Worker.
+  // Never store API keys or test tokens here.
+  "name": "stockpeek-proxy",
+  "main": "./src/worker.js",
+  "compatibility_date": "2026-11-20",
+  "workers_dev": true,
+  // Existing dashboard Variables stay intact when deploying with Wrangler.
+  "keep_vars": true,
+  "d1_databases": [
+    {
+      "binding": "ANALYSIS_DB",
+      "database_name": "REPLACE_WITH_EXISTING_D1_NAME",
+      "database_id": "REPLACE_WITH_EXISTING_D1_UUID"
+    }
+  ]
+}

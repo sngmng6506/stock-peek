@@ -46,8 +46,8 @@ src/shared/personalizedPreview.js   로컬 AI 분석 요청 v2 미리보기
 src/main/thesisStore.js      투자 관점 로컬 저장 어댑터
 tests/personalizedPreview.test.mjs  데이터 포함 선택 및 미리보기 테스트
 server/p4/                P4 공식 공시 메타데이터/서버 측 모델 프로토타입 (Electron에 번들 금지)
-stockpeek-proxy/           독립 Cloudflare Pages Functions 테스트용 프록시 (운영 서비스 아님)
-scripts/check-proxy-sync.mjs  server/p4/와 stockpeek-proxy/functions/_lib/ 동일성 검증
+stockpeek-proxy/           Cloudflare Worker 소스 (운영 Worker는 별도 배포; quote/search 보존)
+scripts/check-proxy-sync.mjs  server/p4/와 stockpeek-proxy/lib/ 동일성 검증
 scripts/p4-analyze.mjs      수동 개발자 테스트용 CLI (인증된 사용자 API 아님)
 docs/p4-pipeline.md         P4 설정·현황·운영 제한
 src/main/preferences.js   도킹·언어·welcome 설정
@@ -121,3 +121,5 @@ docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 - 웹사이트 변경 시 `npm run build:site` 후 `npm run check:site`
 - 모든 지원 언어 UI 확인
 - 좌·우 도킹 hover 동작 확인
+
+- Worker 프록시: `stockpeek-proxy/src/worker.js`가 Worker 진입점. 기존 `/api/stock`, `/api/search` 및 CORS/캐시 계약 유지. P4 인증 라우트는 일반 CORS를 적용하지 않는다. 운영 Worker는 GitHub push만으로 배포되지 않음. Wrangler 배포 전 기존 D1 이름/UUID 및 Secret 바인딩 재확인.

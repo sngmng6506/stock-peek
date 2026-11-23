@@ -305,3 +305,9 @@ P0의 조사와 P1–P3의 로컬 기술 구현은 병행 가능하나 **라이�
 4. 가격 알림에서 지연·장외·절전 한계를 명시해도 유의미한 수요가 있는가?
 
 **최종 운영 원칙:** 억지로 PDF 내용을 채우지 않는다. 새 사실이 없으면 없다고 말하고, 실패는 무과금 처리한다. 개발 완성보다 **재사용/재구매와 분석 신뢰도**를 우선 평가한다.
+
+
+### Worker 프록시 소스 통합 (배포 전)
+- 실제 운영 `stockpeek-proxy.sngmng.workers.dev`는 별도 Cloudflare Worker이며, 기존 프록시 번들 기반의 주가/검색 라우트를 `stockpeek-proxy/src/worker.js`에 재구성하였다.
+- `/api/health`, 차단 상태로 시작하는 `/api/analyze` 추가. Pages Functions 프로토타입은 Worker 진입점이 아니며, Worker는 GitHub push로 자동 배포되지 않는다.
+- `stockpeek-proxy/README.md`의 배포 전 바인딩·D1·Secret 검증, 원본 Worker 백업 및 롤백 절차를 적용한다. 현재 실배포·외부 API 라이브 검증은 미완료다.

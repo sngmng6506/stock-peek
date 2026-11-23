@@ -1,62 +1,41 @@
-# stockpeek-proxy — restricted Cloudflare Pages Functions prototype
+# stockpeek-proxy — Cloudflare Worker source
 
-This directory is an **independently deployable Pages project**. Nothing here is deployed merely by committing to GitHub. Existing `stockpeek-proxy` Pages settings, connected repository and root directory have **not** been verified by API. Do not overwrite a live project's build configuration or existing routes without first comparing its deployment.
+The production URL `https://stockpeek-proxy.sngmng.workers.dev/` is a **standalone Cloudflare Worker**, separate from the `stock-peek` Pages website. The previous `functions/` proof-of-concept is **not** the production deployment entrypoint.
 
-## Repository layout
+## Source of truth
 
-- `functions/api/health.js` → public `GET /api/health` (status only)
-- `functions/api/analyze.js` → **operator-only** `POST /api/analyze` (off by default)
-- `lib/` → exact copies of `server/p4/` (required because Pages project root is this directory)
-- `public/` → minimal static page
-- `migrations/0001_rate_limits.sql` → D1 quota table; does **not** implement payment credits
+- `src/worker.js`: **Worker entrypoint**, reconstructed from the existing Worker bundle supplied by the operator; preserves `GET /api/stock`, `GET /api/search`, `GET /` and `GET /health`, including quote/search CORS and caching behavior
+- `GET /api/health`: new uncached read-only health endpoint (no keys or private bindings returned)
+- `POST /api/analyze`: new **restricted operator test endpoint**, imported from `functions/api/analyze.js` (legacy Pages Function handler reused as a plain module)
+- `lib/{filings,pipeline,openrouter}.js`: copies of canonical `../server/p4/` modules (enforced via `node scripts/check-proxy-sync.mjs` from repo root)
+- `migrations/0001_rate_limits.sql`: D1 operator daily quota table, **not** billing credits
+- `wrangler.example.jsonc`: template, **not** deployable before D1 configuration
+- `tests/workerProxy.test.mjs`: integration-level router contract tests using mocked quotes/search; `tests/pagesProxy.test.mjs`: closed-by-default analyze tests
 
-Run `node scripts/check-proxy-sync.mjs` from the repository root after modifying canonical P4 modules. The synchronization test fails if local copies diverge; include the test in the deployment build command before publishing.
+**The GitHub repo does not control the current Worker automatically.** GitHub commit is not a Cloudflare deployment. The bundle shown in the Cloudflare dashboard has no GitHub source attached, so use a deliberately verified Wrangler deployment or connect the Worker to GitHub only after comparing its current settings.
 
-## Before enabling any external request
+## Deploy safely (operator only)
 
-1. In Cloudflare Workers & Pages, inspect **stockpeek-proxy → Settings → Builds**: connected repository, root directory, build command, output directory and production branch. For this directory layout on a Git-connected project: **root directory `stockpeek-proxy`**, output `public`, no build command. Confirm no preexisting Functions or critical proxy routes are being overwritten.
-2. The user's `DART_API_KEY` and `OPENROUTER_API_KEY` belong to **production Secret** bindings on this exact Pages project. Never place them in `vars` or Git. If previously displayed in plaintext, rotate the provider credentials. Pages Functions access values with `context.env`.
-3. Create a D1 database (e.g. `stockpeek-analysis-test`) and add it as the **`ANALYSIS_DB`** D1 binding to the **same** Pages project's production environment. Apply `migrations/0001_rate_limits.sql` to the database using the Cloudflare D1 console/CLI.
-4. Add a **new independent, randomly generated token of at least 32 ASCII characters** as the Secret `ANALYSIS_TEST_TOKEN`. This is NOT an OpenRouter or DART token; keep it off clients and browser JavaScript. For operator testing only, not a scalable user-login design.
-5. Configure normal Variables: `SEC_USER_AGENT` (identifiable app and contact email; SEC requirement), `P4_MODEL=anthropic/claude-sonnet-5.5`, `ANALYSIS_DAILY_LIMIT=3` (hard capped at 10 by code), and optionally `DART_CORP_MAP_JSON` (JSON of stock code → **verified** 8-digit OpenDART corporation code). Do not put API keys in `DART_CORP_MAP_JSON`.
-6. Keep `ANALYSIS_ENABLED` **absent or `0`** until all other setup and offline tests are ready. When testing, set `ANALYSIS_ENABLED=1`; set back to `0` afterwards.
-7. Restrict access via the operator token. **No public Electron UI is connected** and there is no end-user authentication, checkout, billing ledger, refund management or per-account isolation. Do not publish this as a paid user service.
+1. In Cloudflare `stockpeek-proxy` → Settings / Bindings, record the existing binding names and **D1 database name + UUID**. Back up the current Worker code/version before deploying. Compare the reconstructed quote/search behavior against the currently deployed version (price/chart/search are independent and must keep working).
+2. Copy `wrangler.example.jsonc` to `wrangler.jsonc` inside this directory. Replace **both** D1 placeholders with the **already existing** D1 database's name/UUID; do not create or bind an empty replacement. Confirm `ANALYSIS_DB` matches the current binding name. Leave `keep_vars: true` to preserve dashboard-set Variables. Wrangler does not delete Secrets during a normal code deploy (per Cloudflare documentation), but **review bindings in deployment output before confirming**.
+3. Keep `ANALYSIS_ENABLED=0` in the existing Worker Variables. Verify the existing Secrets: `DART_API_KEY`, `OPENROUTER_API_KEY`, `ANALYSIS_TEST_TOKEN` (minimum 32 characters), as well as regular Variables `SEC_USER_AGENT`, `P4_MODEL=anthropic/claude-sonnet-5.5`, `ANALYSIS_DAILY_LIMIT=3`. Do **not** store secret values in source or Wrangler vars. Rotate previously displayed credentials.
+4. Confirm the `analysis_daily_usage` table exists in the **same** D1 database configured above.
+5. Run from the repository root: `node --test tests/pagesProxy.test.mjs tests/workerProxy.test.mjs` and `node scripts/check-proxy-sync.mjs`. Run regular `npm test` and lint/build if dependencies are installed. A GitHub push does not prove tests or upstream connectivity.
+6. From the `stockpeek-proxy/` directory, run `npx wrangler deploy --dry-run` using the completed local config. Inspect the Worker entrypoint and D1 binding. Only then, with explicit intent to replace the currently running Worker code, run `npx wrangler deploy`. This is a **live code replacement** and may affect stock quotes; make sure the previous Worker version can be restored.
+7. Test `GET /health` and `GET /api/health`. Check `/api/stock?market=KR&symbol=005930&skipChart=1` and `/api/search?market=US&q=MSFT` before any AI experiment. Use the normal service's stock-data smoke tests if available.
 
-**Important:** The Cloudflare screenshot previously displayed values in a `wrangler.jsonc` `vars` example. Ensure secrets are not present in any config file or Pages project's plain Variables. Changing the UI type does not revoke previously exposed tokens; rotate both in their provider dashboards.
+**Do not paste the entire production bundle into the Cloudflare Editor with additional `import` statements.** That editor shows a built single-file artifact; the new entrypoint is a multi-file ES module whose imports must be bundled by Wrangler.
 
-## Test endpoint behavior
+## Live safety gate and test order
 
-| Route | Method | Result |
-|---|---|---|
-| `/api/health` | GET | `{"ok":true,"service":"stockpeek-proxy","mode":"restricted"}` |
-| `/api/analyze` | POST | Disabled by default; requires no Origin header, bearer test token, D1 quota, valid JSON v2, configured upstream Secrets. |
-| `/api/analyze` | GET/OPTIONS | 405. Browser-origin requests are denied. No CORS allowed. |
+- By default `POST /api/analyze` yields HTTP **503** `ERR_ANALYSIS_DISABLED` without initiating any paid upstream requests.
+- `GET/OPTIONS /api/analyze` yields HTTP **405**, **no CORS**. No browser-based API testing; this test token must **never** be embedded in a public website or Electron app.
+- After deployment: verify disabled response, D1 availability and valid token using an **operator-only** client; then temporarily set `ANALYSIS_ENABLED=1` for a minimal JSON v2 test. Calls are quota-counted before the upstream attempt and may consume OpenRouter credits.
+- `DART_CORP_MAP_JSON` is needed for Korean stocks (verified 8-digit corporation codes); US SEC requests require a valid `SEC_USER_AGENT` with contact email.
+- All reports are **metadata-only** and `generated_unbilled`. There is no news license, filing content extraction, report persistence, end-user identity, paid credits ledger, or actual Electron AI report API integration. API failures intentionally avoid disclosing upstream details; use private debugging.
 
-Maximum request body: **12 KB**. Up to five KR/US stocks, maximum 1–10 operator requests/day (D1-enforced), maximum 1200 model output tokens, short upstream timeouts. Each request counts against the **testing quota even if the upstream provider fails**. Testing quota is *not* a monetary credit charge. Nothing is persisted except the daily token hash/quota count in D1; no reports are saved.
+## Rollback
 
-Example manual request using an operator shell after deployment (no real token shown):
+If deployment breaks legacy stock/search behavior, restore the previous Worker deployment/version using Cloudflare's deployment history and verify both `/api/stock` and `/api/search`. Do not blindly redeploy another revision.
 
-```bash
-curl -sS -X POST 'https://<confirmed-stockpeek-proxy-domain>/api/analyze' \
-  -H "Authorization: Bearer ${ANALYSIS_TEST_TOKEN}" \
-  -H 'Content-Type: application/json' \
-  --data-binary @.private/request.json
-```
-
-Do not use an Electron client secret or embedded test token. Use a disposable operator-only shell, not a public website's frontend code. Raw responses may contain user-selected portfolio context; use private files and avoid telemetry.
-
-## Deployment and diagnostics
-
-- Use a Git-integrated Cloudflare Pages project with root `stockpeek-proxy` and output `public`. Pages automatically discovers the project-root `functions/` directory.
-- If the existing `stockpeek-proxy` is a **Direct Upload** project or is connected to a different repository/root, changing its setup is a separate Cloudflare operation. This Git commit will not automatically attach or deploy the new project.
-- `GET /api/health` must return the JSON response above **after deployment**; only then enable authorized tests. A 404 means Functions have not been deployed at that location.
-- Production Secrets can differ from Preview Secrets; use the right environment. Cloudflare may require redeploying after binding changes.
-- `ERR_ANALYSIS_DISABLED`: set to 1 only after safe setup; `ERR_UNAUTHORIZED`: missing/wrong test token; `ERR_RATE_DB`: D1 binding/migration missing; `ERR_ANALYSIS_DAILY_LIMIT`: quota exceeded; `ERR_ANALYSIS_FAILED`: upstream/data/model error with details intentionally hidden from public response. Use private diagnostics, never log API URLs containing DART keys.
-
-Source modules remain **filing metadata only** and are not a verified financial analysis. The code blocks unauthorized paid inference by default, but an authorized operator can still spend OpenRouter tokens. News, source-document content verification, real user authorization, report persistence, PDF and billing remain pending.
-
-Official Cloudflare documentation:
-- https://developers.cloudflare.com/pages/functions/get-started/
-- https://developers.cloudflare.com/pages/functions/bindings/
-- https://developers.cloudflare.com/pages/functions/routing/
-- https://developers.cloudflare.com/d1/platform/client-api/
+Cloudflare docs: https://developers.cloudflare.com/workers/wrangler/configuration/ | https://developers.cloudflare.com/workers/wrangler/commands/workers/

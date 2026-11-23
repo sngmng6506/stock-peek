@@ -17,3 +17,6 @@ Thumbs.db
 .dev.vars
 .dev.vars.*
 stockpeek-proxy/.env*
+
+# Local Worker config may contain private Cloudflare D1 resource identifiers
+stockpeek-proxy/wrangler.jsonc
