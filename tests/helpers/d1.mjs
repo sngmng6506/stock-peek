@@ -2,8 +2,10 @@
 import { DatabaseSync } from 'node:sqlite'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const MIGRATIONS = new URL('../../stockpeek-proxy/migrations/', import.meta.url)
+// fileURLToPath, not URL.pathname: the latter breaks on Windows drive letters.
+const MIGRATIONS = fileURLToPath(new URL('../../stockpeek-proxy/migrations/', import.meta.url))
 
 class Statement {
   constructor(db, sql, params = []) {
@@ -42,7 +44,7 @@ export function createD1() {
   for (const file of readdirSync(MIGRATIONS)
     .filter((f) => f.endsWith('.sql'))
     .sort())
-    db.exec(readFileSync(join(MIGRATIONS.pathname, file), 'utf8'))
+    db.exec(readFileSync(join(MIGRATIONS, file), 'utf8'))
   return {
     raw: db,
     prepare: (sql) => new Statement(db, sql),
