@@ -284,6 +284,7 @@ function App() {
             </button>
             <button
               className="icon-btn"
+              data-action="settings"
               onClick={() => setShowSettings(true)}
               title={t('app.settings')}
               aria-label={t('app.settings')}
