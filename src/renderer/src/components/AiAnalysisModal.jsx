@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../i18n'
 import { errorText } from '../lib/errors'
 import { getLanguageInfo } from '../../../shared/languages.js'
+import ProAccount from './ProAccount'
 
 const MAX_STOCKS = 5
 const MAX_LISTED_REPORTS = 5
@@ -19,7 +20,7 @@ export default function AiAnalysisModal({ onClose }) {
   const [status, setStatus] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [busy, setBusy] = useState(false)
-  const [analysis, setAnalysis] = useState({ available: false, markets: [] })
+  const [pro, setPro] = useState({ available: false })
   const [reports, setReports] = useState([])
 
   useEffect(() => {
@@ -30,21 +31,8 @@ export default function AiAnalysisModal({ onClose }) {
       .then((data) => {
         if (!active) return
         const list = Array.isArray(data?.stocks) ? data.stocks : []
-        const beta = data?.analysis?.available === true
-        const markets = Array.isArray(data?.analysis?.markets) ? data.analysis.markets : []
-        setAnalysis({ available: beta, markets })
         setStocks(list)
-        setSelected(
-          list
-            .filter((item) => !beta || markets.includes(item.market))
-            .slice(0, MAX_STOCKS)
-            .map((item) => item.market + ':' + item.symbol)
-        )
-        if (beta)
-          window.api
-            .listAiReports()
-            .then((items) => active && setReports(items))
-            .catch(() => {})
+        setSelected(list.slice(0, MAX_STOCKS).map((item) => item.market + ':' + item.symbol))
         if (data?.thesis)
           setThesis({
             text: data.thesis.text || '',
@@ -55,6 +43,14 @@ export default function AiAnalysisModal({ onClose }) {
       .catch(() => {
         if (active) setStatus('error')
       })
+    window.api
+      .listAiReports()
+      .then((items) => active && setReports(items))
+      .catch(() => {})
+    window.api
+      .getProStatus()
+      .then((value) => active && setPro(value || { available: false }))
+      .catch(() => {})
     return () => {
       active = false
     }
@@ -63,13 +59,11 @@ export default function AiAnalysisModal({ onClose }) {
   function changeSelected(key) {
     setPreview(null)
     setStatus('')
-    setSelected((current) =>
-      current.includes(key)
-        ? current.filter((x) => x !== key)
-        : current.length < MAX_STOCKS
-          ? [...current, key]
-          : current
-    )
+    setSelected((current) => {
+      const valid = current.filter((k) => supported(k.split(':')[0]))
+      if (valid.includes(key)) return valid.filter((x) => x !== key)
+      return valid.length < MAX_STOCKS ? [...valid, key] : valid
+    })
   }
 
   async function saveThesis() {
@@ -89,13 +83,13 @@ export default function AiAnalysisModal({ onClose }) {
   }
 
   async function makePreview() {
-    if (busy || !selected.length) return
+    if (busy || !activeSelected.length) return
     setBusy(true)
     setStatus('')
     setPreview(null)
     try {
       const result = await window.api.buildAiPreview({
-        selectedKeys: selected,
+        selectedKeys: activeSelected,
         includeHoldings,
         includeHistory,
         includeThesis,
@@ -134,7 +128,7 @@ export default function AiAnalysisModal({ onClose }) {
     setStatus('generating')
     return run(async () => {
       const result = await window.api.createAiReport({
-        selectedKeys: selected,
+        selectedKeys: activeSelected,
         includeHoldings,
         includeHistory,
         includeThesis,
@@ -144,6 +138,7 @@ export default function AiAnalysisModal({ onClose }) {
       setReports(result.reports)
       setPreview(null)
       setStatus('generated')
+      setPro(await window.api.getProStatus())
     })
   }
 
@@ -172,7 +167,11 @@ export default function AiAnalysisModal({ onClose }) {
     dateStyle: 'medium',
     timeStyle: 'short'
   })
-  const supported = (market) => !analysis.available || analysis.markets.includes(market)
+  const supported = (market) => !pro.available || pro.markets.includes(market)
+  const credits = pro.account?.credits?.available ?? 0
+  // Reports cover a subset of markets; unsupported stocks are never sent.
+  const activeSelected = selected.filter((key) => supported(key.split(':')[0]))
+  const canGenerate = pro.available && pro.reports && !!pro.account && credits > 0
 
   return (
     <div
@@ -196,7 +195,8 @@ export default function AiAnalysisModal({ onClose }) {
             ×
           </button>
         </header>
-        <p className="ai-hint">{t(analysis.available ? 'ai.betaHint' : 'ai.previewOnly')}</p>
+        <p className="ai-hint">{t(pro.available ? 'ai.proHint' : 'ai.previewOnly')}</p>
+        {pro.available && <ProAccount pro={pro} onChange={setPro} busy={busy} setBusy={setBusy} />}
         <div className="ai-section">
           <strong>{t('ai.stocks')}</strong>
           <p className="ai-hint">{t('ai.stockLimit')}</p>
@@ -207,9 +207,12 @@ export default function AiAnalysisModal({ onClose }) {
               <label className="ai-stock-row" key={key}>
                 <input
                   type="checkbox"
-                  checked={selected.includes(key)}
+                  checked={activeSelected.includes(key)}
                   onChange={() => changeSelected(key)}
-                  disabled={!allowed || (!selected.includes(key) && selected.length >= MAX_STOCKS)}
+                  disabled={
+                    !allowed ||
+                    (!activeSelected.includes(key) && activeSelected.length >= MAX_STOCKS)
+                  }
                 />
                 <span>{key}</span>
                 {!allowed && <small className="ai-muted">{t('ai.unsupportedMarket')}</small>}
@@ -302,7 +305,7 @@ export default function AiAnalysisModal({ onClose }) {
             />
             <span>{t('ai.includeThesis')}</span>
           </label>
-          <p className="ai-hint">{t(analysis.available ? 'ai.privacyBeta' : 'ai.privacy')}</p>
+          <p className="ai-hint">{t(pro.available ? 'ai.privacyPro' : 'ai.privacy')}</p>
         </div>
         <div className="modal-actions">
           <button type="button" onClick={onClose}>
@@ -312,7 +315,7 @@ export default function AiAnalysisModal({ onClose }) {
             className="primary"
             type="button"
             onClick={makePreview}
-            disabled={busy || selected.length === 0}
+            disabled={busy || activeSelected.length === 0}
           >
             {t('ai.preview')}
           </button>
@@ -326,16 +329,24 @@ export default function AiAnalysisModal({ onClose }) {
           <section className="ai-section" aria-label={t('ai.preview')}>
             <p className="ai-hint">{t('ai.payloadDescription')}</p>
             <pre className="ai-preview">{JSON.stringify(preview.request, null, 2)}</pre>
-            {analysis.available && (
+            {pro.available && (
               <div className="modal-actions">
-                <button className="primary" type="button" onClick={generate} disabled={busy}>
+                <button
+                  className="primary"
+                  type="button"
+                  onClick={generate}
+                  disabled={busy || !canGenerate}
+                >
                   {t('ai.generate')}
                 </button>
               </div>
             )}
+            {pro.available && !canGenerate && (
+              <p className="ai-hint">{t(pro.reports ? 'ai.noCredits' : 'ai.reportsPaused')}</p>
+            )}
           </section>
         )}
-        {analysis.available && reports.length > 0 && (
+        {reports.length > 0 && (
           <section className="ai-section" aria-label={t('ai.reports')}>
             <strong>{t('ai.reports')}</strong>
             <ul className="ai-report-list">

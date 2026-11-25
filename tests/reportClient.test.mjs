@@ -1,17 +1,19 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  analysisConfigFromEnv,
   prepareAnalysisBody,
   normalizeAnalysisResult,
-  requestAnalysis,
-  ANALYSIS_MAX_BODY_BYTES,
-  DEFAULT_ANALYSIS_ENDPOINT
+  ANALYSIS_MAX_BODY_BYTES
 } from '../src/shared/reportClient.js'
+import {
+  apiOriginFromEnv,
+  createProClient,
+  isCheckoutUrl,
+  DEFAULT_API_ORIGIN
+} from '../src/shared/proClient.js'
 import { createAnalysisPipeline } from '../server/p4/pipeline.js'
 
 const TOKEN = 'a'.repeat(40)
-const config = { endpoint: DEFAULT_ANALYSIS_ENDPOINT, token: TOKEN }
 
 const request = (over = {}) => ({
   schemaVersion: 2,
@@ -58,23 +60,23 @@ const okFetch =
     json: async () => (status === 200 ? { ok: true, result } : { ok: false, error: result })
   })
 
-test('config requires an operator token from the environment and https endpoint', () => {
-  assert.equal(analysisConfigFromEnv({}), null)
-  assert.equal(analysisConfigFromEnv({ STOCKPEEK_ANALYSIS_TOKEN: 'short' }), null)
-  assert.deepEqual(analysisConfigFromEnv({ STOCKPEEK_ANALYSIS_TOKEN: TOKEN }), config)
+test('API origin override accepts https or a local wrangler dev server only', () => {
+  assert.equal(apiOriginFromEnv({}), DEFAULT_API_ORIGIN)
   assert.equal(
-    analysisConfigFromEnv({
-      STOCKPEEK_ANALYSIS_TOKEN: TOKEN,
-      STOCKPEEK_ANALYSIS_URL: 'http://example.com/api/analyze'
-    }),
-    null
+    apiOriginFromEnv({ STOCKPEEK_API_URL: 'http://127.0.0.1:8787/x' }),
+    'http://127.0.0.1:8787'
   )
+  assert.equal(apiOriginFromEnv({ STOCKPEEK_API_URL: 'http://evil.example' }), DEFAULT_API_ORIGIN)
   assert.equal(
-    analysisConfigFromEnv({
-      STOCKPEEK_ANALYSIS_TOKEN: TOKEN,
-      STOCKPEEK_ANALYSIS_URL: 'http://127.0.0.1:8787/api/analyze'
-    }).endpoint,
-    'http://127.0.0.1:8787/api/analyze'
+    apiOriginFromEnv({ STOCKPEEK_API_URL: 'https://staging.example/' }),
+    'https://staging.example'
+  )
+  const tok = 'A'.repeat(43)
+  assert.equal(isCheckoutUrl(DEFAULT_API_ORIGIN + '/pay/' + tok, DEFAULT_API_ORIGIN), true)
+  assert.equal(isCheckoutUrl('https://evil.example/pay/' + tok, DEFAULT_API_ORIGIN), false)
+  assert.equal(
+    isCheckoutUrl(DEFAULT_API_ORIGIN + '/pay/' + tok + '?x=1', DEFAULT_API_ORIGIN),
+    false
   )
 })
 
@@ -151,61 +153,44 @@ test('rejects responses citing unknown sources, foreign hosts or unrequested sto
   assert.throws(() => normalizeAnalysisResult(note, request()), /ERR_ANALYSIS_RESPONSE/)
 })
 
-test('requestAnalysis sends bearer JSON and maps server errors to safe codes', async () => {
+test('pro client sends bearer + idempotency key and maps errors to safe codes', async () => {
   let sent
-  const result = await pipelineResult([])
-  const report = await requestAnalysis({
-    fetchImpl: async (url, init) => {
-      sent = { url, init }
-      return okFetch(result)()
-    },
-    config,
-    request: request()
-  })
-  assert.equal(sent.url, DEFAULT_ANALYSIS_ENDPOINT)
+  const result = { ...(await pipelineResult([])), status: 'generated_billed' }
+  const client = (fetchImpl, token = TOKEN) =>
+    createProClient({ fetchImpl, origin: DEFAULT_API_ORIGIN, getToken: () => token })
+  const report = await client(async (url, init) => {
+    sent = { url, init }
+    return okFetch(result)()
+  }).createReport(request(), 'key-0123456789abcdef')
+  assert.equal(sent.url, DEFAULT_API_ORIGIN + '/v1/reports')
   assert.equal(sent.init.method, 'POST')
   assert.equal(sent.init.headers.authorization, 'Bearer ' + TOKEN)
+  assert.equal(sent.init.headers['idempotency-key'], 'key-0123456789abcdef')
   assert.equal(JSON.parse(sent.init.body).schemaVersion, 2)
+  assert.equal(report.status, 'generated_billed')
   assert.equal(report.noNewEvents, true)
 
   const cases = [
-    [503, 'ERR_ANALYSIS_DISABLED', /ERR_ANALYSIS_DISABLED/],
-    [401, 'ERR_UNAUTHORIZED', /ERR_UNAUTHORIZED/],
+    [402, 'ERR_CREDITS_INSUFFICIENT', /ERR_CREDITS_INSUFFICIENT/],
+    [401, 'ERR_SESSION_INVALID', /ERR_SESSION_INVALID/],
     [429, 'ERR_ANALYSIS_DAILY_LIMIT', /ERR_ANALYSIS_DAILY_LIMIT/],
-    [503, 'ERR_SECRETS_MISSING', /ERR_ANALYSIS_FAILED/],
     [502, 'ERR_MODEL_HTTP', /ERR_ANALYSIS_FAILED/],
-    [413, 'ERR_REQUEST_TOO_LARGE', /ERR_ANALYSIS_TOO_LARGE/]
+    [500, 'ERR_INTERNAL', /ERR_ANALYSIS_FAILED/]
   ]
-  for (const [status, code, expected] of cases) {
+  for (const [status, code, expected] of cases)
     await assert.rejects(
-      requestAnalysis({ fetchImpl: okFetch(code, status), config, request: request() }),
+      client(okFetch(code, status)).createReport(request(), 'k'.repeat(16)),
       expected
     )
-  }
   await assert.rejects(
-    requestAnalysis({
-      fetchImpl: async () => {
-        throw new Error('offline')
-      },
-      config,
-      request: request()
-    }),
-    /ERR_ANALYSIS_NETWORK/
+    client(async () => {
+      throw new Error('offline')
+    }).me(),
+    /ERR_PRO_NETWORK/
   )
+  await assert.rejects(client(okFetch(result), null).me(), /ERR_SESSION_INVALID/)
   await assert.rejects(
-    requestAnalysis({
-      fetchImpl: (_url, { signal }) =>
-        new Promise((_resolve, reject) =>
-          signal.addEventListener('abort', () => reject(signal.reason))
-        ),
-      config,
-      request: request(),
-      timeoutMs: 10
-    }),
-    /ERR_ANALYSIS_TIMEOUT/
-  )
-  await assert.rejects(
-    requestAnalysis({ fetchImpl: okFetch(result), config: null, request: request() }),
-    /ERR_ANALYSIS_UNAVAILABLE/
+    client(okFetch({ url: 'https://evil.example/pay/' + 'A'.repeat(43) })).checkout(),
+    /ERR_PRO_FAILED/
   )
 })

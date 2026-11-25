@@ -277,15 +277,32 @@ PDF는 복사가능한 텍스트·클릭 가능한 출처 링크 포함. 저장�
 - OpenDART 키는 `DART_API_KEY`, OpenRouter 키는 `OPENROUTER_API_KEY` 환경변수에만 설정한다. 기본 라우팅 모델은 `anthropic/claude-sonnet-5.5`이며, 라이브 연결 및 비용 검증 전까지 운영 유료 분석으로 취급하지 않는다.
 - P4는 **부분 구현**이다. 최신 뉴스 연동, 본문/XBRL 검증, 직전 리포트 대비 의미 있는 변화, 인증된 Worker API, 운영 데이터 접근 통제는 남아 있다.
 
-### P5 리포트 출력·앱 연결 (운영자 베타, 2026-11-25)
+### P5 리포트 출력·앱 연결 (2026-11-25)
 
-- `src/shared/reportClient.js`: 운영자 PC 환경변수(`STOCKPEEK_ANALYSIS_TOKEN`, 선택 `STOCKPEEK_ANALYSIS_URL`)로만 켜지는 분석 API 클라이언트. 토큰은 앱 번들·저장소에 넣지 않는다. 미설정이면 기존 P3 미리보기 화면과 같다.
+- `src/shared/reportClient.js`: 요청 본문 검사와 서버 응답 재검증. (P5 최초 구현의 운영자 환경변수 토큰 경로는 P6에서 로그인 세션으로 대체.)
 - main이 로컬 저장소에서 요청을 다시 만든 뒤 `eFetch`로 `POST /api/analyze`에 보낸다(Electron `net.fetch`는 `Origin` 헤더를 보내지 않아 Worker의 브라우저 차단에 걸리지 않음을 확인). 지원 시장 US·KR, 본문 12KB 상한을 보내기 전에 검사한다.
 - 응답 재검증 후 `ai-reports` 로컬 저장소에 스냅샷으로 보관(최신 20개). 보기·PDF 저장·삭제는 서버를 다시 부르지 않는다.
 - `src/shared/reportHtml.js`: 4개 언어, 아랍어 RTL, 그레고리력 날짜, 공시 메타데이터 근거 수준 표기, 자료 미수집 종목 표기. JavaScript 없는 정적 문서와 CSP.
 - `src/main/reportWindow.js`: 별도 보기 창(JavaScript 꺼짐, 링크는 기본 브라우저), 숨김 창 `printToPDF(A4)`. 내용이 길면 여러 장으로 출력(목록 항목·제목이 쪽 경계에서 갈라지지 않게 처리).
 - 검증: 단위 테스트(`tests/reportClient.test.mjs`, `tests/reportArchive.test.mjs`), Linux Electron에서 모의 API로 생성→보관→보기→삭제 확인. Windows·macOS 실제 글꼴에서의 PDF 확인은 아직 하지 않았다.
 - 남은 것: 서버 요약문이 `locale`과 무관하게 영어(`metadataOnlyReport`)인 점, 인증·크레딧 원장·결제(P6), 일반 사용자 공개 전 개인정보 처리방침 웹페이지 갱신.
+
+### P6 Pro 계정·크레딧 원장·토스페이먼츠 (2026-11-25, 미배포)
+
+결정: **Windows 전용**(사용 통계상 Mac 일 이용자 0), **로그인 없이 바로 사용 + 이메일 연결은 선택**(접근성 우선; 이메일 6자리 코드), 결제는 **토스페이먼츠(KRW) 먼저**, 해외 결제(Paddle)는 이후 `orders.provider` 확장.
+
+- 서버(`stockpeek-proxy/pro/`, D1 `migrations/0002_pro_accounts.sql`)
+  - `/v1/auth/device`: 첫 충전·생성 때 이메일 없는 기기 계정 + 세션 생성(IP당 시간당 10개). 크레딧은 유료뿐이라 새 계정에 가치가 없다.
+  - 이메일 연결·불러오기: 기기 세션으로 `/v1/auth/verify`하면 새 이메일은 그 계정에 연결(잔액 유지), 이미 있는 이메일이면 그 계정으로 로그인하고 기기 잔액을 `adjust` 한 쌍(`merge-out:`/`merge-in:`)으로 한 번만 옮긴다. 이전 기기 세션은 폐기.
+  - `/v1/auth/request-code`·`/v1/auth/verify`·`/v1/auth/logout`: 코드는 `AUTH_PEPPER`로 해시만 저장, 10분 유효, 5회 오입력 시 폐기, 1회용. 주소당 시간당 5회·IP당 20회 제한. 메일은 Resend(`RESEND_API_KEY`, `MAIL_FROM`). 세션은 불투명 토큰(해시 저장), 180일.
+  - `credit_ledger`: 추가 전용 원장, 잔액 = 합계. 예약(-1) → 성공 시 `use`(0) / 실패 시 `release`(+1). `(kind, ref)` 유일 제약으로 적립·정산·해제 중복 불가. 예약은 단일 SQL로 잔액이 있을 때만 들어간다.
+  - `POST /v1/reports`: `Idempotency-Key` 필수. 같은 키·같은 요청은 저장된 결과를 재전송(추가 차감·외부 호출 없음), 다른 요청이면 422. 사용자별·서비스 전체 일일 상한(`PRO_USER_DAILY_LIMIT`, `PRO_GLOBAL_DAILY_LIMIT`)을 외부 호출 전에 검사. 실패는 해제. 15분 넘게 `processing`인 작업은 자동 해제. 결과는 재전송용으로 7일만 보관하고 보유 수량·평단은 저장하지 않는다.
+  - `POST /v1/credits/checkout` → 서버가 정한 가격(기본 990원/10회)으로 주문 생성, 30분짜리 1회용 결제 페이지 `/pay/<token>`. `/pay/success`는 주문 금액과 리다이렉트 금액을 비교하고, 한 요청만 `confirming`으로 선점해 토스 승인 API를 부른 뒤 `DONE`·금액·주문번호가 맞을 때만 적립. 새로고침·중복 호출에도 1회만 적립. `/pay/fail`은 주문만 실패 처리.
+  - `POST /v1/admin/credits`(`ADMIN_TOKEN`): 베타 지급·환불·조정. 이메일 또는 `userId`로 지정. 잔액을 음수로 만들 수 없고 같은 `ref`는 한 번만.
+  - 플래그: `PRO_ENABLED`(API 열기), `PRO_PUBLIC`(배포 앱에 노출), `PRO_REPORTS_ENABLED`(유료 생성), `PAYMENTS_ENABLED`(충전). 모두 기본 0.
+- 앱: Windows에서 서버가 `pro:true`일 때만 Pro 영역 표시(베타는 `STOCKPEEK_PRO=1`). 로그인 화면 없이 잔액·충전이 먼저 보이고, 이메일 연결/불러오기는 선택 링크. 세션 토큰은 main에서 `safeStorage`로 암호화 저장, 렌더러에는 이메일·잔액만. 충전은 기본 브라우저에서 결제 후 "새로고침". 운영자 환경변수 토큰 경로(P5)는 제거했다.
+- 검증: `tests/proServer.test.mjs`가 `node:sqlite` 기반 D1 대역(`tests/helpers/d1.mjs`)에 실제 마이그레이션 SQL을 적용해 로그인·원장·멱등·결제 흐름을 확인. Linux Electron + 로컬 Pro 서버로 로그인 → 잔액 0 거부 → 관리자 지급 → 생성(3→2) → 로그아웃 확인.
+- 남은 것(출시 전 필수): 토스 **테스트 키로 실제 결제창 확인**(SDK·CSP), 사업자등록·토스 가맹 심사, 이용약관·환불정책·전자상거래 고지 페이지, 개인정보 처리방침 4개 언어(이메일·결제 기록 수집), 계정 삭제 기능, 이메일 미연결 잔액은 PC 변경 시 복구 불가라는 결제 전 고지(약관 포함), 뉴스·시세 이용권과 투자자문 경계 검토(P0), 서버 요약문 다국어화.
 
 ### Cloudflare Pages 테스트 API (미배포)
 
@@ -303,8 +320,8 @@ PDF는 복사가능한 텍스트·클릭 가능한 출처 링크 포함. 저장�
 | P2 | 가격 알림 로컬 엔진/UX | **기초 로직 구현**: 패널 숨김 중 감시, stale 차단, 1회 발송, 로컬 상태 저장. OS·장중/장외 통합 검증은 추가 필요 |
 | P3 | 투자 관점·AI 분석 요청 계약 v2 | 선택 정보만 서버 전송, 이전 분석 대비 변화, 이력 기반 수치 검증 |
 | P4 | 공시/뉴스 수집·LLM 근거 검증 | **부분 구현**: SEC/OpenDART 메타데이터 수집 및 출처·ID 검증. 뉴스 라이선스·공시 본문/XBRL·LLM 실사용 검증은 미완료 |
-| P5 | PDF 출력/품질 검증 | **운영자 베타 구현**: A4 여러 장 허용, 링크/텍스트 복사, KO/EN/JA/AR 렌더 테스트, PDF 재저장. Windows/macOS 실기기 확인 필요 |
-| P6 | 인증·10크레딧 원장·결제 | webhook 위변조/중복/환불, 요청 병렬·재시도, 실패 무과금, 사용자 간 격리 |
+| P5 | PDF 출력/품질 검증 | **구현**: A4 여러 장 허용, 링크/텍스트 복사, KO/EN/JA/AR 렌더 테스트, PDF 재저장. Windows/macOS 실기기 확인 필요 |
+| P6 | 인증·10크레딧 원장·결제 | **코드 구현(미배포)**: 승인 위변조/중복, 요청 재시도 멱등, 실패 무과금, 사용자 간 격리. 토스 실결제·가맹 심사 전 |
 | P7 | 제한적 베타/원가 검증 | 동일 자료 반복/뉴스 없을 때 품질, 1건당 최악 비용, 반복 사용률·결제 전환 확인 |
 
 P0의 조사와 P1–P3의 로컬 기술 구현은 병행 가능하나 **라이선스 확인 전 과금/광고 문구에 '실시간 정확한 주가 알림' 등 보장 금지**. 모든 단계에서 `npm run lint`, `npm run check:i18n`, `npm test`, `npm run build`, Windows/macOS 동작 점검을 시행한다.

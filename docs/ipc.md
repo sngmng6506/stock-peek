@@ -60,15 +60,20 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 
 `quantity`·`avgPrice`: 비어 있으면 미입력, 아니면 0보다 큰 유한한 수.
 
-## AI 분석·리포트 (P3 미리보기 + P5 운영자 베타)
+## AI 분석·리포트 (P3 미리보기 + P5 리포트 + P6 Pro)
 
 | 채널 | 입력 | 출력 | 설명 |
 |---|---|---|---|
-| `ai:get-context` | — | `{stocks:[{market,symbol}], thesis, analysis:{available,markets}}` | 현재 관심 목록, 로컬 투자 관점, 리포트 생성 가능 여부(`available`)와 지원 시장(`US`,`KR`) |
+| `ai:get-context` | — | `{stocks:[{market,symbol}], thesis}` | 현재 관심 목록과 로컬 투자 관점 |
 | `ai:get-thesis` | — | `{schemaVersion,text,horizon,focus,updatedAt}` | 선택적 자유 입력 투자 관점 |
 | `ai:save-thesis` | `{text,horizon,focus}` | 저장한 투자 관점 | 길이·선택값 검증, 원본은 로컬 저장 |
 | `ai:preview` | `{selectedKeys,includeHoldings,includeHistory,includeThesis,thesisDraft?,lookbackDays?}` | `{status:'preview_only',request,scope}` | **네트워크 요청 없음, 크레딧 미사용, PDF 미생성** |
-| `ai:create-report` | `ai:preview`와 같은 옵션 | `{id, reports: ReportSummary[]}` | main이 로컬 저장소에서 요청을 **다시 만들어** 분석 API로 전송. 응답을 재검증한 뒤 로컬 보관 |
+| `pro:get-status` | — | `ProStatus` | `{available, payments?, reports?, pack?:{price,credits,currency}, markets?, account?:{email, credits:{available,pending}\|null}\|null}` |
+| `pro:request-code` | `email` | — | 이메일 연결·계정 불러오기용 코드 메일 발송 요청 |
+| `pro:verify-code` | `{email, code}` | `ProStatus` | 6자리 코드 확인. 현재 계정이 이메일 없는 기기 계정이면 **이메일 연결**(잔액 유지), 이미 있는 이메일이면 그 계정을 **불러오고** 기기 잔액을 합침 |
+| `pro:logout` | — | `ProStatus` | 서버 세션 폐기(실패해도 로컬 세션 삭제) |
+| `pro:checkout` | — | `{status:'opened'}` | 계정이 없으면 기기 계정을 먼저 만든 뒤, 서버가 만든 1회용 결제 페이지(`<API>/pay/<token>`)만 기본 브라우저로 연다 |
+| `ai:create-report` | `ai:preview`와 같은 옵션 | `{id, reports: ReportSummary[]}` | 계정이 없으면 기기 계정을 만든다(로그인 불필요). main이 로컬 저장소에서 요청을 **다시 만들어** `POST /v1/reports`로 전송, 1회 차감. 응답 재검증 후 로컬 보관 |
 | `ai:list-reports` | — | `ReportSummary[]` | 최신순 `{id,createdAt,asOf,stocks,noNewEvents,summary}` |
 | `ai:open-report` | `id` | — | 별도 창에 리포트 표시 (JavaScript 꺼짐, 링크는 기본 브라우저) |
 | `ai:save-pdf` | `id` | `{status:'saved'\|'cancelled'}` | 저장된 스냅샷을 A4 PDF로 출력(내용에 따라 여러 장). **서버 호출·차감 없음**, 반복 저장 가능 |
@@ -78,9 +83,12 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 - 보유 수량·평단가, 활동 이력, 투자 관점은 **기본 제외**. 각각 사용자 선택이 있는 경우만 미리보기와 요청에 포함.
 - `thesisDraft`는 선택적 미저장 편집 내용이며 **미리보기 자체는 저장하지 않음**. 별도 저장 버튼으로만 보관.
 - 관심 종목 추가·삭제는 거래 내역으로 간주하지 않는다. 평단가·수량 변경도 매수/매도가 아님.
-- **리포트 생성은 운영자 베타 전용.** 일반 배포 앱은 `available:false`이며 아무것도 전송하지 않는다. 운영자 PC 환경변수 `STOCKPEEK_ANALYSIS_TOKEN`(32–256자)이 있을 때만 켜진다. 토큰은 번들·저장소·설정 파일에 넣지 않는다. 엔드포인트 기본값은 운영 Worker `/api/analyze`, `STOCKPEEK_ANALYSIS_URL`로 바꿀 수 있다(https, 또는 로컬 `wrangler dev`용 `http://127.0.0.1`·`localhost`).
-- 전송 전 검사: 지원 시장(US·KR) 외 종목 → `ERR_ANALYSIS_MARKET`, 본문 12KB 초과 → `ERR_ANALYSIS_TOO_LARGE`, 이미 생성 중 → `ERR_ANALYSIS_BUSY`.
-- 서버 오류는 `ERR_ANALYSIS_DISABLED`, `ERR_UNAUTHORIZED`, `ERR_ANALYSIS_DAILY_LIMIT`, `ERR_ANALYSIS_NO_COVERAGE`, `ERR_ANALYSIS_REQUEST`만 그대로 전달하고 나머지는 `ERR_ANALYSIS_FAILED`. 연결 실패 `ERR_ANALYSIS_NETWORK`, 90초 초과 `ERR_ANALYSIS_TIMEOUT`.
+- **Pro는 Windows 전용.** 다른 OS와, 서버가 공개하지 않은 상태(`/v1/config`의 `pro:false`)에서는 `available:false`이고 아무것도 전송하지 않는다. 클로즈드 베타는 PC 환경변수 `STOCKPEEK_PRO=1`로 화면을 켠다. `STOCKPEEK_API_URL`로 서버 주소를 바꿀 수 있다(https, 또는 로컬 `wrangler dev`용 `http://127.0.0.1`·`localhost`). `STOCKPEEK_PRO_ANY_OS=1`은 개발·테스트용.
+- **로그인 없이 사용**: 첫 유료 동작(충전·생성) 때 `POST /v1/auth/device`로 이메일 없는 기기 계정을 만든다. 대화상자를 여는 것만으로는 계정을 만들지 않는다. 이메일 연결은 선택이며, 연결하지 않은 잔액은 그 PC의 세션이 없어지면(재설치·PC 변경) 되찾을 수 없다고 화면에 안내한다.
+- 세션 토큰은 main에만 있고 OS 암호화(`safeStorage`, Windows DPAPI)로 저장한다. 암호화를 쓸 수 없으면 메모리에만 두고 앱 재시작 시 다시 로그인. 렌더러에는 이메일·잔액만 전달.
+- 리포트 생성은 클릭마다 새 `Idempotency-Key`. 연결이 끊기면(`ERR_PRO_NETWORK`) 같은 키로 한 번 재시도해 이중 차감 없이 저장된 결과를 받는다.
+- 전송 전 검사: 지원 시장(US·KR) 외 종목 → `ERR_ANALYSIS_MARKET`, 본문 12KB 초과 → `ERR_ANALYSIS_TOO_LARGE`, 이미 생성 중 → `ERR_ANALYSIS_IN_PROGRESS`.
+- 서버 오류 중 `ERR_EMAIL_INVALID`, `ERR_CODE_INVALID`, `ERR_RATE_LIMITED`, `ERR_SESSION_INVALID`, `ERR_PRO_DISABLED`, `ERR_MAIL_FAILED`, `ERR_CREDITS_INSUFFICIENT`, `ERR_PAYMENTS_DISABLED`, `ERR_ANALYSIS_DISABLED`, `ERR_ANALYSIS_DAILY_LIMIT`, `ERR_ANALYSIS_BUSY`, `ERR_ANALYSIS_IN_PROGRESS`, `ERR_ANALYSIS_NO_COVERAGE`, `ERR_ANALYSIS_REQUEST`만 그대로 전달. 나머지는 `ERR_PRO_FAILED`(리포트는 `ERR_ANALYSIS_FAILED`). 연결 실패 `ERR_PRO_NETWORK`, 시간 초과 `ERR_PRO_TIMEOUT`(리포트 120초, 그 외 15초). `ERR_SESSION_INVALID`면 로컬 세션 삭제.
 - 응답은 `src/shared/reportClient.js`가 다시 검증한다(공식 공시 도메인, 인용 ID, 길이, 요청한 종목만, 보유정보 미동의 시 포트폴리오 문단 거부). 실패하면 `ERR_ANALYSIS_RESPONSE`이고 저장하지 않는다. 저장되는 종목 목록에는 보유 수량·평단을 넣지 않는다.
 - 로컬 보관: `ai-reports` electron-store, 최신 20개. 공시가 새로 나와도 저장된 스냅샷은 바뀌지 않는다.
 - PDF: A4 세로, 내용이 길면 여러 장. 내용을 자르거나 글자를 줄이지 않는다. 출력 실패는 `ERR_REPORT_PDF`.

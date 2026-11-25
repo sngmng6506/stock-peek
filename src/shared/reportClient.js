@@ -1,26 +1,12 @@
-// P5 client contract for the restricted analysis API (stockpeek-proxy /api/analyze).
-// Pure module: the caller injects fetch (Electron net.fetch in main). Never bundle a token;
-// operators supply it through the environment of their own machine only.
+// Report request/response contract shared by the Pro client (src/shared/proClient.js).
+// Pure module: request body checks before upload and strict re-validation of the server result.
 
 export const ANALYSIS_MARKETS = Object.freeze(['US', 'KR'])
 export const ANALYSIS_MAX_BODY_BYTES = 12_000
-export const ANALYSIS_TIMEOUT_MS = 90_000
-export const DEFAULT_ANALYSIS_ENDPOINT = 'https://stockpeek-proxy.sngmng.workers.dev/api/analyze'
-
-const TOKEN_PATTERN = /^[A-Za-z0-9_\-.]{32,256}$/
 const SOURCE_HOSTS = Object.freeze({
   'U.S. SEC EDGAR': 'www.sec.gov',
   OpenDART: 'dart.fss.or.kr'
 })
-// Server error codes that are safe and meaningful to show. Everything else collapses.
-const PASS_THROUGH = new Set([
-  'ERR_ANALYSIS_DISABLED',
-  'ERR_UNAUTHORIZED',
-  'ERR_ANALYSIS_DAILY_LIMIT',
-  'ERR_ANALYSIS_NO_COVERAGE',
-  'ERR_ANALYSIS_REQUEST'
-])
-
 const fail = (code) => {
   throw new Error(code)
 }
@@ -30,24 +16,6 @@ const isoOrNull = (value) => {
   if (typeof value !== 'string') return null
   const ms = Date.parse(value)
   return Number.isFinite(ms) ? new Date(ms).toISOString() : null
-}
-
-// env: process.env-like object. Returns null when the operator beta is not configured.
-export function analysisConfigFromEnv(env = {}) {
-  const token = typeof env.STOCKPEEK_ANALYSIS_TOKEN === 'string' ? env.STOCKPEEK_ANALYSIS_TOKEN : ''
-  if (!TOKEN_PATTERN.test(token)) return null
-  const raw = env.STOCKPEEK_ANALYSIS_URL || DEFAULT_ANALYSIS_ENDPOINT
-  let url
-  try {
-    url = new URL(raw)
-  } catch {
-    return null
-  }
-  // Plain http only for a local `wrangler dev` server on this machine.
-  const local =
-    url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname)
-  if ((url.protocol !== 'https:' && !local) || url.username || url.password) return null
-  return { endpoint: url.href, token }
 }
 
 // Input: personalizedPreview request (schemaVersion 2). Output: JSON string to POST.
@@ -112,7 +80,7 @@ export function normalizeAnalysisResult(result, request) {
   if (
     !result ||
     result.schemaVersion !== 1 ||
-    result.status !== 'generated_unbilled' ||
+    !['generated_unbilled', 'generated_billed'].includes(result.status) ||
     result.dataLevel !== 'filing_metadata_only'
   )
     fail('ERR_ANALYSIS_RESPONSE')
@@ -157,7 +125,7 @@ export function normalizeAnalysisResult(result, request) {
   const locale = typeof report.locale === 'string' ? report.locale : request.locale
   return {
     schemaVersion: 1,
-    status: 'generated_unbilled',
+    status: result.status,
     dataLevel: 'filing_metadata_only',
     asOf,
     periodStart,
@@ -171,51 +139,4 @@ export function normalizeAnalysisResult(result, request) {
     coverage,
     noNewEvents: sources.length === 0 && report.noNewEvents !== false
   }
-}
-
-export function analysisErrorCode(status, serverCode) {
-  if (typeof serverCode === 'string' && PASS_THROUGH.has(serverCode)) return serverCode
-  if (serverCode === 'ERR_REQUEST_TOO_LARGE' || status === 413) return 'ERR_ANALYSIS_TOO_LARGE'
-  if (status === 401) return 'ERR_UNAUTHORIZED'
-  if (status === 429) return 'ERR_ANALYSIS_DAILY_LIMIT'
-  return 'ERR_ANALYSIS_FAILED'
-}
-
-export async function requestAnalysis({
-  fetchImpl,
-  config,
-  request,
-  timeoutMs = ANALYSIS_TIMEOUT_MS
-}) {
-  if (typeof fetchImpl !== 'function' || !config) fail('ERR_ANALYSIS_UNAVAILABLE')
-  const body = prepareAnalysisBody(request)
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), timeoutMs)
-  let res
-  let data
-  try {
-    try {
-      res = await fetchImpl(config.endpoint, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: 'Bearer ' + config.token
-        },
-        body,
-        signal: controller.signal,
-        redirect: 'error'
-      })
-    } catch {
-      fail(controller.signal.aborted ? 'ERR_ANALYSIS_TIMEOUT' : 'ERR_ANALYSIS_NETWORK')
-    }
-    try {
-      data = await res.json()
-    } catch {
-      fail(controller.signal.aborted ? 'ERR_ANALYSIS_TIMEOUT' : 'ERR_ANALYSIS_FAILED')
-    }
-  } finally {
-    clearTimeout(timer)
-  }
-  if (!res.ok || data?.ok !== true) fail(analysisErrorCode(res.status, data?.error))
-  return normalizeAnalysisResult(data.result, request)
 }

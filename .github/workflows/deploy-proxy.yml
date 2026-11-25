@@ -1,0 +1,88 @@
+name: Deploy stockpeek-proxy
+
+# 수동 실행 전용. push로는 절대 배포하지 않는다 (AGENTS.md: 운영 Worker는 push만으로 배포되지 않음).
+# Actions → Deploy stockpeek-proxy → Run workflow → "Use workflow from"에서 배포할 브랜치 선택.
+# 필요한 저장소 Secret: CLOUDFLARE_API_TOKEN (Workers Scripts:Edit + D1:Edit), CLOUDFLARE_ACCOUNT_ID.
+# 배포 후 기존 시세·검색과 /v1/config를 확인하고, 실패하면 job이 실패한다 → 대시보드 Deployments에서 Rollback.
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: '체크하면 실제 배포, 비우면 dry-run만'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-proxy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER: wrangler@4.168.0
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Proxy tests (no dependencies needed)
+        run: |
+          tests="tests/pagesProxy.test.mjs tests/workerProxy.test.mjs"
+          [ -f tests/proServer.test.mjs ] && tests="$tests tests/proServer.test.mjs"
+          node --test $tests
+          node scripts/check-proxy-sync.mjs
+
+      - name: Check secrets are configured
+        run: |
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo '::error::CLOUDFLARE_API_TOKEN secret missing'; exit 1; }
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || { echo '::error::CLOUDFLARE_ACCOUNT_ID secret missing'; exit 1; }
+
+      - name: Dry run (bindings and vars)
+        working-directory: stockpeek-proxy
+        run: npx --yes "$WRANGLER" deploy --dry-run
+
+      - name: Deploy
+        if: ${{ inputs.deploy }}
+        working-directory: stockpeek-proxy
+        run: npx --yes "$WRANGLER" deploy
+
+      - name: Verify live routes
+        if: ${{ inputs.deploy }}
+        run: |
+          export HAS_PRO=$([ -d stockpeek-proxy/pro ] && echo 1 || echo 0)
+          node --input-type=module <<'NODE'
+          const base = 'https://stockpeek-proxy.sngmng.workers.dev'
+          const get = async (path) => {
+            const res = await fetch(base + path, { signal: AbortSignal.timeout(15000) })
+            return { status: res.status, body: await res.json() }
+          }
+          let failed = false
+          const check = async (name, path, ok) => {
+            try {
+              const r = await get(path)
+              if (!ok(r)) throw new Error('unexpected ' + r.status + ' ' + JSON.stringify(r.body).slice(0, 200))
+              console.log('PASS', name)
+            } catch (e) {
+              failed = true
+              console.log('::error::FAIL ' + name + ': ' + e.message)
+            }
+          }
+          await new Promise((r) => setTimeout(r, 5000))
+          await check('/health', '/health', (r) => r.status === 200 && r.body.ok === true)
+          await check('KR quote', '/api/stock?market=KR&symbol=005930&skipChart=1', (r) => r.status === 200 && Number.isFinite(r.body.price))
+          await check('US search', '/api/search?market=US&q=MSFT', (r) => r.status === 200 && Array.isArray(r.body) && r.body.length > 0)
+          if (process.env.HAS_PRO === '1')
+            await check('/v1/config', '/v1/config', (r) => r.status === 200 && r.body.ok === true)
+          if (failed) {
+            console.log('::error::Live check failed. Roll back in Cloudflare dashboard → stockpeek-proxy → Deployments.')
+            process.exit(1)
+          }
+          NODE

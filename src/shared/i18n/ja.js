@@ -172,11 +172,7 @@ export default {
   'notify.updateTitle': 'Stock Peek v{v} アップデート',
   'notify.updateInstall': 'クリックするとすぐに更新して再起動します。',
   'notify.updateDownload': 'クリックするとダウンロードページを開きます。',
-  'ai.betaHint':
-    '運営者ベータ：選択した情報だけをサーバーに送り、開示書類のタイトルと提出日に基づくレポートを作成します。決済やクレジットの消費はありません。',
-  'ai.privacyBeta':
-    'チェックした情報だけが含まれます。「レポートを作成」を押したときだけ、プレビューと同じ内容が分析サーバーに送信されます。操作履歴は実際の売買記録ではありません。',
-  'ai.generate': 'この内容でレポートを作成',
+  'ai.generate': 'この内容でレポートを作成（1回使用）',
   'ai.unsupportedMarket': 'レポート非対応の市場',
   'ai.reports': '最近のレポート',
   'ai.openReport': '表示',
@@ -206,23 +202,57 @@ export default {
   'report.level.filing-metadata': '開示タイトルと提出日のみ確認（本文未確認）',
   'report.disclaimer':
     'この文書は情報収集を補助する要約であり、投資助言や売買の指示ではありません。開示書類や記事のタイトルだけでは本文の内容は検証されません。各資料の出典と日時を原文で確認してください。',
-  'error.ERR_ANALYSIS_UNAVAILABLE': 'このバージョンではレポートを作成できません',
   'error.ERR_ANALYSIS_MARKET': 'レポートは韓国・米国の銘柄のみ選択できます',
   'error.ERR_ANALYSIS_TOO_LARGE':
     '送信する情報が多すぎます。操作履歴を外すか銘柄数を減らしてください',
-  'error.ERR_ANALYSIS_TIMEOUT':
-    'レポート作成がタイムアウトしました。しばらくしてから再試行してください',
-  'error.ERR_ANALYSIS_NETWORK': '分析サーバーに接続できませんでした',
   'error.ERR_ANALYSIS_DISABLED': 'サーバーでレポート作成が無効になっています',
-  'error.ERR_UNAUTHORIZED': 'ベータのアクセストークンが正しくありません',
   'error.ERR_ANALYSIS_DAILY_LIMIT': '本日の作成上限に達しました',
   'error.ERR_ANALYSIS_NO_COVERAGE': '選択した銘柄の開示データを取得できませんでした',
   'error.ERR_ANALYSIS_REQUEST': 'リクエストの形式が正しくありません',
   'error.ERR_ANALYSIS_RESPONSE':
     'サーバーの応答を検証できなかったため、レポートを保存しませんでした',
   'error.ERR_ANALYSIS_FAILED': 'レポートを作成できませんでした',
-  'error.ERR_ANALYSIS_BUSY': 'すでにレポートを作成中です',
+  'error.ERR_ANALYSIS_BUSY': '現在混み合っています。しばらくしてから再試行してください',
   'error.ERR_REPORT_NOT_FOUND': 'レポートが見つかりません',
   'error.ERR_REPORT_ARCHIVE': '保存されたレポートを読み込めませんでした',
-  'error.ERR_REPORT_PDF': 'PDFを作成できませんでした'
+  'error.ERR_REPORT_PDF': 'PDFを作成できませんでした',
+  'ai.proHint':
+    '選択した情報だけを送り、開示書類のタイトルと提出日に基づくレポートを作成します。レポート1件につき1回を使用し、作成に失敗した場合は消費されません。',
+  'ai.privacyPro':
+    'チェックした情報だけが含まれます。「レポートを作成」を押したときだけプレビューと同じ内容が分析サーバーに送信され、保有数量・平均取得単価はサーバーに保存されません。操作履歴は実際の売買記録ではありません。',
+  'ai.noCredits': '残りのレポート回数がありません。チャージしてから再試行してください。',
+  'ai.reportsPaused': 'レポート作成は一時停止中です。後でもう一度お試しください。',
+  'pro.title': 'Proアカウント',
+  'pro.emailPlaceholder': 'メールアドレス',
+  'pro.codePlaceholder': '6桁のコード',
+  'pro.sendCode': 'コードを受け取る',
+  'pro.resendCode': 'コードを再送',
+  'pro.verify': '確認',
+  'pro.codeSent': 'コードを送信しました。受信トレイ（迷惑メールを含む）を確認してください。',
+  'pro.credits': '残りレポート {n}回',
+  'pro.creditsUnknown': '残高を読み込めませんでした',
+  'pro.topUp': '{n}回チャージ（₩{v}）',
+  'pro.refresh': '更新',
+  'pro.logout': 'ログアウト',
+  'pro.checkoutOpened': 'ブラウザで決済を完了してから「更新」を押してください。',
+  'error.ERR_EMAIL_INVALID': 'メールアドレスの形式が正しくありません',
+  'error.ERR_CODE_INVALID': 'コードが違うか期限切れです。コードを再送してください',
+  'error.ERR_RATE_LIMITED': 'リクエストが多すぎます。しばらくしてから再試行してください',
+  'error.ERR_SESSION_INVALID': 'ログインの有効期限が切れました。もう一度ログインしてください',
+  'error.ERR_PRO_DISABLED': '現在Pro機能は利用できません',
+  'error.ERR_MAIL_FAILED': 'メールを送信できませんでした。しばらくしてから再試行してください',
+  'error.ERR_CREDITS_INSUFFICIENT': '残りのレポート回数がありません',
+  'error.ERR_PAYMENTS_DISABLED': '現在チャージできません',
+  'error.ERR_ANALYSIS_IN_PROGRESS': 'すでにレポートを作成中です',
+  'error.ERR_PRO_FAILED': 'リクエストを処理できませんでした',
+  'error.ERR_PRO_NETWORK': 'サーバーに接続できませんでした',
+  'error.ERR_PRO_TIMEOUT':
+    'サーバーの応答がタイムアウトしました。しばらくしてから再試行してください',
+  'pro.linkHint':
+    'メールを連携すると、PCの変更や再インストール後も残り回数を引き継げます。連携しない場合はこのPCでのみ使えます。',
+  'pro.recoverHint':
+    'ログインなしですぐにチャージして使えます。別のPCでメールを連携したアカウントがあれば呼び出せます。',
+  'pro.link': 'メールを連携（任意）',
+  'pro.recover': 'メールでアカウントを呼び出す',
+  'pro.linked': '{v} と連携済み'
 }

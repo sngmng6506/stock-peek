@@ -44,7 +44,12 @@ tests/activityHistory.test.mjs    활동 이력·baseline·이상/중복 기록 
 src/shared/thesisModel.js     투자 관점 순수 계약
 src/shared/personalizedPreview.js   로컬 AI 분석 요청 v2 미리보기
 src/main/thesisStore.js      투자 관점 로컬 저장 어댑터
-src/shared/reportClient.js    P5 분석 API 클라이언트·응답 재검증 (운영자 환경변수 토큰 전용)
+src/shared/reportClient.js    리포트 요청 본문 검사·서버 응답 재검증
+src/shared/proClient.js       Pro API 클라이언트 (로그인·잔액·충전·리포트, 오류 코드 매핑)
+src/main/proSession.js        Pro 세션 토큰 safeStorage 암호화 저장
+src/renderer/src/components/ProAccount.jsx  Pro 로그인·잔액·충전 UI
+stockpeek-proxy/pro/          Pro API (/v1/*, /pay/*): 인증·크레딧 원장·리포트·토스 결제
+tests/helpers/d1.mjs          node:sqlite 기반 D1 대역 (마이그레이션 SQL 그대로 적용)
 src/shared/reportArchive.js   생성 리포트 로컬 스냅샷 보관 순수 로직
 src/shared/reportHtml.js      A4 리포트 HTML (4개 언어, JavaScript 없음) + PDF 페이지 수
 src/main/reportStore.js       리포트 보관 electron-store 어댑터
@@ -88,7 +93,8 @@ docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 - Pages 프록시: `ANALYSIS_ENABLED` 기본 비활성, `ANALYSIS_TEST_TOKEN`은 Cloudflare Secret, `ANALYSIS_DB` D1 바인딩 필수. 무인증/일일 한도 미설정 상태로 LLM 엔드포인트 열지 않음. 기존 Pages 배포 루트 확인 전 자동 배포 성공 주장 금지.
 - P4: OpenDART=`DART_API_KEY`, OpenRouter=`OPENROUTER_API_KEY`; 모델 선택=`P4_MODEL` (기본 `anthropic/claude-sonnet-5.5`). `server/p4/` API 키는 서버 환경변수만 사용. `scripts/p4-analyze.mjs` 입력·출력은 `.private/` 아래에 보관(무시 대상). Electron 앱에서 OpenAI/DART 비밀키 직접 호출 금지. 공시 제목만으로 재무·투자 영향을 확정하지 않는다.
 - 비밀값: 토큰·계정 ID·인증서 커밋 금지
-- 리포트 생성(P5): 토큰은 운영자 PC 환경변수 `STOCKPEEK_ANALYSIS_TOKEN`에서만 읽는다. 앱 번들·설정 UI·electron-store에 토큰을 넣지 않는다. 응답은 `normalizeAnalysisResult`로 재검증한 것만 저장·렌더링. PDF는 A4 여러 장 허용, 내용을 자르거나 글자를 줄이지 않는다
+- 리포트(P5): 응답은 `normalizeAnalysisResult`로 재검증한 것만 저장·렌더링. PDF는 A4 여러 장 허용, 내용을 자르거나 글자를 줄이지 않는다
+- Pro(P6): Windows 전용. 세션 토큰은 main에서만 다루고 `safeStorage`로 암호화 저장, 렌더러·로그에 넣지 않는다. 앱 번들에 서버 비밀값 금지. 크레딧은 `credit_ledger` 추가 전용(UPDATE·DELETE 금지), 금액·지급량은 서버만 정한다. 결제 적립은 `/pay/success`의 토스 승인 결과로만. 서버 플래그(`PRO_ENABLED`·`PRO_PUBLIC`·`PRO_REPORTS_ENABLED`·`PAYMENTS_ENABLED`) 기본 0. 서버 SQL 변경은 `migrations/`에 새 파일 추가
 - 리포트 창: 정적 HTML만, `javascript:false`·샌드박스. 데이터 URL 창은 `destroy()` 대신 `close()`로 닫는다(다음 창 로드가 `ERR_FAILED`로 실패함)
 
 ## 시장·언어 추가
