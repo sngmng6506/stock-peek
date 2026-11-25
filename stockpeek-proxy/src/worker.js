@@ -1,6 +1,7 @@
 // Canonical Cloudflare Worker entrypoint for the existing stockpeek-proxy Worker.
 // Preserve legacy stock/search response contracts; add restricted AI API routes.
 import { onRequestPost as analyze } from '../functions/api/analyze.js'
+import { handlePro, isProPath } from '../pro/router.js'
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
@@ -208,6 +209,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url)
     // IMPORTANT: handle private routes before global GET/OPTIONS+CORS routing.
+    if (isProPath(url.pathname)) return handlePro(request, env)
     if (url.pathname === '/api/analyze') {
       if (request.method !== 'POST') return methodNotAllowed('POST')
       return analyze({ request, env })

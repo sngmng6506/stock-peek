@@ -74,3 +74,32 @@ SELECT day, used, updated_at FROM analysis_daily_usage ORDER BY updated_at DESC 
 Do not paste D1 `token_hash` or private report bodies in bug reports. Investigate `ERR_ANALYSIS_NO_COVERAGE` as SEC fetch/access failures; `ERR_MODEL_HTTP` as provider/authorization/model/JSON Schema issues. Neither indicates successful paid report generation.
 
 Latest known OpenRouter model is `anthropic/claude-sonnet-5.5`. Deployment remains operator-only; do not copy the token into Electron/website assets.
+
+## P6 Pro API (`/v1/*`, `/pay/*`) — not deployed yet
+
+Source: `pro/` (router, auth, credits, reports, payments) and `migrations/0002_pro_accounts.sql`. Everything is closed by default (`PRO_ENABLED=0`, `PRO_PUBLIC=0`, `PRO_REPORTS_ENABLED=0`, `PAYMENTS_ENABLED=0` in `wrangler.jsonc`). `/v1/*` never sends wildcard CORS and rejects requests with an `Origin` header; `/pay/*` are browser pages.
+
+### One-time setup (operator)
+
+1. **Migration**: `npx wrangler d1 execute stock-peek --remote --file=migrations/0002_pro_accounts.sql` (same database as `ANALYSIS_DB`). It only creates new tables.
+2. **Secrets** (`npx wrangler secret put <NAME>` — never in `wrangler.jsonc`):
+   - `AUTH_PEPPER`: 32+ random characters. Changing it invalidates pending codes only.
+   - `ADMIN_TOKEN`: 32+ random characters, for `/v1/admin/credits`.
+   - `RESEND_API_KEY`: Resend API key. Verify the `stock-peek.com` sending domain in Resend (DNS records) so `MAIL_FROM` (`몰래주식 <login@stock-peek.com>`) is accepted.
+   - `TOSS_CLIENT_KEY`, `TOSS_SECRET_KEY`: start with **test** keys (`test_ck_`/`test_sk_` or widget `test_gck_`/`test_gsk_`).
+3. **Local run**: `npx wrangler dev` with `MAIL_MODE=log` in `.dev.vars` prints sign-in codes to the console instead of sending mail. Never set `MAIL_MODE` on the deployed Worker.
+
+### Rollout order
+
+1. Deploy with all flags 0, check `GET /v1/config` and that `/api/stock`, `/api/search` still work.
+2. Closed beta: `PRO_ENABLED=1`, `PRO_REPORTS_ENABLED=1` (keep `PRO_PUBLIC=0`). Testers on Windows set `STOCKPEEK_PRO=1`; grant credits:
+   ```bash
+   curl -X POST https://stockpeek-proxy.sngmng.workers.dev/v1/admin/credits \
+     -H "authorization: Bearer $ADMIN_TOKEN" -H "content-type: application/json" \
+     -d '{"email":"tester@example.com","amount":5,"kind":"grant","ref":"beta-2026-11-tester"}'
+   ```
+   The user must have signed in once. `kind` is `grant`, `refund` (negative) or `adjust`; `ref` is unique per kind.
+3. Payments with Toss **test keys**: `PAYMENTS_ENABLED=1`, complete a test card payment from the app, confirm the balance rises once and reloading `/pay/success` does not add more.
+4. Public launch (`PRO_PUBLIC=1`, live keys) only after: Toss merchant review, terms/refund/e-commerce notice pages, privacy pages in 4 languages, account deletion, and the P0 licensing review in `docs/stock-peek-pro.md`.
+
+Refunds: cancel in the Toss dashboard, then record `kind:"refund"` with a negative amount and `ref:"refund-<orderId>"`. The ledger refuses to go below zero.

@@ -59,7 +59,7 @@ async function checkLimit(env, tokenHash) {
   return Boolean(result)
 }
 
-async function readLimitedBody(request) {
+export async function readLimitedBody(request) {
   if (!request.body) throw new Error('ERR_REQUEST_JSON')
   const reader = request.body.getReader()
   const chunks = []
@@ -84,7 +84,11 @@ async function readLimitedBody(request) {
   }
 }
 
-async function safeFetchJson(url, options = {}) {
+function makeSafeFetchJson(fetchImpl) {
+  return (url, options) => safeFetchJson(url, options, fetchImpl)
+}
+
+async function safeFetchJson(url, options = {}, fetchImpl = fetch) {
   // Only preconstructed official source URLs from the filing adapter are accepted.
   const u = new URL(url)
   if (
@@ -92,7 +96,7 @@ async function safeFetchJson(url, options = {}) {
     !['data.sec.gov', 'www.sec.gov', 'opendart.fss.or.kr'].includes(u.hostname)
   )
     throw new Error('ERR_SOURCE_URL')
-  const res = await fetch(u.href, { ...options, signal: AbortSignal.timeout(10_000) })
+  const res = await fetchImpl(u.href, { ...options, signal: AbortSignal.timeout(10_000) })
   if (!res.ok) throw new Error('ERR_SOURCE_HTTP')
   const size = Number(res.headers.get('content-length') || 0)
   if (size > 5_000_000) throw new Error('ERR_SOURCE_SIZE')
@@ -103,6 +107,97 @@ async function safeFetchJson(url, options = {}) {
   } catch {
     throw new Error('ERR_SOURCE_JSON')
   }
+}
+
+// Rebuild the request from an explicit allowlist. Unknown JSON fields never
+// reach upstream models, even when a client sends extra properties. Throws on invalid input.
+export function sanitizeAnalysisInput(input) {
+  validateAnalysisRequest(input)
+  const options = input.options
+  const limitedSnapshot = (item) => {
+    if (!item || typeof item !== 'object') return null
+    const out = {}
+    if (typeof item.market === 'string') out.market = item.market.slice(0, 8)
+    if (typeof item.symbol === 'string') out.symbol = item.symbol.slice(0, 20)
+    if (options.includeHoldings) {
+      if (typeof item.quantity === 'number' && Number.isFinite(item.quantity))
+        out.quantity = item.quantity
+      if (typeof item.avgPrice === 'number' && Number.isFinite(item.avgPrice))
+        out.avgPrice = item.avgPrice
+    }
+    return out
+  }
+  return {
+    schemaVersion: 2,
+    locale: ['ko', 'en', 'ja', 'ar'].includes(input.locale) ? input.locale : 'ko',
+    stocks: input.stocks.map((stock) => ({
+      market: stock.market,
+      symbol: stock.symbol,
+      key: stock.key,
+      ...(options.includeHoldings && stock.holding
+        ? { holding: { quantity: stock.holding.quantity, avgPrice: stock.holding.avgPrice } }
+        : {})
+    })),
+    options: {
+      includeHoldings: options.includeHoldings,
+      includeHistory: options.includeHistory,
+      includeThesis: options.includeThesis,
+      lookbackDays: options.lookbackDays
+    },
+    ...(options.includeThesis && input.investmentThesis
+      ? {
+          investmentThesis: {
+            text: input.investmentThesis.text,
+            horizon: input.investmentThesis.horizon,
+            focus: input.investmentThesis.focus
+          }
+        }
+      : {}),
+    ...(options.includeHistory
+      ? {
+          activity: input.activity.map((event) => ({
+            type: event.type,
+            occurredAt: event.occurredAt,
+            stock: { market: event.stock.market, symbol: event.stock.symbol },
+            before: limitedSnapshot(event.before),
+            after: limitedSnapshot(event.after)
+          }))
+        }
+      : {})
+  }
+}
+
+// Known, non-sensitive error codes only. Never upstream bodies, credentialed URLs or prompts.
+export function analysisFailureCode(error) {
+  return error instanceof Error &&
+    /^(ERR_ANALYSIS_NO_COVERAGE|ERR_DART_MAPPING_CONFIG|ERR_MODEL_(HTTP|INCOMPLETE|REFUSAL|RESPONSE|JSON|NOT_CONFIGURED)|ERR_NEWS_NOT_LICENSED)$/.test(
+      error.message
+    )
+    ? error.message
+    : 'ERR_ANALYSIS_FAILED'
+}
+
+// Runs official-filing collection and model narration for an already sanitized request.
+export async function runAnalysis(input, env, { fetchImpl = fetch } = {}) {
+  let map
+  try {
+    map = env.DART_CORP_MAP_JSON ? JSON.parse(env.DART_CORP_MAP_JSON) : {}
+  } catch {
+    throw new Error('ERR_DART_MAPPING_CONFIG')
+  }
+  const filing = createOfficialFilingProvider({
+    fetchJson: makeSafeFetchJson(fetchImpl),
+    secUserAgent: env.SEC_USER_AGENT,
+    dartApiKey: env.DART_API_KEY,
+    dartCorpMap: map
+  })
+  const narrator = createOpenRouterNarrator({
+    fetchImpl,
+    apiKey: env.OPENROUTER_API_KEY,
+    model: env.P4_MODEL || 'anthropic/claude-sonnet-5.5'
+  })
+  const run = createAnalysisPipeline({ filings: filing, generate: narrator })
+  return run(input)
 }
 
 export async function onRequestPost({ request, env }) {
@@ -127,62 +222,8 @@ export async function onRequestPost({ request, env }) {
       : response(400, 'ERR_REQUEST_JSON')
   }
 
-  // Rebuild the request from an explicit allowlist. Unknown JSON fields never
-  // reach upstream models, even when an operator's client sends extra properties.
   try {
-    validateAnalysisRequest(input)
-    const options = input.options
-    const limitedSnapshot = (item) => {
-      if (!item || typeof item !== 'object') return null
-      const out = {}
-      if (typeof item.market === 'string') out.market = item.market.slice(0, 8)
-      if (typeof item.symbol === 'string') out.symbol = item.symbol.slice(0, 20)
-      if (options.includeHoldings) {
-        if (typeof item.quantity === 'number' && Number.isFinite(item.quantity))
-          out.quantity = item.quantity
-        if (typeof item.avgPrice === 'number' && Number.isFinite(item.avgPrice))
-          out.avgPrice = item.avgPrice
-      }
-      return out
-    }
-    input = {
-      schemaVersion: 2,
-      locale: ['ko', 'en', 'ja', 'ar'].includes(input.locale) ? input.locale : 'ko',
-      stocks: input.stocks.map((stock) => ({
-        market: stock.market,
-        symbol: stock.symbol,
-        key: stock.key,
-        ...(options.includeHoldings && stock.holding
-          ? { holding: { quantity: stock.holding.quantity, avgPrice: stock.holding.avgPrice } }
-          : {})
-      })),
-      options: {
-        includeHoldings: options.includeHoldings,
-        includeHistory: options.includeHistory,
-        includeThesis: options.includeThesis,
-        lookbackDays: options.lookbackDays
-      },
-      ...(options.includeThesis && input.investmentThesis
-        ? {
-            investmentThesis: {
-              text: input.investmentThesis.text,
-              horizon: input.investmentThesis.horizon,
-              focus: input.investmentThesis.focus
-            }
-          }
-        : {}),
-      ...(options.includeHistory
-        ? {
-            activity: input.activity.map((event) => ({
-              type: event.type,
-              occurredAt: event.occurredAt,
-              stock: { market: event.stock.market, symbol: event.stock.symbol },
-              before: limitedSnapshot(event.before),
-              after: limitedSnapshot(event.after)
-            }))
-          }
-        : {})
-    }
+    input = sanitizeAnalysisInput(input)
   } catch {
     return response(400, 'ERR_ANALYSIS_REQUEST')
   }
@@ -194,40 +235,13 @@ export async function onRequestPost({ request, env }) {
   }
 
   try {
-    let map
-    try {
-      map = env.DART_CORP_MAP_JSON ? JSON.parse(env.DART_CORP_MAP_JSON) : {}
-    } catch {
-      return response(503, 'ERR_DART_MAPPING_CONFIG')
-    }
-    const filing = createOfficialFilingProvider({
-      fetchJson: safeFetchJson,
-      secUserAgent: env.SEC_USER_AGENT,
-      dartApiKey: env.DART_API_KEY,
-      dartCorpMap: map
-    })
-    const narrator = createOpenRouterNarrator({
-      fetchImpl: fetch,
-      apiKey: env.OPENROUTER_API_KEY,
-      model: env.P4_MODEL || 'anthropic/claude-sonnet-5.5'
-    })
-    const run = createAnalysisPipeline({ filings: filing, generate: narrator })
-    const output = await run(input)
+    const output = await runAnalysis(input, env)
     return new Response(JSON.stringify({ ok: true, result: output }), {
       status: 200,
       headers: JSON_HEADERS
     })
   } catch (error) {
-    // Return only known, non-sensitive error codes to an authenticated operator.
-    // Never include upstream response bodies, DART URLs with credentials or prompts.
-    const code =
-      error instanceof Error &&
-      /^(ERR_ANALYSIS_NO_COVERAGE|ERR_MODEL_(HTTP|INCOMPLETE|REFUSAL|RESPONSE|JSON|NOT_CONFIGURED)|ERR_NEWS_NOT_LICENSED)$/.test(
-        error.message
-      )
-        ? error.message
-        : 'ERR_ANALYSIS_FAILED'
-    return response(502, code)
+    return response(502, analysisFailureCode(error))
   }
 }
 

@@ -9,7 +9,19 @@
     "ANALYSIS_ENABLED": "0",
     "ANALYSIS_DAILY_LIMIT": "3",
     "P4_MODEL": "anthropic/claude-sonnet-5.5",
-    "SEC_USER_AGENT": "StockPeek/1.0 (sngmng6506@gmail.com)"
+    "SEC_USER_AGENT": "StockPeek/1.0 (sngmng6506@gmail.com)",
+    // P6 Pro (accounts, credits, Toss). All closed until the operator flips them.
+    "PRO_ENABLED": "0",
+    "PRO_PUBLIC": "0",
+    "PRO_REPORTS_ENABLED": "0",
+    "PAYMENTS_ENABLED": "0",
+    "PRO_USER_DAILY_LIMIT": "20",
+    "PRO_GLOBAL_DAILY_LIMIT": "300",
+    "PRO_PACK_PRICE_KRW": "990",
+    "PRO_PACK_CREDITS": "10",
+    "MAIL_FROM": "몰래주식 <login@stock-peek.com>"
+    // Secrets (dashboard / `wrangler secret put`, never here): AUTH_PEPPER, RESEND_API_KEY,
+    // ADMIN_TOKEN, TOSS_CLIENT_KEY, TOSS_SECRET_KEY (+ existing P4 secrets).
   },
   "d1_databases": [
     {

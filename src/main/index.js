@@ -45,7 +45,10 @@ import { alerts } from './alertStore.js'
 import { thesis } from './thesisStore.js'
 import { buildPersonalizedPreview } from '../shared/personalizedPreview.js'
 import { normalizeThesis } from '../shared/thesisModel.js'
-import { ANALYSIS_MARKETS, analysisConfigFromEnv, requestAnalysis } from '../shared/reportClient.js'
+import { ANALYSIS_MARKETS } from '../shared/reportClient.js'
+import { apiOriginFromEnv, createProClient, isCheckoutUrl } from '../shared/proClient.js'
+import { getSession, setSession, clearSession } from './proSession.js'
+import { randomUUID } from 'node:crypto'
 import { renderReportHtml } from '../shared/reportHtml.js'
 import { reports } from './reportStore.js'
 import { openReportViewer, printReportPdf } from './reportWindow.js'
@@ -144,9 +147,44 @@ function resolveLanguage() {
 
 const t = (key, vars) => translate(resolveLanguage(), key, vars)
 
-// Operator-only beta: the token comes from this machine's environment, never from the bundle.
-const analysisConfig = analysisConfigFromEnv(process.env)
+// Pro (accounts, credits, paid reports): Windows only. STOCKPEEK_PRO=1 shows it before the
+// server publishes it (closed beta); STOCKPEEK_API_URL points at a local `wrangler dev`.
+const PRO_PLATFORM = process.platform === 'win32' || process.env.STOCKPEEK_PRO_ANY_OS === '1'
+const PRO_FORCED = process.env.STOCKPEEK_PRO === '1'
+const proOrigin = apiOriginFromEnv(process.env)
+const pro = createProClient({
+  fetchImpl: eFetch,
+  origin: proOrigin,
+  getToken: () => getSession()?.token || null
+})
 let analysisInFlight = false
+
+async function proStatus() {
+  if (!PRO_PLATFORM) return { available: false }
+  let config
+  try {
+    config = await pro.config()
+  } catch {
+    return { available: false, offline: true }
+  }
+  if (!config.pro && !PRO_FORCED) return { available: false }
+  const status = {
+    available: true,
+    payments: config.payments,
+    reports: config.reports,
+    pack: config.pack,
+    markets: ANALYSIS_MARKETS,
+    account: null
+  }
+  if (!getSession()) return status
+  try {
+    status.account = await pro.me()
+  } catch (error) {
+    if (error.message === 'ERR_SESSION_INVALID') clearSession()
+    else status.account = { email: getSession().email, credits: null }
+  }
+  return status
+}
 
 function buildAiPreview(options) {
   const watchlist = getItems()
@@ -866,24 +904,69 @@ app.whenReady().then(() => {
   // Activity history stays on-device. Export is an explicit local save action.
   ipcMain.handle('ai:get-context', () => ({
     stocks: getItems().map(({ market, symbol }) => ({ market, symbol })),
-    thesis: thesis.get(),
-    analysis: { available: !!analysisConfig, markets: ANALYSIS_MARKETS }
+    thesis: thesis.get()
   }))
   ipcMain.handle('ai:get-thesis', () => thesis.get())
   ipcMain.handle('ai:save-thesis', (_event, value) => thesis.save(value))
   // Local preview only. Does not contact a server, LLM or payment provider.
   ipcMain.handle('ai:preview', (_event, options) => buildAiPreview(options))
+  ipcMain.handle('pro:get-status', () => proStatus())
+  ipcMain.handle('pro:request-code', async (_event, email) => {
+    try {
+      await pro.requestCode(String(email || ''), resolveLanguage())
+    } catch (error) {
+      throw codedError(error, 'ERR_PRO_FAILED')
+    }
+  })
+  ipcMain.handle('pro:verify-code', async (_event, { email, code } = {}) => {
+    try {
+      setSession(await pro.verifyCode(String(email || ''), String(code || '')))
+    } catch (error) {
+      throw codedError(error, 'ERR_PRO_FAILED')
+    }
+    return proStatus()
+  })
+  ipcMain.handle('pro:logout', async () => {
+    try {
+      await pro.logout()
+    } catch {
+      // The local session is dropped even when the server is unreachable.
+    }
+    clearSession()
+    return proStatus()
+  })
+  ipcMain.handle('pro:checkout', async () => {
+    let url
+    try {
+      ;({ url } = await pro.checkout())
+    } catch (error) {
+      throw codedError(error, 'ERR_PRO_FAILED')
+    }
+    // Only our own one-time payment page opens in the browser.
+    if (!isCheckoutUrl(url, proOrigin)) throw new Error('ERR_PRO_FAILED')
+    await shell.openExternal(url)
+    return { status: 'opened' }
+  })
   ipcMain.handle('ai:create-report', async (_event, options) => {
-    if (!analysisConfig) throw new Error('ERR_ANALYSIS_UNAVAILABLE')
-    if (analysisInFlight) throw new Error('ERR_ANALYSIS_BUSY')
+    if (!PRO_PLATFORM || !getSession()) throw new Error('ERR_SESSION_INVALID')
+    if (analysisInFlight) throw new Error('ERR_ANALYSIS_IN_PROGRESS')
     // Rebuilt in main from local stores: the renderer cannot add fields to the upload.
     const { request } = buildAiPreview(options)
+    const key = randomUUID()
     analysisInFlight = true
     try {
-      const report = await requestAnalysis({ fetchImpl: eFetch, config: analysisConfig, request })
+      let report
+      try {
+        report = await pro.createReport(request, key)
+      } catch (error) {
+        // A dropped connection may hide a finished, charged job: retry with the same key.
+        if (error.message !== 'ERR_PRO_NETWORK') throw error
+        report = await pro.createReport(request, key)
+      }
       const entry = reports.add(report)
       return { id: entry.id, reports: reports.list() }
     } catch (error) {
+      if (error.message === 'ERR_SESSION_INVALID') clearSession()
       throw codedError(error, 'ERR_ANALYSIS_FAILED')
     } finally {
       analysisInFlight = false
