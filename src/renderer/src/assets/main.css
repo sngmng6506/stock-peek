@@ -1113,3 +1113,11 @@ body,
 .ai-secondary { background: #252831; border: 1px solid #555965; color: inherit; padding: 6px 10px; border-radius: 5px; cursor: pointer; }
 .ai-preview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 200px; overflow-y: auto; background: #15171d; border-radius: 5px; padding: 10px; font-size: 10px; text-align: start; }
 .ai-analysis-modal :focus-visible { outline: 2px solid #7ba8f4; outline-offset: 2px; }
+.ai-muted { opacity: .6; font-size: 10px; margin-inline-start: 6px; }
+.ai-report-list { list-style: none; margin: 0; padding: 0; }
+.ai-report-list li { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+.ai-report-list li:last-child { border-bottom: 0; }
+.ai-report-meta { display: block; font-size: 11px; }
+.ai-report-stocks { display: block; font-size: 11px; opacity: .72; overflow-wrap: anywhere; margin: 2px 0 6px; }
+.ai-report-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.ai-report-actions .ai-secondary { padding: 4px 8px; font-size: 11px; }

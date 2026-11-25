@@ -1,5 +1,9 @@
-// Pure A4 layout; print this document with Electron webContents.printToPDF({ pageSize: 'A4' }).
-// Call only with validateReportOutput() output, never raw LLM HTML.
+// Pure A4 layout (multi-page allowed); print this document with Electron webContents.printToPDF({ pageSize: 'A4' }).
+// Call only with validated report objects (validateReportOutput / normalizeAnalysisResult),
+// never raw LLM HTML. The document needs no JavaScript and loads no external resources.
+import { translate } from './i18n/index.js'
+import { getLanguageInfo, isSupportedLanguage } from './languages.js'
+
 const escapeHtml = (value) =>
   String(value)
     .replaceAll('&', '&amp;')
@@ -8,53 +12,94 @@ const escapeHtml = (value) =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
 
-export function renderReportHtml(report) {
+// Date-only filings are stamped at local midnight of the filing authority.
+const SOURCE_TIME_ZONE = { OpenDART: 'Asia/Seoul', 'U.S. SEC EDGAR': 'UTC' }
+
+function formatter(locale, options) {
+  try {
+    // Filings and exchanges use Gregorian dates; avoid locale default calendars (ar-SA = Hijri).
+    return new Intl.DateTimeFormat(locale + '-u-ca-gregory-nu-latn', options)
+  } catch {
+    return new Intl.DateTimeFormat('en-US', options)
+  }
+}
+
+export function renderReportHtml(report, { lang } = {}) {
+  const code = isSupportedLanguage(lang)
+    ? lang
+    : isSupportedLanguage(report.locale)
+      ? report.locale
+      : 'ko'
+  const info = getLanguageInfo(code)
+  const t = (key, vars) => translate(code, key, vars)
   const safe = escapeHtml
+  const dateTime = formatter(info.locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'UTC'
+  })
+  const dateOnly = (iso, zone = 'UTC') =>
+    formatter(info.locale, { dateStyle: 'medium', timeZone: zone }).format(new Date(iso))
+  const stamp = (iso) => `${dateTime.format(new Date(iso))} UTC`
+
   const stocks = report.stocks.map((s) => safe(`${s.market}:${s.symbol}`)).join(' · ')
   const sourceNumbers = new Map(report.sources.map((source, index) => [source.id, index + 1]))
   const highlights = report.highlights
     .map((item) => {
       const refs = item.sourceIds.map((id) => sourceNumbers.get(id)).filter(Boolean)
-      return `<li>${safe(item.text)} <small>[${refs.join(', ')}]</small></li>`
+      return `<li><bdi>${safe(item.text)}</bdi> <small>[${refs.join(', ')}]</small></li>`
     })
     .join('')
-  const watchItems = report.watchItems.map((item) => `<li>${safe(item)}</li>`).join('')
+  const watchItems = report.watchItems.map((item) => `<li><bdi>${safe(item)}</bdi></li>`).join('')
   const sources = report.sources
-    .map(
-      (item, i) =>
-        `<li><span>[${i + 1}] ${safe(item.publisher)} · ${safe(item.publishedAt.slice(0, 16).replace('T', ' '))} UTC · ${safe(item.evidenceLevel === 'headline-only' ? '제목·메타데이터만 확인' : '이용 허가된 발췌 자료')}</span><a href="${safe(item.url)}">${safe(item.title)}</a></li>`
-    )
+    .map((item, i) => {
+      const when =
+        item.precision === 'date'
+          ? dateOnly(item.publishedAt, SOURCE_TIME_ZONE[item.publisher] || 'UTC')
+          : stamp(item.publishedAt)
+      const level = t('report.level.' + item.evidenceLevel)
+      return `<li><span class="src-meta">[${i + 1}] ${safe(item.publisher)} · ${safe(when)}</span> <a href="${safe(item.url)}"><bdi>${safe(item.title)}</bdi></a> <span class="src-meta">· ${safe(level)}</span></li>`
+    })
     .join('')
+  const gaps = (report.coverage || []).filter((c) => c.status === 'unavailable').map((c) => c.key)
+  const period = report.periodStart
+    ? `${dateOnly(report.periodStart)} – ${dateOnly(report.asOf)}`
+    : null
   return `<!doctype html>
-<html lang="${safe(report.locale)}">
-<head><meta charset="utf-8"><title>Stock Peek AI Report</title>
+<html lang="${safe(code)}" dir="${safe(info.dir)}">
+<head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<title>Stock Peek ${safe(t('report.title'))}</title>
 <style>
 @page { size: A4; margin: 13mm 15mm; }
 * { box-sizing: border-box; }
-html, body { margin:0; padding:0; background:#fff; color:#1d2430; font-family: Arial, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; font-size:10pt; line-height:1.48; }
-header { border-bottom:2px solid #27364d; padding-bottom:9px; display:flex; justify-content:space-between; align-items:baseline; }
+html, body { margin:0; padding:0; background:#fff; color:#1d2430; font-family: Arial, "Malgun Gothic", "Apple SD Gothic Neo", "Hiragino Sans", "Yu Gothic", "Segoe UI", "Geeza Pro", Tahoma, sans-serif; font-size:10pt; line-height:1.48; }
+header { border-bottom:2px solid #27364d; padding-bottom:9px; display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
 h1 { font-size:17pt; margin:0; letter-spacing:-.025em; }
-h2 { font-size:10.5pt; margin:12px 0 4px; color:#27364d; }
+h1 span { font-size:11pt; }
+h2 { font-size:10.5pt; margin:12px 0 4px; color:#27364d; break-after:avoid; }
 .meta { color:#667085; font-size:8pt; }
+.badge { display:inline-block; border:1px solid #98a2b3; border-radius:3px; padding:0 5px; margin-inline-start:6px; }
 p { margin:4px 0 7px; white-space:pre-wrap; }
-ul { padding-left:19px; margin:5px 0; }
-li { margin-bottom:5px; }
+ul { padding-inline-start:19px; margin:5px 0; }
+li { margin-bottom:5px; break-inside:avoid; }
 small { color:#667085; font-size:7pt; }
 .summary { background:#f3f5f8; padding:10px 12px; border-radius:4px; margin-top:12px; }
-.sources { list-style:none; padding:0; font-size:7.5pt; overflow-wrap:anywhere; }
-.sources li { margin-bottom:3px; }
-.sources span { display:block; color:#667085; }
+.sources { list-style:none; padding:0; font-size:7.5pt; line-height:1.35; overflow-wrap:anywhere; column-count:2; column-gap:14px; }
+.sources li { margin-bottom:3px; break-inside:avoid; }
+.src-meta { color:#667085; }
 a { color:#263d62; text-decoration:none; }
+@media screen { body { max-width:210mm; margin:0 auto; padding:14mm 15mm; } }
 footer { border-top:1px solid #d5dce5; margin-top:12px; padding-top:6px; color:#667085; font-size:7.3pt; }
 </style></head>
 <body>
-<header><h1>STOCK PEEK <span style="font-size:11pt">/ AI REPORT</span></h1><div class="meta">${safe(report.asOf.slice(0, 16).replace('T', ' '))} UTC</div></header>
-<p class="meta">관심 종목: ${stocks}</p>
-<section class="summary"><strong>오늘의 요약</strong><p>${safe(report.summary)}</p></section>
-<section><h2>새로운 소식 및 변화</h2>${highlights ? `<ul>${highlights}</ul>` : '<p>확인된 신규 근거 자료가 없습니다. 임의로 변화를 생성하지 않았습니다.</p>'}</section>
-${report.portfolioNote ? `<section><h2>내 포트폴리오 관점 (선택 정보)</h2><p>${safe(report.portfolioNote)}</p></section>` : ''}
-<section><h2>추가로 확인할 항목</h2>${watchItems ? `<ul>${watchItems}</ul>` : '<p>추가 확인 항목이 없습니다.</p>'}</section>
-<section><h2>근거 및 자료 시각</h2>${sources ? `<ul class="sources">${sources}</ul>` : '<p class="meta">선택한 종목에 대해 확인된 자료 없음</p>'}</section>
-<footer>이 문서는 자료 탐색을 돕는 정보 요약이며 투자자문 또는 매수·매도 지시가 아닙니다. 기사 제목만으로 본문 내용이 검증되지는 않습니다. 사용한 자료의 출처·시각·이용 권한을 별도로 확인하세요.</footer>
+<header><h1>STOCK PEEK <span>/ ${safe(t('report.title'))}</span></h1><div class="meta">${safe(t('report.generatedAt', { v: stamp(report.asOf) }))}${report.status === 'generated_unbilled' ? `<span class="badge">${safe(t('report.beta'))}</span>` : ''}</div></header>
+<p class="meta">${safe(t('report.stocks'))}: <bdi>${stocks}</bdi>${period ? ` · ${safe(t('report.period', { v: period }))}` : ''}</p>
+<section class="summary"><strong>${safe(t('report.summary'))}</strong><p><bdi>${safe(report.summary)}</bdi></p></section>
+<section><h2>${safe(t('report.changes'))}</h2>${highlights ? `<ul>${highlights}</ul>` : `<p>${safe(t('report.noChanges'))}</p>`}</section>
+${report.portfolioNote ? `<section><h2>${safe(t('report.portfolio'))}</h2><p><bdi>${safe(report.portfolioNote)}</bdi></p></section>` : ''}
+<section><h2>${safe(t('report.watch'))}</h2>${watchItems ? `<ul>${watchItems}</ul>` : `<p>${safe(t('report.noWatch'))}</p>`}</section>
+<section><h2>${safe(t('report.sources'))}</h2>${gaps.length ? `<p class="meta">${safe(t('report.coverageGap', { v: gaps.join(', ') }))}</p>` : ''}${sources ? `<ul class="sources">${sources}</ul>` : `<p class="meta">${safe(t('report.noSources'))}</p>`}</section>
+<footer>${safe(t('report.disclaimer'))}</footer>
 </body></html>`
 }

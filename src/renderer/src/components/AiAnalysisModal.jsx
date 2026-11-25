@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../i18n'
+import { errorText } from '../lib/errors'
+import { getLanguageInfo } from '../../../shared/languages.js'
 
 const MAX_STOCKS = 5
+const MAX_LISTED_REPORTS = 5
 
 export default function AiAnalysisModal({ onClose }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const closeRef = useRef(null)
   const [stocks, setStocks] = useState([])
   const [selected, setSelected] = useState([])
@@ -14,7 +17,10 @@ export default function AiAnalysisModal({ onClose }) {
   const [includeThesis, setIncludeThesis] = useState(false)
   const [preview, setPreview] = useState(null)
   const [status, setStatus] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const [busy, setBusy] = useState(false)
+  const [analysis, setAnalysis] = useState({ available: false, markets: [] })
+  const [reports, setReports] = useState([])
 
   useEffect(() => {
     closeRef.current?.focus()
@@ -24,8 +30,21 @@ export default function AiAnalysisModal({ onClose }) {
       .then((data) => {
         if (!active) return
         const list = Array.isArray(data?.stocks) ? data.stocks : []
+        const beta = data?.analysis?.available === true
+        const markets = Array.isArray(data?.analysis?.markets) ? data.analysis.markets : []
+        setAnalysis({ available: beta, markets })
         setStocks(list)
-        setSelected(list.slice(0, MAX_STOCKS).map((item) => item.market + ':' + item.symbol))
+        setSelected(
+          list
+            .filter((item) => !beta || markets.includes(item.market))
+            .slice(0, MAX_STOCKS)
+            .map((item) => item.market + ':' + item.symbol)
+        )
+        if (beta)
+          window.api
+            .listAiReports()
+            .then((items) => active && setReports(items))
+            .catch(() => {})
         if (data?.thesis)
           setThesis({
             text: data.thesis.text || '',
@@ -62,8 +81,8 @@ export default function AiAnalysisModal({ onClose }) {
       const saved = await window.api.saveInvestmentThesis(thesis)
       setThesis({ text: saved.text, horizon: saved.horizon, focus: saved.focus })
       setStatus('saved')
-    } catch {
-      setStatus('error')
+    } catch (error) {
+      showError(error)
     } finally {
       setBusy(false)
     }
@@ -85,12 +104,75 @@ export default function AiAnalysisModal({ onClose }) {
       })
       setPreview(result)
       setStatus('preview')
-    } catch {
-      setStatus('error')
+    } catch (error) {
+      showError(error)
     } finally {
       setBusy(false)
     }
   }
+
+  function showError(error) {
+    setErrorMessage(error ? errorText(error, t) : '')
+    setStatus('error')
+  }
+
+  async function run(task) {
+    if (busy) return
+    setBusy(true)
+    setErrorMessage('')
+    try {
+      await task()
+    } catch (error) {
+      showError(error)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  function generate() {
+    if (!preview) return
+    setStatus('generating')
+    return run(async () => {
+      const result = await window.api.createAiReport({
+        selectedKeys: selected,
+        includeHoldings,
+        includeHistory,
+        includeThesis,
+        lookbackDays: 90,
+        ...(includeThesis ? { thesisDraft: thesis } : {})
+      })
+      setReports(result.reports)
+      setPreview(null)
+      setStatus('generated')
+    })
+  }
+
+  function savePdf(id) {
+    setStatus('')
+    return run(async () => {
+      const result = await window.api.saveAiReportPdf(id)
+      if (result?.status === 'saved') setStatus('pdfSaved')
+    })
+  }
+
+  function openReport(id) {
+    setStatus('')
+    return run(() => window.api.openAiReport(id))
+  }
+
+  function deleteReport(id) {
+    setStatus('')
+    return run(async () => {
+      setReports(await window.api.deleteAiReport(id))
+      setStatus('deleted')
+    })
+  }
+
+  const dateFormat = new Intl.DateTimeFormat(getLanguageInfo(lang).locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  })
+  const supported = (market) => !analysis.available || analysis.markets.includes(market)
 
   return (
     <div
@@ -114,21 +196,23 @@ export default function AiAnalysisModal({ onClose }) {
             ×
           </button>
         </header>
-        <p className="ai-hint">{t('ai.previewOnly')}</p>
+        <p className="ai-hint">{t(analysis.available ? 'ai.betaHint' : 'ai.previewOnly')}</p>
         <div className="ai-section">
           <strong>{t('ai.stocks')}</strong>
           <p className="ai-hint">{t('ai.stockLimit')}</p>
           {stocks.map((stock) => {
             const key = stock.market + ':' + stock.symbol
+            const allowed = supported(stock.market)
             return (
               <label className="ai-stock-row" key={key}>
                 <input
                   type="checkbox"
                   checked={selected.includes(key)}
                   onChange={() => changeSelected(key)}
-                  disabled={!selected.includes(key) && selected.length >= MAX_STOCKS}
+                  disabled={!allowed || (!selected.includes(key) && selected.length >= MAX_STOCKS)}
                 />
                 <span>{key}</span>
+                {!allowed && <small className="ai-muted">{t('ai.unsupportedMarket')}</small>}
               </label>
             )
           })}
@@ -218,7 +302,7 @@ export default function AiAnalysisModal({ onClose }) {
             />
             <span>{t('ai.includeThesis')}</span>
           </label>
-          <p className="ai-hint">{t('ai.privacy')}</p>
+          <p className="ai-hint">{t(analysis.available ? 'ai.privacyBeta' : 'ai.privacy')}</p>
         </div>
         <div className="modal-actions">
           <button type="button" onClick={onClose}>
@@ -235,13 +319,62 @@ export default function AiAnalysisModal({ onClose }) {
         </div>
         {status && (
           <p className="ai-hint" role="status">
-            {t('ai.status.' + status)}
+            {status === 'error' && errorMessage ? errorMessage : t('ai.status.' + status)}
           </p>
         )}
         {preview && (
           <section className="ai-section" aria-label={t('ai.preview')}>
             <p className="ai-hint">{t('ai.payloadDescription')}</p>
             <pre className="ai-preview">{JSON.stringify(preview.request, null, 2)}</pre>
+            {analysis.available && (
+              <div className="modal-actions">
+                <button className="primary" type="button" onClick={generate} disabled={busy}>
+                  {t('ai.generate')}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+        {analysis.available && reports.length > 0 && (
+          <section className="ai-section" aria-label={t('ai.reports')}>
+            <strong>{t('ai.reports')}</strong>
+            <ul className="ai-report-list">
+              {reports.slice(0, MAX_LISTED_REPORTS).map((item) => (
+                <li key={item.id}>
+                  <span className="ai-report-meta">
+                    {dateFormat.format(new Date(item.createdAt))}
+                    {item.noNewEvents && <small className="ai-muted">{t('ai.noNewEvents')}</small>}
+                  </span>
+                  <span className="ai-report-stocks">{item.stocks.join(' · ')}</span>
+                  <span className="ai-report-actions">
+                    <button
+                      className="ai-secondary"
+                      type="button"
+                      disabled={busy}
+                      onClick={() => openReport(item.id)}
+                    >
+                      {t('ai.openReport')}
+                    </button>
+                    <button
+                      className="ai-secondary"
+                      type="button"
+                      disabled={busy}
+                      onClick={() => savePdf(item.id)}
+                    >
+                      {t('ai.savePdf')}
+                    </button>
+                    <button
+                      className="ai-secondary"
+                      type="button"
+                      disabled={busy}
+                      onClick={() => deleteReport(item.id)}
+                    >
+                      {t('ai.deleteReport')}
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
       </div>

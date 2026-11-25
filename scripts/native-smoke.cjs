@@ -115,7 +115,7 @@ const probe = `(async () => {
   // Dismiss welcome in both React and main before exercising settings.
   document.querySelector('.welcome-modal .modal-actions button')?.click();
   await window.api.dismissWelcome();
-  document.querySelector('.actions button:nth-child(3)').click();
+  document.querySelector('button[data-action=settings]').click();
   await new Promise(resolve => setTimeout(resolve, 200));
   for (const lang of ['ko', 'en', 'ja', 'ar']) {
     const select = document.querySelector('.lang-select');
@@ -280,7 +280,7 @@ async function screenshots(mainUrl, dir) {
     await evaluate(
       await rendererTarget(),
       `(async () => {
-      if (!document.querySelector('.lang-select')) document.querySelector('.actions button:nth-child(3)').click();
+      if (!document.querySelector('.lang-select')) document.querySelector('button[data-action=settings]').click();
       await new Promise(r => setTimeout(r, 200));
       const select = document.querySelector('.lang-select');
       select.value = ${JSON.stringify(lang)};

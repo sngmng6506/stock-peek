@@ -1,7 +1,8 @@
 // 日本語
 export default {
   'ai.title': 'AI分析の準備',
-  'ai.previewOnly': 'P3プレビュー：AI呼び出し、決済、PDF生成はまだ接続されていません。',
+  'ai.previewOnly':
+    'AIレポートはまだ準備中です。現在は送信予定のデータをこのPCで確認することだけができます。',
   'ai.stocks': '分析対象の銘柄',
   'ai.stockLimit': '最大5銘柄を選択してください。',
   'ai.noStocks': '銘柄が登録されていません。',
@@ -170,5 +171,58 @@ export default {
   'tray.updateOpenPage': '↓ v{v} のダウンロードページを開く',
   'notify.updateTitle': 'Stock Peek v{v} アップデート',
   'notify.updateInstall': 'クリックするとすぐに更新して再起動します。',
-  'notify.updateDownload': 'クリックするとダウンロードページを開きます。'
+  'notify.updateDownload': 'クリックするとダウンロードページを開きます。',
+  'ai.betaHint':
+    '運営者ベータ：選択した情報だけをサーバーに送り、開示書類のタイトルと提出日に基づくレポートを作成します。決済やクレジットの消費はありません。',
+  'ai.privacyBeta':
+    'チェックした情報だけが含まれます。「レポートを作成」を押したときだけ、プレビューと同じ内容が分析サーバーに送信されます。操作履歴は実際の売買記録ではありません。',
+  'ai.generate': 'この内容でレポートを作成',
+  'ai.unsupportedMarket': 'レポート非対応の市場',
+  'ai.reports': '最近のレポート',
+  'ai.openReport': '表示',
+  'ai.savePdf': 'PDF保存',
+  'ai.deleteReport': '削除',
+  'ai.noNewEvents': '新しい開示なし',
+  'ai.status.generating': 'レポートを作成しています。最大1分ほどかかる場合があります。',
+  'ai.status.generated': 'レポートを作成し、このPCに保存しました。',
+  'ai.status.pdfSaved': 'PDFを保存しました。',
+  'ai.status.deleted': 'レポートを削除しました。',
+  'report.title': 'AIレポート',
+  'report.generatedAt': '作成 {v}',
+  'report.beta': 'ベータ・無料',
+  'report.stocks': '分析銘柄',
+  'report.period': 'データ期間 {v}',
+  'report.summary': '要約',
+  'report.changes': '新しい情報と変化',
+  'report.noChanges': '確認できた新しい根拠資料はありません。変化を推測で作成していません。',
+  'report.portfolio': 'ポートフォリオの観点（任意情報）',
+  'report.watch': '次に確認する項目',
+  'report.noWatch': '追加で確認する項目はありません。',
+  'report.sources': '根拠資料と日時',
+  'report.noSources': '選択した銘柄について確認できた資料はありません',
+  'report.coverageGap': 'データを取得できなかった銘柄：{v}',
+  'report.level.headline-only': 'タイトル・メタデータのみ確認',
+  'report.level.verified-extract': '利用許諾済みの抜粋',
+  'report.level.filing-metadata': '開示タイトルと提出日のみ確認（本文未確認）',
+  'report.disclaimer':
+    'この文書は情報収集を補助する要約であり、投資助言や売買の指示ではありません。開示書類や記事のタイトルだけでは本文の内容は検証されません。各資料の出典と日時を原文で確認してください。',
+  'error.ERR_ANALYSIS_UNAVAILABLE': 'このバージョンではレポートを作成できません',
+  'error.ERR_ANALYSIS_MARKET': 'レポートは韓国・米国の銘柄のみ選択できます',
+  'error.ERR_ANALYSIS_TOO_LARGE':
+    '送信する情報が多すぎます。操作履歴を外すか銘柄数を減らしてください',
+  'error.ERR_ANALYSIS_TIMEOUT':
+    'レポート作成がタイムアウトしました。しばらくしてから再試行してください',
+  'error.ERR_ANALYSIS_NETWORK': '分析サーバーに接続できませんでした',
+  'error.ERR_ANALYSIS_DISABLED': 'サーバーでレポート作成が無効になっています',
+  'error.ERR_UNAUTHORIZED': 'ベータのアクセストークンが正しくありません',
+  'error.ERR_ANALYSIS_DAILY_LIMIT': '本日の作成上限に達しました',
+  'error.ERR_ANALYSIS_NO_COVERAGE': '選択した銘柄の開示データを取得できませんでした',
+  'error.ERR_ANALYSIS_REQUEST': 'リクエストの形式が正しくありません',
+  'error.ERR_ANALYSIS_RESPONSE':
+    'サーバーの応答を検証できなかったため、レポートを保存しませんでした',
+  'error.ERR_ANALYSIS_FAILED': 'レポートを作成できませんでした',
+  'error.ERR_ANALYSIS_BUSY': 'すでにレポートを作成中です',
+  'error.ERR_REPORT_NOT_FOUND': 'レポートが見つかりません',
+  'error.ERR_REPORT_ARCHIVE': '保存されたレポートを読み込めませんでした',
+  'error.ERR_REPORT_PDF': 'PDFを作成できませんでした'
 }
