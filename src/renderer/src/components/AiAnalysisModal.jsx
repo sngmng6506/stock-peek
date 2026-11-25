@@ -329,7 +329,7 @@ export default function AiAnalysisModal({ onClose }) {
           <section className="ai-section" aria-label={t('ai.preview')}>
             <p className="ai-hint">{t('ai.payloadDescription')}</p>
             <pre className="ai-preview">{JSON.stringify(preview.request, null, 2)}</pre>
-            {pro.available && pro.account && (
+            {pro.available && (
               <div className="modal-actions">
                 <button
                   className="primary"
@@ -341,7 +341,7 @@ export default function AiAnalysisModal({ onClose }) {
                 </button>
               </div>
             )}
-            {pro.available && pro.account && !canGenerate && (
+            {pro.available && !canGenerate && (
               <p className="ai-hint">{t(pro.reports ? 'ai.noCredits' : 'ai.reportsPaused')}</p>
             )}
           </section>

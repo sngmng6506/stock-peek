@@ -343,3 +343,66 @@ test('payments stay closed without the flag and Toss keys', async () => {
   const token = await signIn(ctx)
   assert.equal((await ctx.call('POST', '/v1/credits/checkout', { token })).status, 503)
 })
+
+test('no sign-in: device account works; linking an e-mail keeps its credits', async () => {
+  const ctx = setup()
+  const device = await (await ctx.call('POST', '/v1/auth/device')).json()
+  assert.equal(device.email, null)
+  const me1 = await (await ctx.call('GET', '/v1/me', { token: device.token })).json()
+  assert.equal(me1.email, null)
+  const { id } = ctx.database.raw.prepare('SELECT id FROM users').get()
+  const g = await ctx.call('POST', '/v1/admin/credits', {
+    body: { userId: id, amount: 4, kind: 'grant', ref: 'beta-device' },
+    headers: { authorization: 'Bearer ' + ADMIN }
+  })
+  assert.equal(g.status, 200)
+  // Device account can buy and generate without any e-mail.
+  assert.equal((await report(ctx, device.token, 'key-device-000000001')).status, 200)
+  assert.deepEqual(await me(ctx, device.token), { available: 3, pending: 0 })
+
+  // Link an e-mail: same account, same balance, old device token revoked.
+  await ctx.call('POST', '/v1/auth/request-code', { body: { email: 'new@example.com' } })
+  const code = /(\d{6})/.exec(ctx.mails.at(-1).text)[1]
+  const linked = await (
+    await ctx.call('POST', '/v1/auth/verify', {
+      body: { email: 'new@example.com', code },
+      token: device.token
+    })
+  ).json()
+  assert.equal(linked.email, 'new@example.com')
+  assert.equal(ctx.database.raw.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1)
+  assert.deepEqual(await me(ctx, linked.token), { available: 3, pending: 0 })
+  assert.equal((await ctx.call('GET', '/v1/me', { token: device.token })).status, 401)
+})
+
+test('recovering an e-mail account on a new PC merges the device balance once', async () => {
+  const ctx = setup()
+  const owner = await signIn(ctx) // user@example.com
+  await grant(ctx, 2, 'owner-grant')
+  const device = await (await ctx.call('POST', '/v1/auth/device')).json()
+  const deviceId = ctx.database.raw.prepare('SELECT id FROM users WHERE email IS NULL').get().id
+  await ctx.call('POST', '/v1/admin/credits', {
+    body: { userId: deviceId, amount: 5, kind: 'grant', ref: 'device-grant' },
+    headers: { authorization: 'Bearer ' + ADMIN }
+  })
+  await ctx.call('POST', '/v1/auth/request-code', { body: { email: 'user@example.com' } })
+  const code = /(\d{6})/.exec(ctx.mails.at(-1).text)[1]
+  const res = await (
+    await ctx.call('POST', '/v1/auth/verify', {
+      body: { email: 'user@example.com', code },
+      token: device.token
+    })
+  ).json()
+  assert.deepEqual(await me(ctx, res.token), { available: 7, pending: 0 })
+  assert.deepEqual(await me(ctx, owner), { available: 7, pending: 0 })
+  const left = ctx.database.raw
+    .prepare('SELECT COALESCE(SUM(amount),0) AS n FROM credit_ledger WHERE user_id = ?')
+    .get(deviceId).n
+  assert.equal(left, 0)
+})
+
+test('device accounts are rate limited per IP', async () => {
+  const ctx = setup()
+  for (let i = 0; i < 10; i++) assert.equal((await ctx.call('POST', '/v1/auth/device')).status, 200)
+  assert.equal((await ctx.call('POST', '/v1/auth/device')).status, 429)
+})

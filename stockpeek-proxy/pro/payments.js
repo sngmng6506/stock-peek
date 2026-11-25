@@ -112,7 +112,7 @@ export async function checkoutPage(env, token, { now = Date.now(), origin }) {
       orderName: `몰래주식 AI 리포트 ${order.credits}회`,
       successUrl: origin + '/pay/success',
       failUrl: origin + '/pay/fail',
-      customerEmail: order.email.length <= 100 ? order.email : undefined
+      customerEmail: order.email && order.email.length <= 100 ? order.email : undefined
     }
   }
   // JSON embedded in a script: escape '<' so no value can close the tag.

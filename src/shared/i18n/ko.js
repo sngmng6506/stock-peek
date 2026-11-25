@@ -222,12 +222,11 @@ export default {
   'ai.noCredits': '남은 리포트 횟수가 없어요. 충전 후 다시 시도해 주세요.',
   'ai.reportsPaused': '리포트 생성이 잠시 중단됐어요. 나중에 다시 시도해 주세요.',
   'pro.title': 'Pro 계정',
-  'pro.signInHint': '이메일로 받은 6자리 코드로 로그인해요. 비밀번호는 없어요.',
   'pro.emailPlaceholder': '이메일 주소',
   'pro.codePlaceholder': '6자리 코드',
   'pro.sendCode': '코드 받기',
   'pro.resendCode': '코드 다시 받기',
-  'pro.verify': '로그인',
+  'pro.verify': '확인',
   'pro.codeSent': '코드를 보냈어요. 메일함(스팸함 포함)을 확인해 주세요.',
   'pro.credits': '남은 리포트 {n}회',
   'pro.creditsUnknown': '잔액을 불러오지 못했어요',
@@ -246,5 +245,12 @@ export default {
   'error.ERR_ANALYSIS_IN_PROGRESS': '이미 리포트를 만드는 중이에요',
   'error.ERR_PRO_FAILED': '요청을 처리하지 못했어요',
   'error.ERR_PRO_NETWORK': '서버에 연결하지 못했어요',
-  'error.ERR_PRO_TIMEOUT': '서버 응답 시간이 초과됐어요. 잠시 후 다시 시도해 주세요'
+  'error.ERR_PRO_TIMEOUT': '서버 응답 시간이 초과됐어요. 잠시 후 다시 시도해 주세요',
+  'pro.linkHint':
+    '이메일을 연결해 두면 PC를 바꾸거나 다시 설치해도 남은 횟수를 지킬 수 있어요. 연결하지 않으면 이 PC에서만 쓸 수 있어요.',
+  'pro.recoverHint':
+    '로그인 없이 바로 충전하고 쓸 수 있어요. 다른 PC에서 이메일을 연결해 둔 계정이 있다면 불러올 수 있어요.',
+  'pro.link': '이메일 연결 (선택)',
+  'pro.recover': '이메일로 계정 불러오기',
+  'pro.linked': '{v} 연결됨'
 }

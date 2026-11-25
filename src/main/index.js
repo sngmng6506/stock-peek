@@ -159,6 +159,13 @@ const pro = createProClient({
 })
 let analysisInFlight = false
 
+// Accounts are created lazily on the first paid action, so merely opening the dialog
+// never registers anything on the server.
+async function ensureSession() {
+  if (getSession()) return
+  setSession(await pro.device())
+}
+
 async function proStatus() {
   if (!PRO_PLATFORM) return { available: false }
   let config
@@ -938,6 +945,7 @@ app.whenReady().then(() => {
   ipcMain.handle('pro:checkout', async () => {
     let url
     try {
+      await ensureSession()
       ;({ url } = await pro.checkout())
     } catch (error) {
       throw codedError(error, 'ERR_PRO_FAILED')
@@ -948,13 +956,14 @@ app.whenReady().then(() => {
     return { status: 'opened' }
   })
   ipcMain.handle('ai:create-report', async (_event, options) => {
-    if (!PRO_PLATFORM || !getSession()) throw new Error('ERR_SESSION_INVALID')
+    if (!PRO_PLATFORM) throw new Error('ERR_PRO_DISABLED')
     if (analysisInFlight) throw new Error('ERR_ANALYSIS_IN_PROGRESS')
     // Rebuilt in main from local stores: the renderer cannot add fields to the upload.
     const { request } = buildAiPreview(options)
     const key = randomUUID()
     analysisInFlight = true
     try {
+      await ensureSession()
       let report
       try {
         report = await pro.createReport(request, key)

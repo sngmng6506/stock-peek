@@ -66,8 +66,9 @@ export function createProClient({ fetchImpl, origin = DEFAULT_API_ORIGIN, getTok
     path,
     { body, auth = false, headers = {}, timeoutMs, fallback } = {}
   ) {
+    // auth: true = session required, 'optional' = send it when present.
     const token = auth ? getToken() : null
-    if (auth && !token) fail('ERR_SESSION_INVALID')
+    if (auth === true && !token) fail('ERR_SESSION_INVALID')
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), timeoutMs || PRO_TIMEOUT_MS)
     let res
@@ -118,15 +119,26 @@ export function createProClient({ fetchImpl, origin = DEFAULT_API_ORIGIN, getTok
     async requestCode(email, locale) {
       await call('POST', '/v1/auth/request-code', { body: { email, locale } })
     },
+    // No sign-in: an anonymous account for this installation.
+    async device() {
+      const data = await call('POST', '/v1/auth/device')
+      if (typeof data.token !== 'string') fail('ERR_PRO_FAILED')
+      return { token: data.token, email: null }
+    },
+    // With a device session this links the e-mail (keeping credits) or recovers an e-mail
+    // account and merges the device balance into it.
     async verifyCode(email, code) {
-      const data = await call('POST', '/v1/auth/verify', { body: { email, code } })
+      const data = await call('POST', '/v1/auth/verify', {
+        body: { email, code },
+        auth: 'optional'
+      })
       if (typeof data.token !== 'string' || typeof data.email !== 'string') fail('ERR_PRO_FAILED')
       return { token: data.token, email: data.email }
     },
     async me() {
       const data = await call('GET', '/v1/me', { auth: true })
       return {
-        email: String(data.email || ''),
+        email: typeof data.email === 'string' ? data.email : null,
         credits: {
           available: Math.max(0, Number(data.credits?.available) || 0),
           pending: Math.max(0, Number(data.credits?.pending) || 0)

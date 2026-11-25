@@ -2,9 +2,10 @@
 -- Apply after 0001. Holds e-mail addresses and purchase records; no holdings or theses
 -- except inside short-lived report results (purged after 7 days, see pro/reports.js).
 
+-- email is NULL for device-only accounts until the user links one (optional, for recovery).
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
-  email TEXT NOT NULL UNIQUE,
+  email TEXT UNIQUE,
   customer_key TEXT NOT NULL UNIQUE,
   created_at TEXT NOT NULL
 );

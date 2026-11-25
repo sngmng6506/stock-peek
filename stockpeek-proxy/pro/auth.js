@@ -144,21 +144,99 @@ export async function verifyCode(request, env, { now = Date.now() } = {}) {
     .bind(email, row.code_hash)
     .first()
   if (!consumed) throw new ApiError(400, 'ERR_CODE_INVALID')
-  await database
-    .prepare(
-      'INSERT INTO users (id, email, customer_key, created_at) VALUES (?, ?, ?, ?) ON CONFLICT(email) DO NOTHING'
-    )
-    .bind(crypto.randomUUID(), email, 'cus_' + crypto.randomUUID(), at)
-    .run()
-  const user = await database.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
+  // Optional: the caller's current (possibly device-only) session.
+  let current = null
+  try {
+    current = await requireUser(request, env, { now })
+  } catch {
+    current = null
+  }
+  const owner = await database.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
+  let userId
+  if (owner) {
+    userId = owner.id
+    // Recovering an e-mail account on this PC: carry a device-only balance over, once.
+    if (current && current.id !== owner.id && !current.email)
+      await mergeDeviceBalance(database, current.id, owner.id, at)
+  } else if (current && !current.email) {
+    // Linking: the device account keeps its credits and gains a recoverable e-mail.
+    await database
+      .prepare('UPDATE users SET email = ? WHERE id = ? AND email IS NULL')
+      .bind(email, current.id)
+      .run()
+    userId = current.id
+  } else {
+    userId = crypto.randomUUID()
+    await database
+      .prepare('INSERT INTO users (id, email, customer_key, created_at) VALUES (?, ?, ?, ?)')
+      .bind(userId, email, 'cus_' + crypto.randomUUID(), at)
+      .run()
+  }
+  if (current) await revokeBearer(database, request, at)
+  return json({ ok: true, token: await createSession(database, userId, at), email })
+}
+
+async function createSession(database, userId, at) {
   const token = randomToken(32)
   await database
     .prepare(
       'INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)'
     )
-    .bind(await sha256Hex(token), user.id, at, addMs(at, SESSION_TTL_MS))
+    .bind(await sha256Hex(token), userId, at, addMs(at, SESSION_TTL_MS))
     .run()
-  return json({ ok: true, token, email })
+  return token
+}
+
+async function revokeBearer(database, request, at) {
+  const token = bearer(request)
+  if (token)
+    await database
+      .prepare('UPDATE sessions SET revoked_at = ? WHERE token_hash = ? AND revoked_at IS NULL')
+      .bind(at, await sha256Hex(token))
+      .run()
+}
+
+async function mergeDeviceBalance(database, fromId, toId, at) {
+  const row = await database
+    .prepare('SELECT COALESCE(SUM(amount), 0) AS available FROM credit_ledger WHERE user_id = ?')
+    .bind(fromId)
+    .first()
+  const amount = Number(row?.available || 0)
+  if (amount <= 0) return
+  // Paired adjustments with unique refs: applied at most once, in one transaction.
+  await database.batch([
+    database
+      .prepare(
+        `INSERT INTO credit_ledger (id, user_id, kind, amount, ref, note, created_at)
+         VALUES (?, ?, 'adjust', ?, ?, 'merged into e-mail account', ?)`
+      )
+      .bind(crypto.randomUUID(), fromId, -amount, 'merge-out:' + fromId, at),
+    database
+      .prepare(
+        `INSERT INTO credit_ledger (id, user_id, kind, amount, ref, note, created_at)
+         VALUES (?, ?, 'adjust', ?, ?, 'merged from device account', ?)`
+      )
+      .bind(crypto.randomUUID(), toId, amount, 'merge-in:' + fromId, at)
+  ])
+}
+
+// No sign-in: one anonymous account per installation. Paid credits only, so new accounts
+// carry no value; still rate limited per IP to keep the table clean.
+export async function createDeviceSession(request, env, { now = Date.now() } = {}) {
+  const database = db(env)
+  const salt = pepper(env)
+  const ip = request.headers.get('cf-connecting-ip') || 'unknown'
+  if (
+    !(await takeRate(database, 'device-ip:' + (await sha256Hex(salt + ':ip:' + ip)), 10, HOUR, now))
+  )
+    throw new ApiError(429, 'ERR_RATE_LIMITED')
+  const at = nowIso(now)
+  const userId = crypto.randomUUID()
+  await database
+    .prepare('INSERT INTO users (id, email, customer_key, created_at) VALUES (?, NULL, ?, ?)')
+    .bind(userId, 'cus_' + crypto.randomUUID(), at)
+    .run()
+  return json({ ok: true, token: await createSession(database, userId, at), email: null })
 }
 
 // Returns { id, email, customerKey } or throws 401.

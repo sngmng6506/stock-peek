@@ -222,12 +222,11 @@ export default {
   'ai.noCredits': 'No reports left. Top up and try again.',
   'ai.reportsPaused': 'Report generation is paused. Please try again later.',
   'pro.title': 'Pro account',
-  'pro.signInHint': 'Sign in with a 6-digit code sent to your e-mail. No password needed.',
   'pro.emailPlaceholder': 'E-mail address',
   'pro.codePlaceholder': '6-digit code',
   'pro.sendCode': 'Send code',
   'pro.resendCode': 'Resend code',
-  'pro.verify': 'Sign in',
+  'pro.verify': 'Confirm',
   'pro.codeSent': 'Code sent. Check your inbox (and spam folder).',
   'pro.credits': '{n} reports left',
   'pro.creditsUnknown': 'Could not load your balance',
@@ -246,5 +245,12 @@ export default {
   'error.ERR_ANALYSIS_IN_PROGRESS': 'A report is already being generated',
   'error.ERR_PRO_FAILED': 'The request could not be completed',
   'error.ERR_PRO_NETWORK': 'Could not reach the server',
-  'error.ERR_PRO_TIMEOUT': 'The server timed out. Please try again later'
+  'error.ERR_PRO_TIMEOUT': 'The server timed out. Please try again later',
+  'pro.linkHint':
+    'Link an e-mail to keep your remaining reports if you change PCs or reinstall. Without it, they stay on this PC only.',
+  'pro.recoverHint':
+    'No sign-in needed: top up and use it right away. If you linked an e-mail on another PC, you can bring that account here.',
+  'pro.link': 'Link e-mail (optional)',
+  'pro.recover': 'Restore account by e-mail',
+  'pro.linked': 'Linked to {v}'
 }

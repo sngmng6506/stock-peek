@@ -9,10 +9,10 @@ let memory = null
 export function getSession() {
   if (memory) return memory
   const saved = store.get('session')
-  if (!saved?.token || !saved?.email || !safeStorage.isEncryptionAvailable()) return null
+  if (!saved?.token || !safeStorage.isEncryptionAvailable()) return null
   try {
     memory = {
-      email: saved.email,
+      email: saved.email || null,
       token: safeStorage.decryptString(Buffer.from(saved.token, 'base64'))
     }
     return memory
@@ -25,7 +25,10 @@ export function getSession() {
 export function setSession({ email, token }) {
   memory = { email, token }
   if (safeStorage.isEncryptionAvailable())
-    store.set('session', { email, token: safeStorage.encryptString(token).toString('base64') })
+    store.set('session', {
+      email: email || null,
+      token: safeStorage.encryptString(token).toString('base64')
+    })
 }
 
 export function clearSession() {

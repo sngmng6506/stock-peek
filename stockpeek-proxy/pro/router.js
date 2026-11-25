@@ -1,7 +1,7 @@
 // Pro API router: /v1/* (JSON, bearer sessions) and /pay/* (browser pages for Toss).
 // No wildcard CORS: the desktop app calls from the main process, never from a web origin.
 import { ApiError, db, fail, flag, json } from './util.js'
-import { logout, requestCode, requireUser, verifyCode } from './auth.js'
+import { createDeviceSession, logout, requestCode, requireUser, verifyCode } from './auth.js'
 import { adminCredits, balance, reconcileStaleJobs } from './credits.js'
 import { createReport } from './reports.js'
 import {
@@ -22,6 +22,7 @@ const ROUTES = {
       payments: flag(env, 'PAYMENTS_ENABLED'),
       pack: creditPack(env)
     }),
+  'POST /v1/auth/device': (request, env, deps) => createDeviceSession(request, env, deps),
   'POST /v1/auth/request-code': (request, env, deps) => requestCode(request, env, deps),
   'POST /v1/auth/verify': (request, env, deps) => verifyCode(request, env, deps),
   'POST /v1/auth/logout': (request, env, deps) => logout(request, env, deps),

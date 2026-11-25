@@ -82,7 +82,9 @@ export async function adminCredits(request, env, { now = Date.now() } = {}) {
   if (typeof token !== 'string' || token.length < 32 || !fixedTimeEqual(presented || '', token))
     throw new ApiError(401, 'ERR_UNAUTHORIZED')
   const input = await readJson(request, 2_000)
-  const email = normalizeEmail(input?.email)
+  // Device-only accounts have no e-mail; operators can address them by user id.
+  const userId = typeof input?.userId === 'string' ? input.userId : null
+  const email = userId ? null : normalizeEmail(input?.email)
   const amount = input?.amount
   const kind = input?.kind
   const ref = typeof input?.ref === 'string' ? input.ref.trim() : ''
@@ -93,7 +95,9 @@ export async function adminCredits(request, env, { now = Date.now() } = {}) {
   if (kind === 'grant' && amount < 0) throw new ApiError(400, 'ERR_ADMIN_INPUT')
   const note = typeof input?.note === 'string' ? input.note.slice(0, 200) : null
   const database = db(env)
-  const user = await database.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
+  const user = userId
+    ? await database.prepare('SELECT id FROM users WHERE id = ?').bind(userId).first()
+    : await database.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
   if (!user) throw new ApiError(404, 'ERR_USER_NOT_FOUND')
   // Negative corrections may not push the balance below zero.
   const result = await database

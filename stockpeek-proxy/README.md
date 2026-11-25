@@ -98,7 +98,7 @@ Source: `pro/` (router, auth, credits, reports, payments) and `migrations/0002_p
      -H "authorization: Bearer $ADMIN_TOKEN" -H "content-type: application/json" \
      -d '{"email":"tester@example.com","amount":5,"kind":"grant","ref":"beta-2026-11-tester"}'
    ```
-   The user must have signed in once. `kind` is `grant`, `refund` (negative) or `adjust`; `ref` is unique per kind.
+   Use `"userId":"<id>"` instead of `email` for device-only accounts (no e-mail linked). The account must exist (created on the user's first top-up or report). `kind` is `grant`, `refund` (negative) or `adjust`; `ref` is unique per kind.
 3. Payments with Toss **test keys**: `PAYMENTS_ENABLED=1`, complete a test card payment from the app, confirm the balance rises once and reloading `/pay/success` does not add more.
 4. Public launch (`PRO_PUBLIC=1`, live keys) only after: Toss merchant review, terms/refund/e-commerce notice pages, privacy pages in 4 languages, account deletion, and the P0 licensing review in `docs/stock-peek-pro.md`.
 

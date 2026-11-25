@@ -1122,3 +1122,4 @@ body,
 .ai-report-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .ai-report-actions .ai-secondary { padding: 4px 8px; font-size: 11px; }
 .ai-input { display: block; width: 100%; box-sizing: border-box; margin: 6px 0; padding: 7px 8px; background: #252831; color: inherit; border: 1px solid #555965; border-radius: 5px; font: inherit; font-size: 12px; }
+.ai-link { background: none; border: 0; padding: 0; color: #7ba8f4; cursor: pointer; font: inherit; font-size: 11px; text-decoration: underline; }

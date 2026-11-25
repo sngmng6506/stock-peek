@@ -223,12 +223,11 @@ export default {
   'ai.noCredits': '残りのレポート回数がありません。チャージしてから再試行してください。',
   'ai.reportsPaused': 'レポート作成は一時停止中です。後でもう一度お試しください。',
   'pro.title': 'Proアカウント',
-  'pro.signInHint': 'メールで届く6桁のコードでログインします。パスワードは不要です。',
   'pro.emailPlaceholder': 'メールアドレス',
   'pro.codePlaceholder': '6桁のコード',
   'pro.sendCode': 'コードを受け取る',
   'pro.resendCode': 'コードを再送',
-  'pro.verify': 'ログイン',
+  'pro.verify': '確認',
   'pro.codeSent': 'コードを送信しました。受信トレイ（迷惑メールを含む）を確認してください。',
   'pro.credits': '残りレポート {n}回',
   'pro.creditsUnknown': '残高を読み込めませんでした',
@@ -248,5 +247,12 @@ export default {
   'error.ERR_PRO_FAILED': 'リクエストを処理できませんでした',
   'error.ERR_PRO_NETWORK': 'サーバーに接続できませんでした',
   'error.ERR_PRO_TIMEOUT':
-    'サーバーの応答がタイムアウトしました。しばらくしてから再試行してください'
+    'サーバーの応答がタイムアウトしました。しばらくしてから再試行してください',
+  'pro.linkHint':
+    'メールを連携すると、PCの変更や再インストール後も残り回数を引き継げます。連携しない場合はこのPCでのみ使えます。',
+  'pro.recoverHint':
+    'ログインなしですぐにチャージして使えます。別のPCでメールを連携したアカウントがあれば呼び出せます。',
+  'pro.link': 'メールを連携（任意）',
+  'pro.recover': 'メールでアカウントを呼び出す',
+  'pro.linked': '{v} と連携済み'
 }
