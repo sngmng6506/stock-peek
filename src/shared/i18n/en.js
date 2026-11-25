@@ -222,7 +222,5 @@ export default {
   'error.ERR_ANALYSIS_BUSY': 'A report is already being generated',
   'error.ERR_REPORT_NOT_FOUND': 'Report not found',
   'error.ERR_REPORT_ARCHIVE': 'Could not read saved reports',
-  'error.ERR_REPORT_OVERFLOW':
-    'The content exceeds one A4 page, so no PDF was saved. Generate again with fewer stocks',
   'error.ERR_REPORT_PDF': 'Could not create the PDF'
 }

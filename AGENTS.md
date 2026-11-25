@@ -48,7 +48,7 @@ src/shared/reportClient.js    P5 분석 API 클라이언트·응답 재검증 (�
 src/shared/reportArchive.js   생성 리포트 로컬 스냅샷 보관 순수 로직
 src/shared/reportHtml.js      A4 리포트 HTML (4개 언어, JavaScript 없음) + PDF 페이지 수
 src/main/reportStore.js       리포트 보관 electron-store 어댑터
-src/main/reportWindow.js      리포트 보기 창·printToPDF(A4 1장 검사)
+src/main/reportWindow.js      리포트 보기 창·printToPDF(A4, 여러 장 허용)
 tests/personalizedPreview.test.mjs  데이터 포함 선택 및 미리보기 테스트
 server/p4/                P4 공식 공시 메타데이터/서버 측 모델 프로토타입 (Electron에 번들 금지)
 stockpeek-proxy/           Cloudflare Worker 소스 (운영 Worker는 별도 배포; quote/search 보존)
@@ -88,7 +88,7 @@ docs/design-system.md     패널 UI 색상·글꼴·간격·컴포넌트 값
 - Pages 프록시: `ANALYSIS_ENABLED` 기본 비활성, `ANALYSIS_TEST_TOKEN`은 Cloudflare Secret, `ANALYSIS_DB` D1 바인딩 필수. 무인증/일일 한도 미설정 상태로 LLM 엔드포인트 열지 않음. 기존 Pages 배포 루트 확인 전 자동 배포 성공 주장 금지.
 - P4: OpenDART=`DART_API_KEY`, OpenRouter=`OPENROUTER_API_KEY`; 모델 선택=`P4_MODEL` (기본 `anthropic/claude-sonnet-5.5`). `server/p4/` API 키는 서버 환경변수만 사용. `scripts/p4-analyze.mjs` 입력·출력은 `.private/` 아래에 보관(무시 대상). Electron 앱에서 OpenAI/DART 비밀키 직접 호출 금지. 공시 제목만으로 재무·투자 영향을 확정하지 않는다.
 - 비밀값: 토큰·계정 ID·인증서 커밋 금지
-- 리포트 생성(P5): 토큰은 운영자 PC 환경변수 `STOCKPEEK_ANALYSIS_TOKEN`에서만 읽는다. 앱 번들·설정 UI·electron-store에 토큰을 넣지 않는다. 응답은 `normalizeAnalysisResult`로 재검증한 것만 저장·렌더링. PDF가 A4 1장을 넘으면 자르지 말고 `ERR_REPORT_OVERFLOW`
+- 리포트 생성(P5): 토큰은 운영자 PC 환경변수 `STOCKPEEK_ANALYSIS_TOKEN`에서만 읽는다. 앱 번들·설정 UI·electron-store에 토큰을 넣지 않는다. 응답은 `normalizeAnalysisResult`로 재검증한 것만 저장·렌더링. PDF는 A4 여러 장 허용, 내용을 자르거나 글자를 줄이지 않는다
 - 리포트 창: 정적 HTML만, `javascript:false`·샌드박스. 데이터 URL 창은 `destroy()` 대신 `close()`로 닫는다(다음 창 로드가 `ERR_FAILED`로 실패함)
 
 ## 시장·언어 추가

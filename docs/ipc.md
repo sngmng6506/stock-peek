@@ -71,7 +71,7 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 | `ai:create-report` | `ai:preview`와 같은 옵션 | `{id, reports: ReportSummary[]}` | main이 로컬 저장소에서 요청을 **다시 만들어** 분석 API로 전송. 응답을 재검증한 뒤 로컬 보관 |
 | `ai:list-reports` | — | `ReportSummary[]` | 최신순 `{id,createdAt,asOf,stocks,noNewEvents,summary}` |
 | `ai:open-report` | `id` | — | 별도 창에 리포트 표시 (JavaScript 꺼짐, 링크는 기본 브라우저) |
-| `ai:save-pdf` | `id` | `{status:'saved'\|'cancelled'}` | 저장된 스냅샷을 A4 1장 PDF로 출력. **서버 호출·차감 없음**, 반복 저장 가능 |
+| `ai:save-pdf` | `id` | `{status:'saved'\|'cancelled'}` | 저장된 스냅샷을 A4 PDF로 출력(내용에 따라 여러 장). **서버 호출·차감 없음**, 반복 저장 가능 |
 | `ai:delete-report` | `id` | `ReportSummary[]` | 이 PC의 리포트 스냅샷만 삭제 |
 
 - 요청 스키마 `schemaVersion:2`; 최대 5종목, 최근 활동 기간 기본 90일(1–365일), 최대 100건.
@@ -83,7 +83,7 @@ main ↔ renderer 계약. 구현: `src/main/index.js` 핸들러, `src/preload/in
 - 서버 오류는 `ERR_ANALYSIS_DISABLED`, `ERR_UNAUTHORIZED`, `ERR_ANALYSIS_DAILY_LIMIT`, `ERR_ANALYSIS_NO_COVERAGE`, `ERR_ANALYSIS_REQUEST`만 그대로 전달하고 나머지는 `ERR_ANALYSIS_FAILED`. 연결 실패 `ERR_ANALYSIS_NETWORK`, 90초 초과 `ERR_ANALYSIS_TIMEOUT`.
 - 응답은 `src/shared/reportClient.js`가 다시 검증한다(공식 공시 도메인, 인용 ID, 길이, 요청한 종목만, 보유정보 미동의 시 포트폴리오 문단 거부). 실패하면 `ERR_ANALYSIS_RESPONSE`이고 저장하지 않는다. 저장되는 종목 목록에는 보유 수량·평단을 넣지 않는다.
 - 로컬 보관: `ai-reports` electron-store, 최신 20개. 공시가 새로 나와도 저장된 스냅샷은 바뀌지 않는다.
-- PDF: 일반 배치 → 한 단계 촘촘한 배치(본문 9pt) 순으로 시도하고, 그래도 A4 한 장을 넘으면 내용을 자르지 않고 `ERR_REPORT_OVERFLOW`. 그 밖의 출력 실패는 `ERR_REPORT_PDF`.
+- PDF: A4 세로, 내용이 길면 여러 장. 내용을 자르거나 글자를 줄이지 않는다. 출력 실패는 `ERR_REPORT_PDF`.
 
 ## 로컬 활동 이력 (P1)
 

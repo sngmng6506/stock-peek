@@ -48,7 +48,7 @@ import { normalizeThesis } from '../shared/thesisModel.js'
 import { ANALYSIS_MARKETS, analysisConfigFromEnv, requestAnalysis } from '../shared/reportClient.js'
 import { renderReportHtml } from '../shared/reportHtml.js'
 import { reports } from './reportStore.js'
-import { openReportViewer, renderOnePagePdf } from './reportWindow.js'
+import { openReportViewer, printReportPdf } from './reportWindow.js'
 import { eFetch } from './markets/http.js'
 import {
   isWelcomeShown,
@@ -901,9 +901,7 @@ app.whenReady().then(() => {
     const entry = reports.get(id)
     let data
     try {
-      data = await renderOnePagePdf(({ compact }) =>
-        renderReportHtml(entry.report, { lang: resolveLanguage(), compact })
-      )
+      data = await printReportPdf(renderReportHtml(entry.report, { lang: resolveLanguage() }))
     } catch (error) {
       throw codedError(error, 'ERR_REPORT_PDF')
     }

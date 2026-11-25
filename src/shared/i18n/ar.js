@@ -221,7 +221,5 @@ export default {
   'error.ERR_ANALYSIS_BUSY': 'جارٍ إنشاء تقرير بالفعل',
   'error.ERR_REPORT_NOT_FOUND': 'لم يتم العثور على التقرير',
   'error.ERR_REPORT_ARCHIVE': 'تعذرت قراءة التقارير المحفوظة',
-  'error.ERR_REPORT_OVERFLOW':
-    'المحتوى يتجاوز صفحة A4 واحدة، لذلك لم يُحفظ ملف PDF. أعد الإنشاء بأسهم أقل',
   'error.ERR_REPORT_PDF': 'تعذر إنشاء ملف PDF'
 }

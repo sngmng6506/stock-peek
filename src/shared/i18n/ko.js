@@ -222,7 +222,5 @@ export default {
   'error.ERR_ANALYSIS_BUSY': '이미 리포트를 만드는 중이에요',
   'error.ERR_REPORT_NOT_FOUND': '리포트를 찾을 수 없어요',
   'error.ERR_REPORT_ARCHIVE': '저장된 리포트를 읽지 못했어요',
-  'error.ERR_REPORT_OVERFLOW':
-    '내용이 A4 한 장을 넘어 PDF로 저장하지 않았어요. 종목 수를 줄여 다시 만들어 주세요',
   'error.ERR_REPORT_PDF': 'PDF를 만들지 못했어요'
 }

@@ -1,4 +1,4 @@
-// Pure A4 layout; print this document with Electron webContents.printToPDF({ pageSize: 'A4' }).
+// Pure A4 layout (multi-page allowed); print this document with Electron webContents.printToPDF({ pageSize: 'A4' }).
 // Call only with validated report objects (validateReportOutput / normalizeAnalysisResult),
 // never raw LLM HTML. The document needs no JavaScript and loads no external resources.
 import { translate } from './i18n/index.js'
@@ -24,7 +24,7 @@ function formatter(locale, options) {
   }
 }
 
-export function renderReportHtml(report, { lang, compact = false } = {}) {
+export function renderReportHtml(report, { lang } = {}) {
   const code = isSupportedLanguage(lang)
     ? lang
     : isSupportedLanguage(report.locale)
@@ -65,25 +65,24 @@ export function renderReportHtml(report, { lang, compact = false } = {}) {
   const period = report.periodStart
     ? `${dateOnly(report.periodStart)} – ${dateOnly(report.asOf)}`
     : null
-  const base = compact ? 9 : 10
   return `<!doctype html>
 <html lang="${safe(code)}" dir="${safe(info.dir)}">
 <head><meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
 <title>Stock Peek ${safe(t('report.title'))}</title>
 <style>
-@page { size: A4; margin: ${compact ? '10mm 12mm' : '13mm 15mm'}; }
+@page { size: A4; margin: 13mm 15mm; }
 * { box-sizing: border-box; }
-html, body { margin:0; padding:0; background:#fff; color:#1d2430; font-family: Arial, "Malgun Gothic", "Apple SD Gothic Neo", "Hiragino Sans", "Yu Gothic", "Segoe UI", "Geeza Pro", Tahoma, sans-serif; font-size:${base}pt; line-height:${compact ? 1.4 : 1.48}; }
+html, body { margin:0; padding:0; background:#fff; color:#1d2430; font-family: Arial, "Malgun Gothic", "Apple SD Gothic Neo", "Hiragino Sans", "Yu Gothic", "Segoe UI", "Geeza Pro", Tahoma, sans-serif; font-size:10pt; line-height:1.48; }
 header { border-bottom:2px solid #27364d; padding-bottom:9px; display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
 h1 { font-size:17pt; margin:0; letter-spacing:-.025em; }
 h1 span { font-size:11pt; }
-h2 { font-size:${base + 0.5}pt; margin:${compact ? 9 : 12}px 0 4px; color:#27364d; }
+h2 { font-size:10.5pt; margin:12px 0 4px; color:#27364d; break-after:avoid; }
 .meta { color:#667085; font-size:8pt; }
 .badge { display:inline-block; border:1px solid #98a2b3; border-radius:3px; padding:0 5px; margin-inline-start:6px; }
 p { margin:4px 0 7px; white-space:pre-wrap; }
 ul { padding-inline-start:19px; margin:5px 0; }
-li { margin-bottom:${compact ? 3 : 5}px; }
+li { margin-bottom:5px; break-inside:avoid; }
 small { color:#667085; font-size:7pt; }
 .summary { background:#f3f5f8; padding:10px 12px; border-radius:4px; margin-top:12px; }
 .sources { list-style:none; padding:0; font-size:7.5pt; line-height:1.35; overflow-wrap:anywhere; column-count:2; column-gap:14px; }
@@ -103,10 +102,4 @@ ${report.portfolioNote ? `<section><h2>${safe(t('report.portfolio'))}</h2><p><bd
 <section><h2>${safe(t('report.sources'))}</h2>${gaps.length ? `<p class="meta">${safe(t('report.coverageGap', { v: gaps.join(', ') }))}</p>` : ''}${sources ? `<ul class="sources">${sources}</ul>` : `<p class="meta">${safe(t('report.noSources'))}</p>`}</section>
 <footer>${safe(t('report.disclaimer'))}</footer>
 </body></html>`
-}
-
-// Page count of a Chromium-generated PDF (uncompressed page tree objects).
-export function countPdfPages(buffer) {
-  const text = Buffer.from(buffer).toString('latin1')
-  return (text.match(/\/Type\s*\/Page(?![a-zA-Z])/g) || []).length
 }

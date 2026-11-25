@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createReportArchive } from '../src/shared/reportArchive.js'
-import { renderReportHtml, countPdfPages } from '../src/shared/reportHtml.js'
+import { renderReportHtml } from '../src/shared/reportHtml.js'
 
 const report = (over = {}) => ({
   schemaVersion: 1,
@@ -95,14 +95,4 @@ test('filing report renders escaped, localized, script-free A4 HTML', () => {
   })
   assert.match(ar, /dir="rtl"/)
   assert.match(ar, /تعذر الحصول على بيانات: KR:005930/)
-
-  assert.match(renderReportHtml(report(), { compact: true }), /font-size:9pt/)
-})
-
-test('countPdfPages counts page objects but not the page tree', () => {
-  const pdf = Buffer.from(
-    '%PDF-1.4\n1 0 obj << /Type /Pages /Kids [2 0 R 3 0 R] /Count 2 >>\n' +
-      '2 0 obj << /Type /Page /Parent 1 0 R >>\n3 0 obj <</Type/Page/Parent 1 0 R>>\n'
-  )
-  assert.equal(countPdfPages(pdf), 2)
 })

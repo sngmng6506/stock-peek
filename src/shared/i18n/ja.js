@@ -224,7 +224,5 @@ export default {
   'error.ERR_ANALYSIS_BUSY': 'すでにレポートを作成中です',
   'error.ERR_REPORT_NOT_FOUND': 'レポートが見つかりません',
   'error.ERR_REPORT_ARCHIVE': '保存されたレポートを読み込めませんでした',
-  'error.ERR_REPORT_OVERFLOW':
-    '内容がA4一枚を超えるため、PDFを保存しませんでした。銘柄数を減らして再作成してください',
   'error.ERR_REPORT_PDF': 'PDFを作成できませんでした'
 }

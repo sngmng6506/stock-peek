@@ -1,5 +1,4 @@
 import { BrowserWindow, shell } from 'electron'
-import { countPdfPages } from '../shared/reportHtml.js'
 
 // Report documents are static HTML: no JavaScript, no preload, no navigation inside the window.
 const WEB_PREFERENCES = {
@@ -70,31 +69,19 @@ export async function openReportViewer(html, title) {
   viewer.focus()
 }
 
-// Renders one document off-screen and returns { data, pages }. Never shown to the user.
+// Renders the document off-screen as A4 PDF (as many pages as the content needs).
 export async function printReportPdf(html) {
   const win = new BrowserWindow({ show: false, webPreferences: WEB_PREFERENCES })
   harden(win)
   try {
     await win.loadURL(toDataUrl(html))
-    const data = await win.webContents.printToPDF({
+    return await win.webContents.printToPDF({
       pageSize: 'A4',
       printBackground: true,
       preferCSSPageSize: true,
       generateDocumentOutline: false
     })
-    return { data, pages: countPdfPages(data) }
   } finally {
     await closeWindow(win)
   }
-}
-
-// A4 one page is the product contract: try the normal layout, then one slightly denser
-// layout (body text stays >= 9pt). Never truncate content silently.
-export async function renderOnePagePdf(renderHtml) {
-  for (const compact of [false, true]) {
-    const { data, pages } = await printReportPdf(renderHtml({ compact }))
-    if (pages === 1) return data
-    if (pages < 1) throw new Error('ERR_REPORT_PDF')
-  }
-  throw new Error('ERR_REPORT_OVERFLOW')
 }
