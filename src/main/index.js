@@ -45,6 +45,10 @@ import { alerts } from './alertStore.js'
 import { thesis } from './thesisStore.js'
 import { buildPersonalizedPreview } from '../shared/personalizedPreview.js'
 import { normalizeThesis } from '../shared/thesisModel.js'
+import { ANALYSIS_MARKETS, analysisConfigFromEnv, requestAnalysis } from '../shared/reportClient.js'
+import { renderReportHtml } from '../shared/reportHtml.js'
+import { reports } from './reportStore.js'
+import { openReportViewer, renderOnePagePdf } from './reportWindow.js'
 import { eFetch } from './markets/http.js'
 import {
   isWelcomeShown,
@@ -139,6 +143,25 @@ function resolveLanguage() {
 }
 
 const t = (key, vars) => translate(resolveLanguage(), key, vars)
+
+// Operator-only beta: the token comes from this machine's environment, never from the bundle.
+const analysisConfig = analysisConfigFromEnv(process.env)
+let analysisInFlight = false
+
+function buildAiPreview(options) {
+  const watchlist = getItems()
+  const currentThesis = options?.includeThesis
+    ? options.thesisDraft
+      ? normalizeThesis(options.thesisDraft)
+      : thesis.get()
+    : null
+  // Touch history only if explicitly requested.
+  const history = options?.includeHistory ? exportActivity().activityHistory : null
+  return buildPersonalizedPreview(watchlist, history, currentThesis, {
+    ...options,
+    locale: resolveLanguage()
+  })
+}
 
 function downloadPageUrl() {
   return `https://stock-peek.com${getLanguageInfo(resolveLanguage()).sitePath}`
@@ -843,25 +866,61 @@ app.whenReady().then(() => {
   // Activity history stays on-device. Export is an explicit local save action.
   ipcMain.handle('ai:get-context', () => ({
     stocks: getItems().map(({ market, symbol }) => ({ market, symbol })),
-    thesis: thesis.get()
+    thesis: thesis.get(),
+    analysis: { available: !!analysisConfig, markets: ANALYSIS_MARKETS }
   }))
   ipcMain.handle('ai:get-thesis', () => thesis.get())
   ipcMain.handle('ai:save-thesis', (_event, value) => thesis.save(value))
-  ipcMain.handle('ai:preview', (_event, options) => {
-    // Local preview only. Does not contact a server, LLM or payment provider.
-    const watchlist = getItems()
-    const currentThesis = options?.includeThesis
-      ? options.thesisDraft
-        ? normalizeThesis(options.thesisDraft)
-        : thesis.get()
-      : null
-    // Touch history only if explicitly requested.
-    const history = options?.includeHistory ? exportActivity().activityHistory : null
-    return buildPersonalizedPreview(watchlist, history, currentThesis, {
-      ...options,
-      locale: resolveLanguage()
-    })
+  // Local preview only. Does not contact a server, LLM or payment provider.
+  ipcMain.handle('ai:preview', (_event, options) => buildAiPreview(options))
+  ipcMain.handle('ai:create-report', async (_event, options) => {
+    if (!analysisConfig) throw new Error('ERR_ANALYSIS_UNAVAILABLE')
+    if (analysisInFlight) throw new Error('ERR_ANALYSIS_BUSY')
+    // Rebuilt in main from local stores: the renderer cannot add fields to the upload.
+    const { request } = buildAiPreview(options)
+    analysisInFlight = true
+    try {
+      const report = await requestAnalysis({ fetchImpl: eFetch, config: analysisConfig, request })
+      const entry = reports.add(report)
+      return { id: entry.id, reports: reports.list() }
+    } catch (error) {
+      throw codedError(error, 'ERR_ANALYSIS_FAILED')
+    } finally {
+      analysisInFlight = false
+    }
   })
+  ipcMain.handle('ai:list-reports', () => reports.list())
+  ipcMain.handle('ai:open-report', async (_event, id) => {
+    const { report } = reports.get(id)
+    await openReportViewer(
+      renderReportHtml(report, { lang: resolveLanguage() }),
+      'Stock Peek ' + t('report.title')
+    )
+  })
+  ipcMain.handle('ai:save-pdf', async (_event, id) => {
+    const entry = reports.get(id)
+    let data
+    try {
+      data = await renderOnePagePdf(({ compact }) =>
+        renderReportHtml(entry.report, { lang: resolveLanguage(), compact })
+      )
+    } catch (error) {
+      throw codedError(error, 'ERR_REPORT_PDF')
+    }
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+      title: 'Stock Peek ' + t('report.title'),
+      defaultPath: 'stock-peek-report-' + entry.createdAt.slice(0, 10) + '.pdf',
+      filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    })
+    if (canceled || !filePath) return { status: 'cancelled' }
+    try {
+      await writeFile(filePath, data)
+      return { status: 'saved' }
+    } catch (error) {
+      throw codedError(error, 'ERR_REPORT_PDF')
+    }
+  })
+  ipcMain.handle('ai:delete-report', (_event, id) => reports.remove(id))
 
   ipcMain.handle('activity:get-summary', () => getActivitySummary())
   ipcMain.handle('activity:export', async () => {

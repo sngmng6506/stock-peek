@@ -275,6 +275,16 @@ PDF는 복사가능한 텍스트·클릭 가능한 출처 링크 포함. 저장�
 - OpenDART 키는 `DART_API_KEY`, OpenRouter 키는 `OPENROUTER_API_KEY` 환경변수에만 설정한다. 기본 라우팅 모델은 `anthropic/claude-sonnet-5.5`이며, 라이브 연결 및 비용 검증 전까지 운영 유료 분석으로 취급하지 않는다.
 - P4는 **부분 구현**이다. 최신 뉴스 연동, 본문/XBRL 검증, 직전 리포트 대비 의미 있는 변화, 인증된 Worker API, 운영 데이터 접근 통제는 남아 있다.
 
+### P5 리포트 출력·앱 연결 (운영자 베타, 2026-11-25)
+
+- `src/shared/reportClient.js`: 운영자 PC 환경변수(`STOCKPEEK_ANALYSIS_TOKEN`, 선택 `STOCKPEEK_ANALYSIS_URL`)로만 켜지는 분석 API 클라이언트. 토큰은 앱 번들·저장소에 넣지 않는다. 미설정이면 기존 P3 미리보기 화면과 같다.
+- main이 로컬 저장소에서 요청을 다시 만든 뒤 `eFetch`로 `POST /api/analyze`에 보낸다(Electron `net.fetch`는 `Origin` 헤더를 보내지 않아 Worker의 브라우저 차단에 걸리지 않음을 확인). 지원 시장 US·KR, 본문 12KB 상한을 보내기 전에 검사한다.
+- 응답 재검증 후 `ai-reports` 로컬 저장소에 스냅샷으로 보관(최신 20개). 보기·PDF 저장·삭제는 서버를 다시 부르지 않는다.
+- `src/shared/reportHtml.js`: 4개 언어, 아랍어 RTL, 그레고리력 날짜, 공시 메타데이터 근거 수준 표기, 자료 미수집 종목 표기. JavaScript 없는 정적 문서와 CSP.
+- `src/main/reportWindow.js`: 별도 보기 창(JavaScript 꺼짐, 링크는 기본 브라우저), 숨김 창 `printToPDF(A4)`. 페이지 수를 세어 1장을 넘으면 촘촘한 배치로 한 번 더 시도하고, 그래도 넘으면 자르지 않고 `ERR_REPORT_OVERFLOW`.
+- 검증: 단위 테스트(`tests/reportClient.test.mjs`, `tests/reportArchive.test.mjs`), Linux Electron에서 모의 API로 생성→보관→보기→삭제 확인. 모든 필드를 최대 길이로 채운 극단적 한국어·일본어 리포트는 A4 1장을 넘어 `ERR_REPORT_OVERFLOW`가 난다. Windows·macOS 실제 글꼴에서의 PDF 확인은 아직 하지 않았다.
+- 남은 것: 서버 요약문이 `locale`과 무관하게 영어(`metadataOnlyReport`)인 점, 인증·크레딧 원장·결제(P6), 일반 사용자 공개 전 개인정보 처리방침 웹페이지 갱신.
+
 ### Cloudflare Pages 테스트 API (미배포)
 
 - `stockpeek-proxy/`에 자체 Pages Functions 프로젝트 코드 추가. `GET /api/health`, 운영자 인증이 필요한 `POST /api/analyze`를 제공한다. 코드만 등록했으며 **Cloudflare 배포·실제 API 실행 성공을 의미하지 않는다**.
@@ -291,7 +301,7 @@ PDF는 복사가능한 텍스트·클릭 가능한 출처 링크 포함. 저장�
 | P2 | 가격 알림 로컬 엔진/UX | **기초 로직 구현**: 패널 숨김 중 감시, stale 차단, 1회 발송, 로컬 상태 저장. OS·장중/장외 통합 검증은 추가 필요 |
 | P3 | 투자 관점·AI 분석 요청 계약 v2 | 선택 정보만 서버 전송, 이전 분석 대비 변화, 이력 기반 수치 검증 |
 | P4 | 공시/뉴스 수집·LLM 근거 검증 | **부분 구현**: SEC/OpenDART 메타데이터 수집 및 출처·ID 검증. 뉴스 라이선스·공시 본문/XBRL·LLM 실사용 검증은 미완료 |
-| P5 | PDF 출력/품질 검증 | A4 **실제 1페이지**, 폰트/링크/텍스트 복사, KO/EN/JA/AR 테스트, PDF 재저장 |
+| P5 | PDF 출력/품질 검증 | **운영자 베타 구현**: A4 실제 1페이지 검사, 링크/텍스트 복사, KO/EN/JA/AR 렌더 테스트, PDF 재저장. Windows/macOS 실기기 확인 필요 |
 | P6 | 인증·10크레딧 원장·결제 | webhook 위변조/중복/환불, 요청 병렬·재시도, 실패 무과금, 사용자 간 격리 |
 | P7 | 제한적 베타/원가 검증 | 동일 자료 반복/뉴스 없을 때 품질, 1건당 최악 비용, 반복 사용률·결제 전환 확인 |
 
