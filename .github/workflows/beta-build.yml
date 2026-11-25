@@ -1,0 +1,56 @@
+name: Beta build (Windows)
+
+# Pro 클로즈드 베타용 Windows 실행 파일(설치 없이 압축 해제 후 실행). 릴리즈·자동 업데이트와 무관.
+# 회사망처럼 로컬에서 npm ci/Electron 다운로드가 막힌 환경을 위해 GitHub에서 빌드한다.
+# 결과: Actions 실행 화면 하단 Artifacts의 stock-peek-beta-win (7일 보관).
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/p6-pro-auth-credits]
+    paths:
+      - 'src/**'
+      - 'package*.json'
+      - 'electron-builder.yml'
+      - '.github/workflows/beta-build.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: beta-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Build unpacked Windows app (no installer, no publish)
+        run: |
+          npm run build
+          npx electron-builder --win --dir --publish never
+      - name: Add beta launcher
+        shell: pwsh
+        run: |
+          $dir = 'dist/win-unpacked'
+          if (!(Test-Path "$dir/stock-peek.exe")) { throw 'stock-peek.exe missing' }
+          @(
+            '@echo off',
+            'rem Stock Peek Pro closed beta: shows Pro before it is public.',
+            'rem Quit the installed Stock Peek from the tray first (single instance).',
+            'set STOCKPEEK_PRO=1',
+            'start "" "%~dp0stock-peek.exe"'
+          ) | Set-Content "$dir/Stock Peek Pro Beta.cmd" -Encoding ascii
+          "commit ${{ github.sha }}" | Set-Content "$dir/BETA-BUILD.txt" -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stock-peek-beta-win
+          path: dist/win-unpacked
+          retention-days: 7
